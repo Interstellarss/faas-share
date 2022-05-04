@@ -1,12 +1,22 @@
 package server
 
 import (
+	"os"
+
+	_ "net/http/pprof"
+
+	"github.com/Interstellarss/faas-share/pkg/k8s"
+
+	"github.com/Interstellarss/faas-share/pkg/config"
+
 	clientset "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned"
 
 	coreinformer "k8s.io/client-go/informers/core/v1"
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/openfaas/faas-provider/types"
+
+	v1apps "k8s.io/client-go/listers/apps/v1"
 )
 
 //TODO: Move to config pattern used else-where across projects
@@ -19,11 +29,32 @@ const defaultWriteTimeout = 8
 func New(client clientset.Interface,
 	kube kubernetes.Interface,
 	endpointsInformer coreinformer.EndpointsInformer,
-	deploymentLister v1apps.deploymentLister,
+	deploymentLister v1apps.DeploymentLister,
 	clusterRole bool,
-	//cfg config.BootstrapConfig
+	cfg config.BootstrapConfig) *Server {
+	sharepodNamespace := "faas-share"
 
-) *Server {
+	if namespace, exists := os.LookupEnv("sharepod_namspace"); exists {
+		sharepodNamespace = namespace
+	}
+
+	pprof := "false"
+
+	if val, exists := os.LookupEnv("pprof"); exists {
+		pprof = val
+	}
+
+	lister := endpointsInformer.Lister()
+	sharepodLookup := k8s.NewFunctionLookup(sharepodNamespace, lister)
+
+	bootstrapConfig := types.FaaSConfig{
+		ReadTimeout:  cfg.FaaSConfig.ReadTimeout,
+		WriteTimeout: cfg.FaaSConfig.WriteTimeout,
+		TCPPort:      cfg.FaaSConfig.TCPPort,
+		EnableHealth: true,
+	}
+
+	bootstrapHandlers := types.FaaSHandlers{}
 
 }
 
