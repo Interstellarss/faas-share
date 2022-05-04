@@ -3,11 +3,13 @@ module github.com/Interstellarss/faas-share
 go 1.18
 
 require (
-	github.com/NTHU-LSALAB/KubeShare v0.9.4 // indirect
 	k8s.io/api v0.23.6
 	k8s.io/apimachinery v0.23.6
-	k8s.io/client-go v0.23.6 // indirect
+	k8s.io/client-go v0.23.6
 	k8s.io/klog v1.0.0
+)
+
+require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/evanphx/json-patch v4.12.0+incompatible // indirect
 	github.com/go-logr/logr v1.2.0 // indirect
