@@ -3,6 +3,7 @@ package server
 import (
 	"os"
 
+	"net/http"
 	_ "net/http/pprof"
 
 	"github.com/Interstellarss/faas-share/pkg/k8s"
@@ -11,12 +12,19 @@ import (
 
 	clientset "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned"
 
+	bootstrap "github.com/openfaas/faas-provider"
+
 	coreinformer "k8s.io/client-go/informers/core/v1"
 	"k8s.io/client-go/kubernetes"
 
+	"github.com/openfaas/faas-provider/proxy"
 	"github.com/openfaas/faas-provider/types"
 
 	v1apps "k8s.io/client-go/listers/apps/v1"
+
+	"github.com/prometheus/client_golang/prometheus/promhttp"
+
+	"k8s.io/klog"
 )
 
 //TODO: Move to config pattern used else-where across projects
@@ -32,6 +40,7 @@ func New(client clientset.Interface,
 	deploymentLister v1apps.DeploymentLister,
 	clusterRole bool,
 	cfg config.BootstrapConfig) *Server {
+
 	sharepodNamespace := "faas-share"
 
 	if namespace, exists := os.LookupEnv("sharepod_namspace"); exists {
@@ -54,7 +63,25 @@ func New(client clientset.Interface,
 		EnableHealth: true,
 	}
 
-	bootstrapHandlers := types.FaaSHandlers{}
+	bootstrapHandlers := types.FaaSHandlers{
+		//TODO: amybe need tochange the proxy  newHandlerFunc?
+		FunctionProxy: proxy.NewHandlerFunc(bootstrapConfig, sharepodLookup),
+
+		DeployHandler: makeApplyHandler(sharepodNamespace, client),
+	}
+
+	if pprof == "true" {
+		bootstrap.Router().PathPrefix("/debug/pprof/").Handler(http.DefaultServeMux)
+	}
+
+	bootstrap.Router().Path("/metrics").Handler(promhttp.Handler())
+
+	klog.Infof("Using namespace '%s'", sharepodNamespace)
+
+	return &Server{
+		BootstrapConfig:   &bootstrapConfig,
+		BootstrapHandlers: &bootstrapHandlers,
+	}
 
 }
 
