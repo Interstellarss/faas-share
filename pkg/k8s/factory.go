@@ -21,7 +21,7 @@ type FunctionFactory struct {
 	//Profiler NamespacedProfiler
 }
 
-func NewFunctionFactory(clientset kubernetes.Interface, config DeploymentConfig, profiler NamespacedProfiler) FunctionFactory {
+func NewFunctionFactory(clientset kubernetes.Interface, config DeploymentConfig) FunctionFactory {
 	return FunctionFactory{
 		Client: clientset,
 		Config: config,

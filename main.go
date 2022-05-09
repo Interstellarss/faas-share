@@ -180,11 +180,15 @@ func runOperator(setup serverSetup, cfg config.BootstrapConfig) {
 
 	setupLooging()
 
-	//signals need to configure
+	//TODO: signals need to configure
 	//stopCh :=
 
 	operator := true
-	Listers := startInformers()
+	listers := startInformers(setup, stopCh)
+
+	//TOOD: conttroller pkg for faas-share
+	ctrl := controller.
+
 
 }
 

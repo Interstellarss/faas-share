@@ -6,23 +6,23 @@ package k8s
 import (
 	"path/filepath"
 
-	types "github.com/openfaas/faas-provider/types"
+	sharepod "github.com/Interstellarss/faas-share/pkg/sharepod"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
 )
 
-type FunctionProbes struct {
+type SharepodProbes struct {
 	Liveness  *corev1.Probe
 	Readiness *corev1.Probe
 }
 
 // MakeProbes returns the liveness and readiness probes
 // by default the health check runs `cat /tmp/.lock` every ten seconds
-func (f *FunctionFactory) MakeProbes(r types.FunctionDeployment) (*FunctionProbes, error) {
-	var handler corev1.Handler
+func (f *FunctionFactory) MakeProbes(r sharepod.SharepodDeployment) (*SharepodProbes, error) {
+	var handler corev1.ProbeHandler
 
 	if f.Config.HTTPProbe {
-		handler = corev1.Handler{
+		handler = corev1.ProbeHandler{
 			HTTPGet: &corev1.HTTPGetAction{
 				Path: "/_/health",
 				Port: intstr.IntOrString{
@@ -33,16 +33,16 @@ func (f *FunctionFactory) MakeProbes(r types.FunctionDeployment) (*FunctionProbe
 		}
 	} else {
 		path := filepath.Join("/tmp/", ".lock")
-		handler = corev1.Handler{
+		handler = corev1.ProbeHandler{
 			Exec: &corev1.ExecAction{
 				Command: []string{"cat", path},
 			},
 		}
 	}
 
-	probes := FunctionProbes{}
+	probes := SharepodProbes{}
 	probes.Readiness = &corev1.Probe{
-		Handler:             handler,
+		ProbeHandler:        handler,
 		InitialDelaySeconds: f.Config.ReadinessProbe.InitialDelaySeconds,
 		TimeoutSeconds:      int32(f.Config.ReadinessProbe.TimeoutSeconds),
 		PeriodSeconds:       int32(f.Config.ReadinessProbe.PeriodSeconds),
@@ -51,7 +51,7 @@ func (f *FunctionFactory) MakeProbes(r types.FunctionDeployment) (*FunctionProbe
 	}
 
 	probes.Liveness = &corev1.Probe{
-		Handler:             handler,
+		ProbeHandler:        handler,
 		InitialDelaySeconds: f.Config.LivenessProbe.InitialDelaySeconds,
 		TimeoutSeconds:      int32(f.Config.LivenessProbe.TimeoutSeconds),
 		PeriodSeconds:       int32(f.Config.LivenessProbe.PeriodSeconds),

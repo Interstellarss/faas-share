@@ -6,13 +6,14 @@ package k8s
 import (
 	"testing"
 
-	types "github.com/openfaas/faas-provider/types"
+	sharepod "github.com/Interstellarss/faas-share/pkg/sharepod"
+	//types "github.com/openfaas/faas-provider/types"
 )
 
 func Test_makeProbes_useExec(t *testing.T) {
 	f := mockFactory()
 
-	request := types.FunctionDeployment{
+	request := sharepod.SharepodDeployment{
 		Service:                "testfunc",
 		ReadOnlyRootFilesystem: false,
 	}
@@ -36,7 +37,7 @@ func Test_makeProbes_useHTTPProbe(t *testing.T) {
 	f := mockFactory()
 	f.Config.HTTPProbe = true
 
-	request := types.FunctionDeployment{
+	request := sharepod.SharepodDeployment{
 		Service:                "testfunc",
 		ReadOnlyRootFilesystem: false,
 	}
@@ -72,7 +73,7 @@ func Test_makeProbes_useCustomDurationHTTPProbe(t *testing.T) {
 
 	customDelay := "0"
 
-	request := types.FunctionDeployment{
+	request := sharepod.SharepodDeployment{
 		Service:                "testfunc",
 		ReadOnlyRootFilesystem: false,
 	}
