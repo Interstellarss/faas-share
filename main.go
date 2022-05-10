@@ -12,6 +12,9 @@ import (
 	"k8s.io/klog/v2"
 
 	v1 "github.com/Interstellarss/faas-share/pkg/client/informers/externalversions/kubeshare/v1"
+	"github.com/Interstellarss/faas-share/pkg/controller"
+	"github.com/Interstellarss/faas-share/pkg/server"
+
 	//v1 "github.com/Interstellarss/faas-share/pkg/client/informers/externealversions"
 
 	clientset "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned"
@@ -117,9 +120,16 @@ func main() {
 	factory := k8s.NewFunctionFactory()
 
 	setup := serverSetup{
-		config: config,
-		function
+		config:              config,
+		functionFactory:     factory,
+		kubeInformerFactory: kubeInformerFactory,
+		faasInformerFactory: faasInformerFactory,
+		kubeClient:          kubeclient,
+		shareClient:         shareClient,
 	}
+
+	log.Println("Starting operator")
+	runOperator(setup, config)
 
 }
 
@@ -168,8 +178,8 @@ func startInformers(setup serverSetup, stopCh <-chan struct{}) customInformers {
 }
 
 func runOperator(setup serverSetup, cfg config.BootstrapConfig) {
-	lubeClient := setup.kubeClient
-	faasClient := setup.faasClient
+	kubeClient := setup.kubeClient
+	shareClient := setup.shareClient
 	kubeInformerfacotry := setup.kubeInformerFactory
 	faasInformerfactory := setup.faasInformerFactory
 
@@ -187,15 +197,20 @@ func runOperator(setup serverSetup, cfg config.BootstrapConfig) {
 	listers := startInformers(setup, stopCh)
 
 	//TOOD: conttroller pkg for faas-share
-	ctrl := controller.
+	ctrl := controller.NewController()
 
+	srv := server.New(shareClient, kubeClient, listers.EndpointsInformer, listers.DeploymentInformer.Lister(), cfg.ClusterRole, cfg)
 
+	go srv.Start()
+	if err := ctrl.Run(1, stopCh); err != nil {
+		klog.Fatalf("Error running controller: %s", err.Error())
+	}
 }
 
 type serverSetup struct {
 	config              config.BootstrapConfig
 	kubeClient          *kubernetes.Clientset
-	faasClient          *clientset.Clientset
+	shareClient         *clientset.Clientset
 	functionFactory     k8s.FunctionFactory
 	kubeInformerFactory kubeinformers.SharedInformerFactory
 	faasInformerFactory informers.SharedInformerFactory

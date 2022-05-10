@@ -13,25 +13,25 @@ import (
 func Test_Replicas(t *testing.T) {
 	scenarios := []struct {
 		name     string
-		function *faasv1.Function
+		sharepod *faasv1.SharePod
 		deploy   *appsv1.Deployment
 		expected *int32
 	}{
 		{
 			"return nil replicas when label is missing and deployment does not exist",
-			&faasv1.Function{},
+			&faasv1.SharePod{},
 			nil,
 			nil,
 		},
 		{
 			"return nil replicas when label is missing and deployment has no replicas",
-			&faasv1.Function{},
+			&faasv1.SharePod{},
 			&appsv1.Deployment{},
 			nil,
 		},
 		{
 			"return min replicas when label is present and deployment has nil replicas",
-			&faasv1.Function{Spec: faasv1.FunctionSpec{Labels: &map[string]string{LabelMinReplicas: "2"}}},
+			&faasv1.SharePod{Spec: faasv1.FunctionSpec{Labels: &map[string]string{LabelMinReplicas: "2"}}},
 			&appsv1.Deployment{Spec: appsv1.DeploymentSpec{Replicas: nil}},
 			int32p(2),
 		},
