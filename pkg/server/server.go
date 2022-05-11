@@ -65,9 +65,11 @@ func New(client clientset.Interface,
 
 	bootstrapHandlers := types.FaaSHandlers{
 		//TODO: amybe need tochange the proxy  newHandlerFunc?
-		FunctionProxy: proxy.NewHandlerFunc(bootstrapConfig, sharepodLookup),
-
-		DeployHandler: makeApplyHandler(sharepodNamespace, client),
+		FunctionProxy:  proxy.NewHandlerFunc(bootstrapConfig, sharepodLookup),
+		DeleteHandler:  makeDeleteHandler(sharepodNamespace, client),
+		DeployHandler:  makeApplyHandler(sharepodNamespace, client),
+		FunctionReader: makeListHandler(),
+		ReplicaReader:  makeReplicaReader(sharepodNamespace, client, deploymentLister),
 	}
 
 	if pprof == "true" {
@@ -88,4 +90,10 @@ func New(client clientset.Interface,
 type Server struct {
 	BootstrapHandlers *types.FaaSHandlers
 	BootstrapConfig   *types.FaaSConfig
+}
+
+func (s *Server) Start() {
+	klog.Infof("Starting HTTP server on port %s", *s.BootstrapConfig.TCPPort)
+
+	bootstrap.Serve(s.BootstrapHandlers, s.BootstrapConfig)
 }

@@ -14,6 +14,7 @@ import (
 	v1 "github.com/Interstellarss/faas-share/pkg/client/informers/externalversions/kubeshare/v1"
 	"github.com/Interstellarss/faas-share/pkg/controller"
 	"github.com/Interstellarss/faas-share/pkg/server"
+	"github.com/Interstellarss/faas-share/pkg/signals"
 
 	//v1 "github.com/Interstellarss/faas-share/pkg/client/informers/externealversions"
 
@@ -117,7 +118,7 @@ func main() {
 	faasInformerOpt := informers.WithNamespace(namespaceScope)
 	faasInformerFactory := informers.NewSharedInformerFactoryWithOptions(shareClient, defaultResync, faasInformerOpt)
 
-	factory := k8s.NewFunctionFactory()
+	factory := k8s.NewFunctionFactory(kubeclient, deployConfig)
 
 	setup := serverSetup{
 		config:              config,
@@ -149,7 +150,7 @@ func startInformers(setup serverSetup, stopCh <-chan struct{}) customInformers {
 
 	sharepods = faasInformerFactory.Kubeshare().V1().SharePods()
 	go sharepods.Informer().Run(stopCh)
-	if ok := cache.WaitForNamedCacheSync("faas-share:sharepods", stopCh, sharepods.Infromer().HasSynced); !ok {
+	if ok := cache.WaitForNamedCacheSync("faas-share:sharepods", stopCh, sharepods.Informer().HasSynced); !ok {
 		log.Fatalf("failed to wait for cache to sync")
 	}
 
@@ -188,19 +189,26 @@ func runOperator(setup serverSetup, cfg config.BootstrapConfig) {
 		Factory: setup.functionFactory,
 	}
 
-	setupLooging()
+	setupLogging()
 
 	//TODO: signals need to configure
-	//stopCh :=
+	stopCh := signals.SetupSignalHandler()
 
-	operator := true
+	//operator := true
 	listers := startInformers(setup, stopCh)
 
 	//TOOD: conttroller pkg for faas-share
-	ctrl := controller.NewController()
+	ctrl := controller.NewController(
+		kubeClient,
+		shareClient,
+		kubeInformerfacotry,
+		faasInformerfactory,
+		facory,
+	)
 
 	srv := server.New(shareClient, kubeClient, listers.EndpointsInformer, listers.DeploymentInformer.Lister(), cfg.ClusterRole, cfg)
 
+	//TODO here
 	go srv.Start()
 	if err := ctrl.Run(1, stopCh); err != nil {
 		klog.Fatalf("Error running controller: %s", err.Error())
