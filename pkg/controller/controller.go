@@ -31,8 +31,8 @@ import (
 )
 
 const (
-	controllerAgentName = "openfaas-operator"
-	faasKind            = "Function"
+	controllerAgentName = "faasshare-operator"
+	faasKind            = "Sharepod"
 	functionPort        = 8080
 	LabelMinReplicas    = "com.openfaas.scale.min"
 	// SuccessSynced is used as part of the Event 'reason' when a Function is synced
@@ -56,10 +56,11 @@ type Controller struct {
 	// faasclientset is a clientset for our own API group
 	faasclientset clientset.Interface
 
+	//here is different from the controller in KubeShare, need to check here
 	deploymentsLister appslisters.DeploymentLister
 	deploymentsSynced cache.InformerSynced
-	functionsLister   listers.SharePodLister
-	functionsSynced   cache.InformerSynced
+	sharepodsLister   listers.SharePodLister
+	sharepodsSynced   cache.InformerSynced
 
 	// workqueue is a rate limited work queue. This is used to queue work to be
 	// processed instead of performing it as soon as a change happens. This
@@ -102,8 +103,8 @@ func NewController(
 		faasclientset:     faasclientset,
 		deploymentsLister: deploymentInformer.Lister(),
 		deploymentsSynced: deploymentInformer.Informer().HasSynced,
-		functionsLister:   faasInformer.Lister(),
-		functionsSynced:   faasInformer.Informer().HasSynced,
+		sharepodsLister:   faasInformer.Lister(),
+		sharepodsSynced:   faasInformer.Informer().HasSynced,
 		workqueue:         workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "Functions"),
 		recorder:          recorder,
 		factory:           factory,
@@ -119,6 +120,7 @@ func NewController(
 		UpdateFunc: func(old, new interface{}) {
 			controller.enqueueFunction(new)
 		},
+		//DeleteFunc: controller.handleDele,
 	})
 
 	// Set up an event handler for when functions related resources like pods, deployments, replica sets
@@ -153,7 +155,7 @@ func (c *Controller) Run(threadiness int, stopCh <-chan struct{}) error {
 	// Start the informer factories to begin populating the informer caches
 	// Wait for the caches to be synced before starting workers
 	glog.Info("Waiting for informer caches to sync")
-	if ok := cache.WaitForCacheSync(stopCh, c.deploymentsSynced, c.functionsSynced); !ok {
+	if ok := cache.WaitForCacheSync(stopCh, c.deploymentsSynced, c.sharepodsSynced); !ok {
 		return fmt.Errorf("failed to wait for caches to sync")
 	}
 
@@ -221,7 +223,7 @@ func (c *Controller) syncHandler(key string) error {
 	}
 
 	// Get the Function resource with this namespace/name
-	sharepod, err := c.functionsLister.SharePods(namespace).Get(name)
+	sharepod, err := c.sharepodsLister.SharePods(namespace).Get(name)
 	if err != nil {
 		// The Function resource may no longer exist, in which case we stop processing.
 		if errors.IsNotFound(err) {
@@ -257,7 +259,7 @@ func (c *Controller) syncHandler(key string) error {
 		glog.Infof("Creating deployment for '%s'", sharepod.Name)
 		deployment, err = c.kubeclientset.AppsV1().Deployments(sharepod.Namespace).Create(
 			context.TODO(),
-			newDeployment(sharepod, deployment, existingSecrets, c.factory),
+			//newDeployment(sharepod, deployment, existingSecrets, c.factory),
 			metav1.CreateOptions{},
 		)
 		if err != nil {
@@ -382,7 +384,7 @@ func (c *Controller) handleObject(obj interface{}) {
 			return
 		}
 
-		function, err := c.functionsLister.SharePods(object.GetNamespace()).Get(ownerRef.Name)
+		function, err := c.sharepodsLister.SharePods(object.GetNamespace()).Get(ownerRef.Name)
 		if err != nil {
 			glog.Infof("Function '%s' deleted. Ignoring orphaned object '%s'", ownerRef.Name, object.GetSelfLink())
 			return

@@ -26,7 +26,7 @@ const (
 func newDeployment(
 	sharepod *faasv1.SharePod,
 	existingDeployment *appsv1.Deployment,
-	existingSecrets map[string]*corev1.Secret,
+	//existingSecrets map[string]*corev1.Secret,
 	factory FunctionFactory) *appsv1.Deployment {
 
 	ctx := context.TODO()

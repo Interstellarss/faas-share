@@ -4,12 +4,12 @@
 package k8s
 
 import (
-	types "github.com/openfaas/faas-provider/types"
-
 	"testing"
 
 	appsv1 "k8s.io/api/apps/v1"
 	apiv1 "k8s.io/api/core/v1"
+
+	sharepod "github.com/Interstellarss/faas-share/pkg/sharepod"
 )
 
 func readOnlyRootDisabled(t *testing.T, deployment *appsv1.Deployment) {
@@ -79,7 +79,7 @@ func Test_configureReadOnlyRootFilesystem_Disabled_To_Disabled(t *testing.T) {
 		},
 	}
 
-	request := types.FunctionDeployment{
+	request := sharepod.SharepodDeployment{
 		Service:                "testfunc",
 		ReadOnlyRootFilesystem: false,
 	}
@@ -102,7 +102,7 @@ func Test_configureReadOnlyRootFilesystem_Disabled_To_Enabled(t *testing.T) {
 		},
 	}
 
-	request := types.FunctionDeployment{
+	request := sharepod.SharepodDeployment{
 		Service:                "testfunc",
 		ReadOnlyRootFilesystem: true,
 	}
@@ -143,7 +143,7 @@ func Test_configureReadOnlyRootFilesystem_Enabled_To_Disabled(t *testing.T) {
 		},
 	}
 
-	request := types.FunctionDeployment{
+	request := sharepod.SharepodDeployment{
 		Service:                "testfunc",
 		ReadOnlyRootFilesystem: false,
 	}
@@ -183,7 +183,7 @@ func Test_configureReadOnlyRootFilesystem_Enabled_To_Enabled(t *testing.T) {
 		},
 	}
 
-	request := types.FunctionDeployment{
+	request := sharepod.SharepodDeployment{
 		Service:                "testfunc",
 		ReadOnlyRootFilesystem: true,
 	}

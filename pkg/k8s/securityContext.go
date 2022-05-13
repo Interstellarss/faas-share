@@ -4,9 +4,11 @@
 package k8s
 
 import (
-	types "github.com/openfaas/faas-provider/types"
+	//types "github.com/openfaas/faas-provider/types"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
+
+	sharepod "github.com/Interstellarss/faas-share/pkg/sharepod"
 )
 
 // nonRootFunctionuserID is the user id that is set when DeployHandlerConfig.SetNonRootUser is true.
@@ -38,7 +40,7 @@ func (f *FunctionFactory) ConfigureContainerUserID(deployment *appsv1.Deployment
 //    to false and there will be no mount for the `/tmp` folder
 //
 // This method is safe for both create and update operations.
-func (f *FunctionFactory) ConfigureReadOnlyRootFilesystem(request types.FunctionDeployment, deployment *appsv1.Deployment) {
+func (f *FunctionFactory) ConfigureReadOnlyRootFilesystem(request sharepod.SharepodDeployment, deployment *appsv1.Deployment) {
 	if deployment.Spec.Template.Spec.Containers[0].SecurityContext != nil {
 		deployment.Spec.Template.Spec.Containers[0].SecurityContext.ReadOnlyRootFilesystem = &request.ReadOnlyRootFilesystem
 	} else {

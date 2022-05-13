@@ -7,22 +7,23 @@ import (
 )
 
 // makeResources creates deployment resource limits and requests requirements from function specs
-func makeResources(function *faasv1.Function) (*corev1.ResourceRequirements, error) {
+func makeResources(sharepod *faasv1.SharePod) (*corev1.ResourceRequirements, error) {
+	//TODO here: modity in order to fit for sharepod
 	resources := &corev1.ResourceRequirements{
 		Limits:   corev1.ResourceList{},
 		Requests: corev1.ResourceList{},
 	}
 
 	// Set Memory limits
-	if function.Spec.Limits != nil && len(function.Spec.Limits.Memory) > 0 {
-		qty, err := resource.ParseQuantity(function.Spec.Limits.Memory)
+	if sharepod.ObjectMeta.Annotations[] != nil && len(sharepod.Spec.Limits.Memory) > 0 {
+		qty, err := resource.ParseQuantity(sharepod.Spec.Limits.Memory)
 		if err != nil {
 			return resources, err
 		}
 		resources.Limits[corev1.ResourceMemory] = qty
 	}
-	if function.Spec.Requests != nil && len(function.Spec.Requests.Memory) > 0 {
-		qty, err := resource.ParseQuantity(function.Spec.Requests.Memory)
+	if sharepod.Spec.Requests != nil && len(sharepod.Spec.Requests.Memory) > 0 {
+		qty, err := resource.ParseQuantity(sharepod.Spec.Requests.Memory)
 		if err != nil {
 			return resources, err
 		}
@@ -30,15 +31,15 @@ func makeResources(function *faasv1.Function) (*corev1.ResourceRequirements, err
 	}
 
 	// Set CPU limits
-	if function.Spec.Limits != nil && len(function.Spec.Limits.CPU) > 0 {
-		qty, err := resource.ParseQuantity(function.Spec.Limits.CPU)
+	if sharepod.Spec.Limits != nil && len(sharepod.Spec.Limits.CPU) > 0 {
+		qty, err := resource.ParseQuantity(sharepod.Spec.Limits.CPU)
 		if err != nil {
 			return resources, err
 		}
 		resources.Limits[corev1.ResourceCPU] = qty
 	}
-	if function.Spec.Requests != nil && len(function.Spec.Requests.CPU) > 0 {
-		qty, err := resource.ParseQuantity(function.Spec.Requests.CPU)
+	if sharepod.Spec.Requests != nil && len(sharepod.Spec.Requests.CPU) > 0 {
+		qty, err := resource.ParseQuantity(sharepod.Spec.Requests.CPU)
 		if err != nil {
 			return resources, err
 		}

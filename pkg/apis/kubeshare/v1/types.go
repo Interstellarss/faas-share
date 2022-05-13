@@ -72,6 +72,19 @@ type SharePodStatus struct {
 	PodObjectMeta  *metav1.ObjectMeta
 	BoundDeviceID  string
 	PodManagerPort int
+
+	//TODOs: add replicas spec for faas
+	Replicas uint64 `json:"replicas, omitempty"`
+
+	AvailableReplicas uint64 `availableReplicas, omitempty`
+
+	Usage *SharepodUsage `json:"usage, omitempty"`
+}
+
+type SharepodUsage struct {
+	GPU float64 `json:"gpu, omitempty"`
+
+	TotalMemoryBytes float64 `json:"totalMemoryBytes, omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

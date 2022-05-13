@@ -6,9 +6,8 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 
-	"github.com/Interstellarss/faas-share/pkg/k8s"
-
 	"github.com/Interstellarss/faas-share/pkg/config"
+	"github.com/Interstellarss/faas-share/pkg/k8s"
 
 	clientset "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned"
 
@@ -17,10 +16,13 @@ import (
 	coreinformer "k8s.io/client-go/informers/core/v1"
 	"k8s.io/client-go/kubernetes"
 
+	"github.com/openfaas/faas-provider/logs"
 	"github.com/openfaas/faas-provider/proxy"
 	"github.com/openfaas/faas-provider/types"
 
 	v1apps "k8s.io/client-go/listers/apps/v1"
+
+	//faassharek8s "github.com/Interstellarss/faas-share/pkg/k8s"
 
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 
@@ -68,8 +70,16 @@ func New(client clientset.Interface,
 		FunctionProxy:  proxy.NewHandlerFunc(bootstrapConfig, sharepodLookup),
 		DeleteHandler:  makeDeleteHandler(sharepodNamespace, client),
 		DeployHandler:  makeApplyHandler(sharepodNamespace, client),
-		FunctionReader: makeListHandler(),
+		FunctionReader: makeListHandler(sharepodNamespace, client, deploymentLister),
 		ReplicaReader:  makeReplicaReader(sharepodNamespace, client, deploymentLister),
+		ReplicaUpdater: makeReplicaHandler(sharepodNamespace, kube),
+		UpdateHandler:  makeHealthReader(),
+		HealthHandler:  makeHealthReader(),
+		InfoHandler:    makeInfoHandler(),
+		//SecretHandler: ,
+		LogHandler: logs.NewLogHandlerFunc(k8s.NewLogRequestor(kube, sharepodNamespace), bootstrapConfig.WriteTimeout),
+
+		//ListNamespaceHandler: ,
 	}
 
 	if pprof == "true" {
@@ -96,4 +106,8 @@ func (s *Server) Start() {
 	klog.Infof("Starting HTTP server on port %s", *s.BootstrapConfig.TCPPort)
 
 	bootstrap.Serve(s.BootstrapHandlers, s.BootstrapConfig)
+}
+
+func int32p(i int32) *int32 {
+	return &i
 }
