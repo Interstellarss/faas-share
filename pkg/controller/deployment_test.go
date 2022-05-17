@@ -41,9 +41,9 @@ func Test_newDeployment(t *testing.T) {
 	}
 	factory := NewFunctionFactory(fake.NewSimpleClientset(), k8sConfig)
 
-	secrets := map[string]*corev1.Secret{}
+	//secrets := map[string]*corev1.Secret{}
 
-	deployment := newDeployment(sharepod, nil, secrets, factory)
+	deployment := newDeployment(sharepod, nil, factory)
 
 	if deployment.Spec.Template.Spec.Containers[0].ReadinessProbe.HTTPGet.Path != "/_/health" {
 		t.Errorf("Readiness probe should have HTTPGet handler set to %s", "/_/health")
@@ -67,15 +67,22 @@ func Test_newDeployment(t *testing.T) {
 }
 
 func Test_newDeployment_withExecProbe(t *testing.T) {
-	function := &faasv1.Function{
+	sharepod := &faasv1.SharePod{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: "kubesec",
+			Name:        "kubesec",
+			Annotations: map[string]string{},
 		},
-		Spec: faasv1.FunctionSpec{
-			Name:                   "kubesec",
-			Image:                  "docker.io/kubesec/kubesec",
-			Annotations:            &map[string]string{},
-			ReadOnlyRootFilesystem: true,
+		Spec: corev1.PodSpec{
+			Containers: []corev1.Container{
+				corev1.Container{
+					Image: "docker.io/kubesec/kubesec",
+				},
+			},
+			//ReadOnlyRootFilesystem: true,
+			//Name:                   "kubesec",
+			//Image:                  "docker.io/kubesec/kubesec",
+			//Annotations:            &map[string]string{},
+			//ReadOnlyRootFilesystem: true,
 		},
 	}
 	k8sConfig := k8s.DeploymentConfig{
@@ -95,9 +102,9 @@ func Test_newDeployment_withExecProbe(t *testing.T) {
 
 	factory := NewFunctionFactory(fake.NewSimpleClientset(), k8sConfig)
 
-	secrets := map[string]*corev1.Secret{}
+	//secrets := map[string]*corev1.Secret{}
 
-	deployment := newDeployment(function, nil, secrets, factory)
+	deployment := newDeployment(sharepod, nil, factory)
 
 	if deployment.Spec.Template.Spec.Containers[0].ReadinessProbe.HTTPGet != nil {
 		t.Fatalf("ReadinessProbe's HTTPGet should be nil due to exec probe")
@@ -105,15 +112,20 @@ func Test_newDeployment_withExecProbe(t *testing.T) {
 }
 
 func Test_newDeployment_PrometheusScrape_NotOverridden(t *testing.T) {
-	function := &faasv1.Function{
+	function := &faasv1.SharePod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: "kubesec",
-		},
-		Spec: faasv1.FunctionSpec{
-			Name:  "kubesec",
-			Image: "docker.io/kubesec/kubesec",
-			Annotations: &map[string]string{
+			Annotations: map[string]string{
 				"prometheus.io.scrape": "true",
+			},
+		},
+		Spec: corev1.PodSpec{
+			//Name:  "kubesec",
+			Containers: []corev1.Container{
+				corev1.Container{
+					//Name: "kubespec",
+					Image: "docker.io/kubesec/kubesec",
+				},
 			},
 		},
 	}
@@ -134,9 +146,9 @@ func Test_newDeployment_PrometheusScrape_NotOverridden(t *testing.T) {
 			},
 		})
 
-	secrets := map[string]*corev1.Secret{}
+	//secrets := map[string]*corev1.Secret{}
 
-	deployment := newDeployment(function, nil, secrets, factory)
+	deployment := newDeployment(function, nil, factory)
 
 	want := "true"
 

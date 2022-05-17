@@ -1,5 +1,6 @@
 package controller
 
+/*
 import (
 	"fmt"
 
@@ -126,3 +127,5 @@ func removeVolumeMount(volumeName string, mounts []corev1.VolumeMount) []corev1.
 
 	return newMounts
 }
+
+*/

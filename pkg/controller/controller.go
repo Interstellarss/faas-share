@@ -259,7 +259,7 @@ func (c *Controller) syncHandler(key string) error {
 		glog.Infof("Creating deployment for '%s'", sharepod.Name)
 		deployment, err = c.kubeclientset.AppsV1().Deployments(sharepod.Namespace).Create(
 			context.TODO(),
-			//newDeployment(sharepod, deployment, existingSecrets, c.factory),
+			newDeployment(sharepod, deployment, c.factory),
 			metav1.CreateOptions{},
 		)
 		if err != nil {
@@ -311,7 +311,7 @@ func (c *Controller) syncHandler(key string) error {
 
 		deployment, err = c.kubeclientset.AppsV1().Deployments(sharepod.Namespace).Update(
 			context.TODO(),
-			newDeployment(sharepod, deployment, existingSecrets, c.factory),
+			newDeployment(sharepod, deployment, c.factory),
 			metav1.UpdateOptions{},
 		)
 
@@ -327,7 +327,7 @@ func (c *Controller) syncHandler(key string) error {
 		existingService.Annotations = makeAnnotations(sharepod)
 		_, err = c.kubeclientset.CoreV1().Services(sharepod.Namespace).Update(context.TODO(), existingService, metav1.UpdateOptions{})
 		if err != nil {
-			glog.Errorf("Updating service for '%s' failed: %v", sharepod.Spec.Name, err)
+			glog.Errorf("Updating service for '%s' failed: %v", sharepod.Name, err)
 		}
 	}
 
@@ -395,6 +395,7 @@ func (c *Controller) handleObject(obj interface{}) {
 	}
 }
 
+/*
 // getSecrets queries Kubernetes for a list of secrets by name in the given k8s namespace.
 func (c *Controller) getSecrets(namespace string, secretNames []string) (map[string]*corev1.Secret, error) {
 	secrets := map[string]*corev1.Secret{}
@@ -409,6 +410,7 @@ func (c *Controller) getSecrets(namespace string, secretNames []string) (map[str
 
 	return secrets, nil
 }
+*/
 
 // getReplicas returns the desired number of replicas for a function taking into account
 // the min replicas label, HPA, the OF autoscaler and scaled to zero deployments

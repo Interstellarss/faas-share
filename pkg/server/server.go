@@ -79,7 +79,7 @@ func New(client clientset.Interface,
 		//SecretHandler: ,
 		LogHandler: logs.NewLogHandlerFunc(k8s.NewLogRequestor(kube, sharepodNamespace), bootstrapConfig.WriteTimeout),
 
-		//ListNamespaceHandler: ,
+		ListNamespaceHandler: MakeNamespacesLister(sharepodNamespace, clusterRole, kube),
 	}
 
 	if pprof == "true" {
