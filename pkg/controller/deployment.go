@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"strings"
 
 	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
 	"github.com/google/go-cmp/cmp"
@@ -99,7 +98,7 @@ func newDeployment(
 		},
 	}
 
-	factory.ConfigureReadOnlyRootFilesystem(sharepod, deploymentSpec)
+	//factory.ConfigureReadOnlyRootFilesystem(sharepod, deploymentSpec)
 	factory.ConfigureContainerUserID(deploymentSpec)
 
 	/*
@@ -183,7 +182,7 @@ func makeLabels(sharepod *faasv1.SharePod) map[string]string {
 		"controller":    sharepod.Name,
 	}
 	if sharepod.Labels != nil {
-		for k, v := range *&sharepod.Labels {
+		for k, v := range sharepod.Labels {
 			labels[k] = v
 		}
 	}
@@ -199,7 +198,7 @@ func makeAnnotations(sharepod *faasv1.SharePod) map[string]string {
 
 	// copy function annotations
 	if sharepod.Annotations != nil {
-		for k, v := range *&sharepod.Annotations {
+		for k, v := range sharepod.Annotations {
 			annotations[k] = v
 		}
 	}
@@ -216,6 +215,8 @@ func makeAnnotations(sharepod *faasv1.SharePod) map[string]string {
 	return annotations
 }
 
+//NodeSelector not supported in KubeShare
+/*
 func makeNodeSelector(constraints []string) map[string]string {
 	selector := make(map[string]string)
 
@@ -231,6 +232,7 @@ func makeNodeSelector(constraints []string) map[string]string {
 
 	return selector
 }
+*/
 
 // deploymentNeedsUpdate determines if the function spec is different from the deployment spec
 func deploymentNeedsUpdate(sharepod *faasv1.SharePod, deployment *appsv1.Deployment) bool {

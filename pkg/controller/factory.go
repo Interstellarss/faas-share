@@ -67,10 +67,12 @@ func (f *FunctionFactory) MakeProbes(sharepod *faasv1.SharePod) (*k8s.SharepodPr
 	return f.Factory.MakeProbes(req)
 }
 
+/*
 func (f *FunctionFactory) ConfigureReadOnlyRootFilesystem(sharepod *faasv1.SharePod, deployment *appsv1.Deployment) {
 	req := sharepodToSharepodRequest(sharepod)
 	f.Factory.ConfigureReadOnlyRootFilesystem(req, deployment)
 }
+*/
 
 func (f *FunctionFactory) ConfigureContainerUserID(deployment *appsv1.Deployment) {
 	f.Factory.ConfigureContainerUserID(deployment)

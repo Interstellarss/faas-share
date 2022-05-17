@@ -103,11 +103,13 @@ type Server struct {
 }
 
 func (s *Server) Start() {
-	klog.Infof("Starting HTTP server on port %s", *s.BootstrapConfig.TCPPort)
+	klog.Infof("Starting HTTP server on port %d", *s.BootstrapConfig.TCPPort)
 
 	bootstrap.Serve(s.BootstrapHandlers, s.BootstrapConfig)
 }
 
+/*
 func int32p(i int32) *int32 {
 	return &i
 }
+*/

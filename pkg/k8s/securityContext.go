@@ -25,7 +25,7 @@ func (f *FunctionFactory) ConfigureContainerUserID(deployment *appsv1.Deployment
 		functionUser = &userID
 	}
 
-	if deployment.Spec.Template.Spec.Containers[0].SecurityContext == nil {
+	if deployment.Spec.Template.Spec.Containers != nil && deployment.Spec.Template.Spec.Containers[0].SecurityContext == nil {
 		deployment.Spec.Template.Spec.Containers[0].SecurityContext = &corev1.SecurityContext{}
 	}
 
@@ -41,7 +41,7 @@ func (f *FunctionFactory) ConfigureContainerUserID(deployment *appsv1.Deployment
 //
 // This method is safe for both create and update operations.
 func (f *FunctionFactory) ConfigureReadOnlyRootFilesystem(request sharepod.SharepodDeployment, deployment *appsv1.Deployment) {
-	if deployment.Spec.Template.Spec.Containers[0].SecurityContext != nil {
+	if deployment.Spec.Template.Spec.Containers != nil && deployment.Spec.Template.Spec.Containers[0].SecurityContext != nil {
 		deployment.Spec.Template.Spec.Containers[0].SecurityContext.ReadOnlyRootFilesystem = &request.ReadOnlyRootFilesystem
 	} else {
 		deployment.Spec.Template.Spec.Containers[0].SecurityContext = &corev1.SecurityContext{

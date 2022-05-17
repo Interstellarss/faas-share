@@ -60,7 +60,7 @@ func makeApplyHandler(defaultNamespace string, client clientset.Interface) http.
 
 			klog.Infof("Updating %s/n", updated.ObjectMeta.Name)
 
-			updated.Spec = toSharepodSpec(req)
+			updated.Spec = toSharepod(req).Spec
 
 			if _, err = client.KubeshareV1().SharePods(namespace).
 				Update(r.Context(), updated, metav1.UpdateOptions{}); err != nil {
@@ -71,26 +71,39 @@ func makeApplyHandler(defaultNamespace string, client clientset.Interface) http.
 		} else {
 
 			//TODO: finishing the sharepod deployment
-			newSharePod := &kubesharev1.SharePod{
-				ObjectMeta: metav1.ObjectMeta{},
-				Spec:       toSharepodSpec(req),
-			}
+			newSharePod := toSharepod(req)
 
 			if _, err = client.KubeshareV1().SharePods(namespace).
-				Create(r.Context(), newSharePod, metav1.CreateOptions{}); err != nil {
+				Create(r.Context(), &newSharePod, metav1.CreateOptions{}); err != nil {
 				w.WriteHeader(http.StatusInternalServerError)
 				w.Write([]byte(fmt.Sprintf("Error creating sharepod: %s", err.Error())))
 				return
 			}
 		}
+
+		w.WriteHeader(http.StatusAccepted)
 	}
 }
 
-func toSharepodSpec(req sharepod.SharepodDeployment) corev1.PodSpec {
-	spec := corev1.PodSpec{}
+func toSharepod(req sharepod.SharepodDeployment) kubesharev1.SharePod {
+	sharepod := kubesharev1.SharePod{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:        req.Service,
+			Namespace:   req.Namespace,
+			Annotations: req.Annotations,
+			Labels:      *req.Labels,
+		},
+		Spec: corev1.PodSpec{
+			Containers: req.Containers,
+		},
+	}
 
-	return spec
+	return sharepod
 }
 
 //how to deal with resources in sharepod
 //func getResources(limits *sharepod.SharepodResources) *
+
+func int32p(i int32) *int32 {
+	return &i
+}

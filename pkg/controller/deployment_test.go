@@ -74,7 +74,7 @@ func Test_newDeployment_withExecProbe(t *testing.T) {
 		},
 		Spec: corev1.PodSpec{
 			Containers: []corev1.Container{
-				corev1.Container{
+				{
 					Image: "docker.io/kubesec/kubesec",
 				},
 			},
@@ -122,7 +122,7 @@ func Test_newDeployment_PrometheusScrape_NotOverridden(t *testing.T) {
 		Spec: corev1.PodSpec{
 			//Name:  "kubesec",
 			Containers: []corev1.Container{
-				corev1.Container{
+				{
 					//Name: "kubespec",
 					Image: "docker.io/kubesec/kubesec",
 				},

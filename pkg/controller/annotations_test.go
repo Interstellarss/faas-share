@@ -9,7 +9,7 @@ import (
 )
 
 func Test_makeAnnotations_NoKeys(t *testing.T) {
-	annotationVal := `{"name":"","image":"","readOnlyRootFilesystem":false}`
+	annotationVal := `{"name":"","image":""}`
 
 	spec := faasv1.SharePod{
 		Spec: corev1.PodSpec{},

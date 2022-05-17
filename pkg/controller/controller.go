@@ -419,7 +419,7 @@ func getReplicas(sharepod *faasv1.SharePod, deployment *appsv1.Deployment) *int3
 
 	// extract min replicas from label if specified
 	if sharepod != nil && sharepod.Labels != nil {
-		lb := *&sharepod.Labels
+		lb := sharepod.Labels
 		if value, exists := lb[LabelMinReplicas]; exists {
 			r, err := strconv.Atoi(value)
 			if err == nil && r > 0 {
