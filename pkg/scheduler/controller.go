@@ -2,6 +2,7 @@ package scheduler
 
 import (
 	"container/list"
+	"context"
 	"fmt"
 	"strconv"
 	"sync"
@@ -24,6 +25,8 @@ import (
 	"k8s.io/client-go/tools/record"
 	"k8s.io/client-go/util/workqueue"
 	"k8s.io/klog"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
 	clientset "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned"
@@ -286,7 +289,7 @@ func (c *Controller) bindSharePodToNode(sharepod *kubesharev1.SharePod, schedNod
 		}
 	}
 
-	_, err := c.kubeshareclientset.KubeshareV1().SharePods(sharepodCopy.Namespace).Update(sharepodCopy)
+	_, err := c.kubeshareclientset.KubeshareV1().SharePods(sharepodCopy.Namespace).Update(context.TODO(), sharepodCopy, metav1.UpdateOptions{})
 	return err
 }
 

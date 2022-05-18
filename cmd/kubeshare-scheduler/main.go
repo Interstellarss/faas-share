@@ -17,6 +17,7 @@ limitations under the License.
 package main
 
 import (
+	"context"
 	"flag"
 	"os"
 	"time"
@@ -93,7 +94,7 @@ func init() {
 }
 
 func checkCRD(kubeshareClientSet *clientset.Clientset) bool {
-	_, err := kubeshareClientSet.KubeshareV1().SharePods("").List(metav1.ListOptions{})
+	_, err := kubeshareClientSet.KubeshareV1().SharePods("").List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		klog.Error(err)
 		if _, ok := err.(*errors.StatusError); ok {

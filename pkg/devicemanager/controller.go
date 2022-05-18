@@ -1,6 +1,7 @@
 package devicemanager
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 	"strings"
@@ -339,7 +340,7 @@ func (c *Controller) syncHandler(key string) error {
 		(sharepod.Spec.RestartPolicy == corev1.RestartPolicyOnFailure && sharepod.Status.PodStatus.Phase != corev1.PodSucceeded) ||
 		(sharepod.Spec.RestartPolicy == corev1.RestartPolicyNever && (sharepod.Status.PodStatus.Phase != corev1.PodSucceeded && sharepod.Status.PodStatus.Phase != corev1.PodFailed))) {
 		if n, ok := nodesInfo[sharepod.Spec.NodeName]; ok {
-			pod, err = c.kubeclientset.CoreV1().Pods(sharepod.ObjectMeta.Namespace).Create(newPod(sharepod, isGPUPod, n.PodIP, physicalGPUport))
+			pod, err = c.kubeclientset.CoreV1().Pods(sharepod.ObjectMeta.Namespace).Create(context.TODO(), newPod(sharepod, isGPUPod, n.PodIP, physicalGPUport), metav1.CreateOptions{})
 		}
 	}
 
@@ -375,7 +376,7 @@ func (c *Controller) updateSharePodStatus(sharepod *kubesharev1.SharePod, pod *c
 		sharepodCopy.Status.PodManagerPort = port
 	}
 
-	_, err := c.kubeshareclientset.KubeshareV1().SharePods(sharepodCopy.Namespace).Update(sharepodCopy)
+	_, err := c.kubeshareclientset.KubeshareV1().SharePods(sharepodCopy.Namespace).Update(context.TODO(), sharepodCopy, metav1.UpdateOptions{})
 	return err
 }
 

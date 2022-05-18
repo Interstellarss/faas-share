@@ -2,6 +2,7 @@ package devicemanager
 
 import (
 	"container/list"
+	"context"
 	"fmt"
 	"strconv"
 	"strings"
@@ -310,7 +311,7 @@ func (c *Controller) createDummyPod(nodeName string, GPUID string) error {
 	createit := func() error {
 		klog.Infof("ERICYEH: creating dummy pod: %s", podName)
 		// create a pod for dummy gpu then waiting for running, and get its gpu deviceID
-		createdPod, err := c.kubeclientset.CoreV1().Pods("kube-system").Create(&corev1.Pod{
+		createdPod, err := c.kubeclientset.CoreV1().Pods("kube-system").Create(context.TODO(), &corev1.Pod{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:      podName,
 				Namespace: "kube-system",
@@ -335,9 +336,9 @@ func (c *Controller) createDummyPod(nodeName string, GPUID string) error {
 				},
 				RestartPolicy: corev1.RestartPolicyNever,
 			},
-		})
+		}, metav1.CreateOptions{})
 		if err != nil {
-			_, exists := c.kubeclientset.CoreV1().Pods("kube-system").Get(podName, metav1.GetOptions{})
+			_, exists := c.kubeclientset.CoreV1().Pods("kube-system").Get(context.TODO(), podName, metav1.GetOptions{})
 			if exists != nil {
 				klog.Errorf("Error when creating dummy pod: \nerror: '%s',\n podspec: %-v", err, createdPod)
 				return err
@@ -346,7 +347,7 @@ func (c *Controller) createDummyPod(nodeName string, GPUID string) error {
 		return nil
 	}
 
-	if dummypod, err := c.kubeclientset.CoreV1().Pods("kube-system").Get(podName, metav1.GetOptions{}); err != nil {
+	if dummypod, err := c.kubeclientset.CoreV1().Pods("kube-system").Get(context.TODO(), podName, metav1.GetOptions{}); err != nil {
 		if errors.IsNotFound(err) {
 			havetocreate := true
 			nodesInfoMux.Lock()
@@ -377,7 +378,7 @@ func (c *Controller) createDummyPod(nodeName string, GPUID string) error {
 // triggered from Pod event handler, preventing request throttling
 func (c *Controller) getAndSetUUIDFromDummyPod(nodeName, GPUID, podName string, dummyPod *corev1.Pod) error {
 	if dummyPod.Status.Phase == corev1.PodFailed {
-		c.kubeclientset.CoreV1().Pods("kube-system").Delete(podName, &metav1.DeleteOptions{})
+		c.kubeclientset.CoreV1().Pods("kube-system").Delete(context.TODO(), podName, metav1.DeleteOptions{})
 		time.Sleep(time.Second)
 		c.createDummyPod(nodeName, GPUID)
 		err := fmt.Errorf("Dummy Pod '%s' status failed, restart it.", podName)
@@ -386,7 +387,7 @@ func (c *Controller) getAndSetUUIDFromDummyPod(nodeName, GPUID, podName string, 
 	}
 	// dummyPod.Status.Phase must be Running
 	var uuid string
-	rawlog, logerr := c.kubeclientset.CoreV1().Pods("kube-system").GetLogs(podName, &corev1.PodLogOptions{}).Do().Raw()
+	rawlog, logerr := c.kubeclientset.CoreV1().Pods("kube-system").GetLogs(podName, &corev1.PodLogOptions{}).Do(context.TODO()).Raw()
 	if logerr != nil {
 		err := fmt.Errorf("Error when get dummy pod's log! pod namespace/name: %s/%s, error: %s", "kube-system", podName, logerr)
 		klog.Errorf(err.Error())
@@ -470,6 +471,6 @@ func (c *Controller) removeSharePodFromList(sharepod *kubesharev1.SharePod) {
 func (c *Controller) deleteDummyPod(nodeName, GPUID, uuid string) {
 	key := fmt.Sprintf("%s-%s-%s", kubesharev1.KubeShareDummyPodName, nodeName, GPUID)
 	klog.Infof("Deleting dummy Pod: %s", key)
-	c.kubeclientset.CoreV1().Pods("kube-system").Delete(key, &metav1.DeleteOptions{})
+	c.kubeclientset.CoreV1().Pods("kube-system").Delete(context.TODO(), key, metav1.DeleteOptions{})
 	syncConfig(nodeName, uuid, nil)
 }

@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"bytes"
 	"container/list"
+	"context"
 	"fmt"
 	"math/rand"
 	"net"
@@ -94,7 +95,7 @@ func clientHandler(conn net.Conn) {
 	podIP := strings.Split(conn.RemoteAddr().String(), ":")[0]
 
 	nodeName := ""
-	pod, err := kubeClient.CoreV1().Pods("kube-system").Get(hostname, metav1.GetOptions{})
+	pod, err := kubeClient.CoreV1().Pods("kube-system").Get(context.TODO(), hostname, metav1.GetOptions{})
 	if errors.IsNotFound(err) {
 		klog.Errorf("ConfigFileClient Pod name: %s, not found!", hostname)
 		return
@@ -198,7 +199,7 @@ func UpdateNodeGPUInfo(nodeName string, uuid2mem *map[string]string) {
 		buf.WriteString(d)
 		buf.WriteString(",")
 	}
-	node, err := kubeClient.CoreV1().Nodes().Get(nodeName, metav1.GetOptions{})
+	node, err := kubeClient.CoreV1().Nodes().Get(context.TODO(), nodeName, metav1.GetOptions{})
 	if err != nil {
 		klog.Errorf("Error when Get node %s, :%s", nodeName, err)
 	}
@@ -209,7 +210,7 @@ func UpdateNodeGPUInfo(nodeName string, uuid2mem *map[string]string) {
 	gpuinfo := buf.String()
 	newNode.ObjectMeta.Annotations[kubesharev1.KubeShareNodeGPUInfo] = gpuinfo
 	klog.Infof("Update node %s GPU info: %s", nodeName, gpuinfo)
-	_, err = kubeClient.CoreV1().Nodes().Update(newNode)
+	_, err = kubeClient.CoreV1().Nodes().Update(context.TODO(), newNode, metav1.UpdateOptions{})
 	if err != nil {
 		klog.Errorf("Error when updating Node %s annotation, err: %s, spec: %v", nodeName, err, newNode)
 	}
