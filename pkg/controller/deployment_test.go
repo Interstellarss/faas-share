@@ -22,7 +22,7 @@ func Test_newDeployment(t *testing.T) {
 					Name:  "kubesec",
 					Image: "docker.io/kubesec/kubesec",
 					//SecurityContext: ,
-					ReadinessProbe: &corev1.Probe{},
+					//ReadinessProbe: &corev1.Probe{},
 				},
 			},
 			/*

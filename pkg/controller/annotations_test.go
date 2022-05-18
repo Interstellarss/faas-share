@@ -11,14 +11,21 @@ import (
 )
 
 func Test_makeAnnotations_NoKeys(t *testing.T) {
-	annotationVal := `{"name":"test", "kubeshare/gpu_request":"0.5", "prometheus.io.scrape":"false"}`
+	annotationVal := `{"containers":[{"name":"kubesec","image":"docker.io/kubesec/kubesec","resources":{}}]}`
 
 	spec := faasv1.SharePod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:        "test",
 			Annotations: map[string]string{"kubeshare/gpu_request": "0.5"},
 		},
-		Spec: corev1.PodSpec{},
+		Spec: corev1.PodSpec{
+			Containers: []corev1.Container{
+				{
+					Name:  "kubesec",
+					Image: "docker.io/kubesec/kubesec",
+				},
+			},
+		},
 	}
 
 	annotations := makeAnnotations(&spec)
@@ -44,9 +51,15 @@ func Test_makeAnnotations_NoKeys(t *testing.T) {
 }
 
 func Test_makeAnnotations_WithKeyAndValue(t *testing.T) {
-	annotationVal := `{"name":"","image":"","annotations":{"key":"value","key2":"value2"},"readOnlyRootFilesystem":false}`
+	//annotationVal := `{"annotations":{"key":"value","key2":"value2"}}`
 
 	spec := faasv1.SharePod{
+		ObjectMeta: metav1.ObjectMeta{
+			Annotations: map[string]string{
+				"key":  "value",
+				"key2": "value2",
+			},
+		},
 		Spec: corev1.PodSpec{
 			/*
 				Annotations: &map[string]string{
@@ -68,13 +81,13 @@ func Test_makeAnnotations_WithKeyAndValue(t *testing.T) {
 		t.Fail()
 	}
 
-	if _, ok := annotations[annotationFunctionSpec]; !ok {
-		t.Errorf("wanted annotation " + annotationFunctionSpec)
+	if val, _ := annotations["key2"]; val != "value2" {
+		t.Errorf("Annotation " + "of key2" + "\nwant: '" + "value2" + "'\ngot: '" + val + "'")
 		t.Fail()
 	}
 
-	if val, _ := annotations[annotationFunctionSpec]; val != annotationVal {
-		t.Errorf("Annotation " + annotationFunctionSpec + "\nwant: '" + annotationVal + "'\ngot: '" + val + "'")
+	if val, _ := annotations["key"]; val != "value" {
+		t.Errorf("Annotation " + "of key" + "\nwant: '" + "value" + "'\ngot: '" + val + "'")
 		t.Fail()
 	}
 }
