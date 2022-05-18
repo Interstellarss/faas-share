@@ -31,9 +31,9 @@ import (
 	// Uncomment the following line to load the gcp plugin (only required to authenticate against GKE clusters).
 	// _ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 
-	kubesharecontroller "github.com/Interstelarss/faas-share/pkg/scheduler"
 	clientset "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned"
 	informers "github.com/Interstellarss/faas-share/pkg/client/informers/externalversions"
+	kubesharecontroller "github.com/Interstellarss/faas-share/pkg/scheduler"
 	"github.com/Interstellarss/faas-share/pkg/signals"
 )
 
