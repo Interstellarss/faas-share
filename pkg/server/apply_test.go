@@ -25,6 +25,7 @@ func Test_makeApplyHandler(t *testing.T) {
 		Service: "nodeinfo",
 		Containers: []corev1.Container{
 			{
+				Name:  "info",
 				Image: "function/nodeinfo",
 			},
 		},
@@ -68,13 +69,15 @@ func Test_makeApplyHandler(t *testing.T) {
 
 	//test update fn
 	fn.Containers[0].Image += ":v1.0"
+
+	//problem here, updated, but not success
 	fn.Labels = &map[string]string{
 		"test": updateVal,
 	}
 
 	updatedJson, _ := json.Marshal(fn)
 
-	reqUp := httptest.NewRequest("POST", "http://system/sharepod", bytes.NewBuffer(updatedJson))
+	reqUp := httptest.NewRequest("POST", "http://system/sharepods", bytes.NewBuffer(updatedJson))
 	wUp := httptest.NewRecorder()
 
 	applyHandler(wUp, reqUp)

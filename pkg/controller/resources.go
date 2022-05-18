@@ -2,30 +2,34 @@ package controller
 
 import (
 	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
+	kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 
-	sharepodV1 "github.com/Interstellarss/faas-share/pkg/sharepod"
+	corev1 "k8s.io/api/core/v1"
 )
 
 // makeResources creates deployment resource limits and requests requirements from function specs
-func makeResources(sharepod *faasv1.SharePod) (*sharepodV1.SharepodRequirements, error) {
-	//TODO here: modity in order to fit for sharepod
-	resources := &sharepodV1.SharepodRequirements{}
+func makeResources(sharepod *kubesharev1.SharePod) (*corev1.ResourceRequirements, error) {
+	resources := &corev1.ResourceRequirements{
+		Limits:   corev1.ResourceList{},
+		Requests: corev1.ResourceList{},
+	}
 
 	// Set Memory limits
-	if sharepod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPUMemory] != "" {
+	if sharepod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUMemory] != "" {
 		qty, err := resource.ParseQuantity(sharepod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPUMemory])
 		if err != nil {
 			return resources, err
 		}
-		resources.Memory = qty
+		resources.Limits[corev1.ResourceMemory] = qty
+		resources.Requests[corev1.ResourceMemory] = qty
 	}
-	if sharepod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPULimit] != "" {
+	if sharepod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPULimit] != "" {
 		qty, err := resource.ParseQuantity(sharepod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPULimit])
 		if err != nil {
 			return resources, err
 		}
-		resources.GPULimit = qty
+		resources.Limits[kubesharev1.ResourceNVIDIAGPU] = qty
 	}
 
 	// Set CPU limits
@@ -34,7 +38,7 @@ func makeResources(sharepod *faasv1.SharePod) (*sharepodV1.SharepodRequirements,
 		if err != nil {
 			return resources, err
 		}
-		resources.GPURequest = qty
+		resources.Requests[kubesharev1.ResourceNVIDIAGPU] = qty
 	}
 	return resources, nil
 }

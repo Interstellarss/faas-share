@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	annotationFunctionSpec = "com.openfaas.function.spec"
+	annotationFunctionSpec = "faas-sahre.sharepod.spec"
 )
 
 // newDeployment creates a new Deployment for a Function resource. It also sets
@@ -31,13 +31,13 @@ func newDeployment(
 	labels := makeLabels(sharepod)
 	//KubeShare does not support NodeSelector, so we dont need it here as well
 	//nodeSelector := makeNodeSelector(sharepod.)
-	//probes, err := factory.MakeProbes(sharepod)
-	//if err != nil {
-	//	glog.Warningf("Function %s probes parsing failed: %v",
-	//		sharepod.Name, err)
-	//}
+	probes, err := factory.MakeProbes(sharepod)
+	if err != nil {
+		glog.Warningf("Function %s probes parsing failed: %v",
+			sharepod.Name, err)
+	}
 
-	//resources, err := makeResources(sharepod)
+	resources, err := makeResources(sharepod)
 	//if err != nil {
 	//	glog.Warningf("Function %s resources parsing failed: %v",
 	//		sharepod.Name, err)
@@ -45,7 +45,7 @@ func newDeployment(
 
 	annotations := makeAnnotations(sharepod)
 
-	//allowPrivilegeEscalation := false
+	allowPrivilegeEscalation := false
 
 	deploymentSpec := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
@@ -90,7 +90,22 @@ func newDeployment(
 				},
 				Spec: corev1.PodSpec{
 					//NodeSelector: nodeSelector,
-					Containers: sharepod.Spec.Containers,
+					Containers: []corev1.Container{
+						{
+							Name:            sharepod.Name,
+							Image:           sharepod.Name,
+							Ports:           []corev1.ContainerPort{},
+							ImagePullPolicy: corev1.PullPolicy(factory.Factory.Config.ImagePullPolicy),
+							Env:             []corev1.EnvVar{},
+							//TODO here to compelt the makeResoruces function
+							Resources:      *resources,
+							LivenessProbe:  probes.Liveness,
+							ReadinessProbe: probes.Readiness,
+							SecurityContext: &corev1.SecurityContext{
+								AllowPrivilegeEscalation: &allowPrivilegeEscalation,
+							},
+						},
+					},
 
 					//TODO here
 				},

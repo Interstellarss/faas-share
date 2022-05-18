@@ -25,7 +25,6 @@ func makeApplyHandler(defaultNamespace string, client clientset.Interface) http.
 		}
 
 		body, _ := ioutil.ReadAll(r.Body)
-
 		req := sharepod.SharepodDeployment{}
 
 		if err := json.Unmarshal(body, &req); err != nil {
@@ -55,12 +54,15 @@ func makeApplyHandler(defaultNamespace string, client clientset.Interface) http.
 			}
 		}
 
+		// Sometimes there was a non-nil "got" value when the miss was
+		// true.
 		if miss == false && got != nil {
 			updated := got.DeepCopy()
 
 			klog.Infof("Updating %s/n", updated.ObjectMeta.Name)
 
-			updated.Spec = toSharepod(req).Spec
+			updated.Spec = toSharepod(req, namespace).Spec
+			updated.Labels = toSharepod(req, namespace).Labels
 
 			if _, err = client.KubeshareV1().SharePods(namespace).
 				Update(r.Context(), updated, metav1.UpdateOptions{}); err != nil {
@@ -71,7 +73,7 @@ func makeApplyHandler(defaultNamespace string, client clientset.Interface) http.
 		} else {
 
 			//TODO: finishing the sharepod deployment
-			newSharePod := toSharepod(req)
+			newSharePod := toSharepod(req, namespace)
 
 			if _, err = client.KubeshareV1().SharePods(namespace).
 				Create(r.Context(), &newSharePod, metav1.CreateOptions{}); err != nil {
@@ -85,11 +87,11 @@ func makeApplyHandler(defaultNamespace string, client clientset.Interface) http.
 	}
 }
 
-func toSharepod(req sharepod.SharepodDeployment) kubesharev1.SharePod {
+func toSharepod(req sharepod.SharepodDeployment, namespace string) kubesharev1.SharePod {
 	sharepod := kubesharev1.SharePod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:        req.Service,
-			Namespace:   req.Namespace,
+			Namespace:   namespace,
 			Annotations: req.Annotations,
 			Labels:      *req.Labels,
 		},

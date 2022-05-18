@@ -6,12 +6,18 @@ import (
 	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
 
 	corev1 "k8s.io/api/core/v1"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
 func Test_makeAnnotations_NoKeys(t *testing.T) {
-	annotationVal := `{"name":"","image":""}`
+	annotationVal := `{"name":"test", "kubeshare/gpu_request":"0.5", "prometheus.io.scrape":"false"}`
 
 	spec := faasv1.SharePod{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:        "test",
+			Annotations: map[string]string{"kubeshare/gpu_request": "0.5"},
+		},
 		Spec: corev1.PodSpec{},
 	}
 
