@@ -1,0 +1,20 @@
+apiVersion: v2
+type: application
+description: OpenFaaS - Serverless Functions Made Simple
+name: openfaas
+version: 10.0.21
+sources:
+- https://github.com/openfaas/faas
+- https://github.com/Interstellarss/faas-share
+home: https://www.openfaas.com
+icon: https://raw.githubusercontent.com/openfaas/media/master/OpenFaaS_logo_stacked_opaque.png
+keywords:
+- serverless
+- functions
+- platform
+- faas
+maintainers:
+- name: alexellis
+  email: alex@openfaas.com
+- name: lucasroesler
+  email: roesler.lucas@gmail.com

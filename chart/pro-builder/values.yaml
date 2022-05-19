@@ -1,0 +1,27 @@
+# You will need to create a license named "openfaas-license" - see the 
+# chart README for detailed instructions.
+
+image: ghcr.io/openfaasltd/pro-builder:0.2.0
+
+# Only set to true for testing
+disableHmac: false
+
+# Usually set to false
+enableLchown: false
+
+imagePullPolicy: Always
+
+buildkit:
+  image: docker.io/moby/buildkit:v0.10.0
+
+fullnameOverride: "pro-builder"
+
+replicas: 1
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+securityContext: {}

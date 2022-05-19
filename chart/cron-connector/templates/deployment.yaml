@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    # Original Helm labels v
+    app: {{ template "connector.name" . }}
+    component: cron-connector
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+  name: {{ template "connector.fullname" . }}
+  namespace: {{ .Release.Namespace | quote }}
+
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "connector.name" . }}
+      name: {{ template "connector.name" . }}
+      component: cron-connector
+  template:
+    metadata:
+      labels:
+        app: {{ template "connector.name" . }}
+        name: {{ template "connector.name" . }}
+        component: cron-connector
+    spec:
+      containers:
+      - name: cron-connector
+        image: {{ .Values.image }}
+        env:
+          - name: gateway_url
+            value: {{ .Values.gatewayURL | quote }}
+          - name: asynchronous_invocation
+            value: {{ .Values.asyncInvocation | quote }}
+          - name: content_type
+            value: {{ .Values.contentType | quote }}
+          {{- if .Values.basicAuth }}
+          - name: basic_auth
+            value: "true"
+          - name: secret_mount_path
+            value: "/var/secrets"
+          {{- end }}
+        {{- if .Values.basicAuth }}          
+        volumeMounts:
+            - name: auth
+              readOnly: true
+              mountPath: "/var/secrets/"
+        {{- end }}
+      {{- if .Values.basicAuth }}
+      volumes:
+      - name: auth
+        secret:
+          secretName: basic-auth
+      {{- end }}
+    {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+{{ toYaml . | indent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 8 }}
+    {{- end }}
