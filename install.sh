@@ -3,7 +3,7 @@ echo Installing with helm 👑
 helm repo add faas-share https://github.com/Interstellarss/faas-share
 
 kubectl apply -f \
-   https://raw.githubusercontent.com/openfaas/faas-netes/master/namespaces.yml
+   https://raw.githubusercontent.com/Interstellarss/faas-share/master/namespaces.yml
 
 # generate a random password
 #PASSWORD=$(head -c 12 /dev/urandom | shasum| cut -d' ' -f1)

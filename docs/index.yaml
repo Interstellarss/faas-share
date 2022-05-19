@@ -1,0 +1,155 @@
+apiVersion: v1
+entries:
+  cron-connector:
+  - apiVersion: v1
+    created: "2022-05-19T11:18:34.774929+02:00"
+    description: Trigger OpenFaaS Functions with cron
+    digest: 793f788c6731fedfa6f3321bb7467cb57b6bcb215c6b88e8679725de3f04fcc0
+    home: https://www.openfaas.com
+    icon: https://raw.githubusercontent.com/openfaas/media/master/OpenFaaS_logo_stacked_opaque.png
+    keywords:
+    - functions
+    - serverless
+    - faas
+    - timer
+    - cron
+    maintainers:
+    - email: alex@openfaas.com
+      name: alexellis
+    name: cron-connector
+    sources:
+    - https://github.com/openfaas-incubator/cron-connector
+    urls:
+    - https://github.com/Interstellarss/faas-share/cron-connector-0.5.3.tgz
+    version: 0.5.3
+  kafka-connector:
+  - apiVersion: v1
+    created: "2022-05-19T11:18:34.775424+02:00"
+    description: Connect OpenFaaS functions to Kafka topics
+    digest: 070a75774ad9cdd694af90afb54ee2d49ba749ce50f63b73654c47c032d3b03b
+    home: https://www.openfaas.com
+    icon: https://raw.githubusercontent.com/openfaas/media/master/OpenFaaS_logo_stacked_opaque.png
+    keywords:
+    - openfaaspro
+    - serverless
+    - kafka
+    - events
+    maintainers:
+    - email: alex@openfaas.com
+      name: alexellis
+    name: kafka-connector
+    sources:
+    - https://github.com/openfaas/faas-netes
+    urls:
+    - https://github.com/Interstellarss/faas-share/kafka-connector-0.7.0.tgz
+    version: 0.7.0
+  mqtt-connector:
+  - apiVersion: v1
+    created: "2022-05-19T11:18:34.775779+02:00"
+    description: Connect OpenFaaS functions to MQTT topics
+    digest: 0b00e9a35e42b2c81d46dc534c81b23cc0223db172c89cf124b7ca612dccff60
+    home: https://www.openfaas.com
+    icon: https://raw.githubusercontent.com/openfaas/media/master/OpenFaaS_logo_stacked_opaque.png
+    keywords:
+    - functions
+    - service
+    - kafka
+    maintainers:
+    - email: alex@openfaas.com
+      name: alexellis
+    name: mqtt-connector
+    sources:
+    - https://github.com/openfaas-incubator/mqtt-connector
+    urls:
+    - https://github.com/Interstellarss/faas-share/mqtt-connector-0.4.5.tgz
+    version: 0.4.5
+  nats-connector:
+  - apiVersion: v1
+    created: "2022-05-19T11:18:34.776105+02:00"
+    description: Trigger OpenFaaS Functions from NATS Pub/Sub
+    digest: aa41cecc9ca6d8b03c3385c44232edb2d9d8fd7f400c3e3a394cf39cde38bb68
+    home: https://www.openfaas.com
+    icon: https://raw.githubusercontent.com/openfaas/media/master/OpenFaaS_logo_stacked_opaque.png
+    keywords:
+    - functions
+    - service
+    - nats
+    maintainers:
+    - email: alex@openfaas.com
+      name: alexellis
+    - email: vivekkmr45@yahoo.in
+      name: viveksyngh
+    name: nats-connector
+    sources:
+    - https://github.com/openfaas-incubator/nats-connector
+    urls:
+    - https://github.com/Interstellarss/faas-share/nats-connector-0.3.0.tgz
+    version: 0.3.0
+  openfaas:
+  - apiVersion: v2
+    created: "2022-05-19T11:18:34.77788+02:00"
+    description: OpenFaaS - Serverless Functions Made Simple
+    digest: db444898033cb595d745442bc262920440d331fa59d59ac6bf947753a6098ee7
+    home: https://www.openfaas.com
+    icon: https://raw.githubusercontent.com/openfaas/media/master/OpenFaaS_logo_stacked_opaque.png
+    keywords:
+    - serverless
+    - functions
+    - platform
+    - faas
+    maintainers:
+    - email: alex@openfaas.com
+      name: alexellis
+    - email: roesler.lucas@gmail.com
+      name: lucasroesler
+    name: openfaas
+    sources:
+    - https://github.com/openfaas/faas
+    - https://github.com/Interstellarss/faas-share
+    type: application
+    urls:
+    - https://github.com/Interstellarss/faas-share/openfaas-10.0.21.tgz
+    version: 10.0.21
+  probuilder:
+  - apiVersion: v1
+    created: "2022-05-19T11:18:34.778245+02:00"
+    description: Build OpenFaaS functions via a REST API
+    digest: 625f741d960873019071614240aff67274c126115158907d66b0ec45a0079473
+    home: https://www.openfaas.com
+    icon: https://raw.githubusercontent.com/openfaas/media/master/OpenFaaS_logo_stacked_opaque.png
+    keywords:
+    - imagebuilder
+    - functionbuilder
+    - builder
+    - functions
+    maintainers:
+    - email: alex@openfaas.com
+      name: alexellis
+    name: probuilder
+    sources:
+    - https://github.com/openfaas/faas-netes
+    urls:
+    - https://github.com/Interstellarss/faas-share/probuilder-0.2.0.tgz
+    version: 0.2.0
+  sqs-connector:
+  - apiVersion: v1
+    created: "2022-05-19T11:18:34.778674+02:00"
+    description: Connect OpenFaaS functions to SQS topics
+    digest: a613b56415db4a48722f301ded3ad6fc8d9733695120b36f15e2a0ee110a79d5
+    home: https://www.openfaas.com
+    icon: https://raw.githubusercontent.com/openfaas/media/master/OpenFaaS_logo_stacked_opaque.png
+    keywords:
+    - openfaaspro
+    - serverless
+    - sqs
+    - events
+    maintainers:
+    - email: alex@openfaas.com
+      name: alexellis
+    name: sqs-connector
+    sources:
+    - https://github.com/openfaas/faas-netes
+    urls:
+    - https://github.com/Interstellarss/faas-share/sqs-connector-0.1.0.tgz
+    version: 0.1.0
+generated: "2022-05-19T11:18:34.774479+02:00"
