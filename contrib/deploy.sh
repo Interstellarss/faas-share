@@ -45,7 +45,7 @@ helm upgrade \
     openfaas \
     ./chart/openfaas \
     --namespace openfaas  \
-    --set basic_auth=false \
+    --set basic_auth=true \
     --set functionNamespace=faas-share-fn \
     --set operator.create=$CREATE_OPERATOR
 
