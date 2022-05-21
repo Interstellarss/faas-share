@@ -66,16 +66,16 @@ jobs:
         run: ./contrib/lint_chart.sh
       - name: create cluster
         run: ./contrib/create_cluster.sh
-      - name: deploy function
-        run: OPERATOR=0 ./contrib/deploy.sh
-      - name: run function
-        run: OPERATOR=0 ./contrib/run_function.sh
-      - name: stop dev cluster
-        run: ./contrib/stop_dev.sh
-      - name: wait 10 seconds
-        run: sleep 10
-      - name: create cluster
-        run: ./contrib/create_cluster.sh
+      #- name: deploy function
+      #  run: OPERATOR=0 ./contrib/deploy.sh
+      #- name: run function
+      #  run: OPERATOR=0 ./contrib/run_function.sh
+     # - name: stop dev cluster
+     #   run: ./contrib/stop_dev.sh
+     # - name: wait 10 seconds
+      #  run: sleep 10
+     # - name: create cluster
+      #  run: ./contrib/create_cluster.sh
       - name: deploy function
         run: OPERATOR=1 ./contrib/deploy.sh
       - name: run function
