@@ -2,7 +2,7 @@
 IMG_NAME?=faas-share
 
 TAG?=0.1.11
-OWNER?=interstellarss
+OWNER?=Interstellarss
 SERVER?=ghcr.io
 export DOCKER_CLI_EXPERIMENTAL=enabled
 export DOCKER_BUILDKIT=1

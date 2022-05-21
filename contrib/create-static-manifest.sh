@@ -14,11 +14,11 @@
 #   $ ./create-static-manifest.sh ./chart/openfaas ./yaml value.yaml openfaas
 #   $ ./create-static-manifest.sh ./chart/openfaas ./yaml value.yaml openfaas openfaas-fn
 
-CHART_DIR=${1:-"./chart/openfaas"}
+CHART_DIR=${1:-"./chart/faas-share"}
 OUTPUT_DIR=${2:-"./yaml"}
 VALUESNAME=${3:-"$CHART_DIR/values.yaml"}
 NAMEPSPACE=${4:-"openfaas"}
-FUNCTIONNAMESPACE=${5:-"openfaas-fn"}
+FUNCTIONNAMESPACE=${5:-"faas-share-fn"}
 
 TEMPLATE_FILE=$(find $CHART_DIR/templates/*.yaml -type f)
 for filepath in $TEMPLATE_FILE; do
