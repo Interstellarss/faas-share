@@ -47,6 +47,7 @@ RUN addgroup -S app \
 
 WORKDIR /home/app
 
+
 EXPOSE 8080
 
 ENV http_proxy      ""
