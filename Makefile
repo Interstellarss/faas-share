@@ -1,8 +1,8 @@
 .PHONY: build local push namespaces install charts start-kind stop-kind build-buildx render-charts
 IMG_NAME?=faas-share
 
-TAG?=latest
-OWNER?=leslie233
+TAG?=0.1.11
+OWNER?=Interstellarss
 SERVER?=ghcr.io
 export DOCKER_CLI_EXPERIMENTAL=enabled
 export DOCKER_BUILDKIT=1

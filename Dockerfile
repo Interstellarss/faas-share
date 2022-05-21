@@ -36,7 +36,8 @@ LABEL org.label-schema.license="MIT" \
       org.label-schema.vcs-type="Git" \
       org.label-schema.name="faas-share/faas-share" \
       org.label-schema.vendor="faas-share" \
-      org.label-schema.docker.schema-version="1.0"
+      org.label-schema.docker.schema-version="1.0" \
+      org.opencontainers.image.source="https://github.com/Interstellarss/faas-share"
 
 RUN apk --no-cache add \
     ca-certificates
