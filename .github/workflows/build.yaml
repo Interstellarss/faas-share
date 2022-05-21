@@ -10,7 +10,7 @@ jobs:
   build:
     strategy:
       matrix:
-        go-version: [1.17.x]
+        go-version: [1.18.x]
         os: [ubuntu-latest]
     runs-on: ${{ matrix.os }}
 
@@ -76,10 +76,10 @@ jobs:
       #  run: sleep 10
      # - name: create cluster
       #  run: ./contrib/create_cluster.sh
-      - name: deploy function
-        run: OPERATOR=1 ./contrib/deploy.sh
-      - name: run function
-        run: OPERATOR=1 ./contrib/run_function.sh
+    #  - name: deploy function
+     #   run: OPERATOR=1 ./contrib/deploy.sh
+     # - name: run function
+     #   run: OPERATOR=1 ./contrib/run_function.sh
       - name: stop dev cluster
         run: ./contrib/stop_dev.sh
 
