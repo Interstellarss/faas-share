@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 DEVENV=${OF_DEV_ENV:-kind}
-KUBE_VERSION=v1.21.11
+KUBE_VERSION=v1.21.12
 
 EXISTS=$(kind get clusters | grep "$DEVENV")
 
