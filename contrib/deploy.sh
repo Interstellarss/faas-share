@@ -49,6 +49,7 @@ helm upgrade \
     --set functionNamespace=faas-share-fn \
     --set operator.create=$CREATE_OPERATOR
 
+
 if [ "${OPERATOR}" == "1" ]; then
 
     kubectl --context "kind-$DEVENV" patch -n openfaas deploy/gateway \
