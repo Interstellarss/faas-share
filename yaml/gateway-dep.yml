@@ -20,7 +20,7 @@ spec:
       labels:
         app: gateway
     spec:
-      serviceAccountName: openfaas-controller
+      serviceAccountName: faas-share-controller
       volumes:
       - name: faas-netes-temp-volume
         emptyDir: {}

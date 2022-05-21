@@ -74,15 +74,15 @@ push:
 	docker push $(SERVER)/$(OWNER)/$(IMG_NAME):$(TAG)
 
 charts:
-	cd chart && helm package openfaas/ && helm package kafka-connector/ && helm package cron-connector/ && helm package nats-connector/ && helm package mqtt-connector/ && helm package pro-builder/  && helm package sqs-connector/
+	cd chart && helm package faas-share/ && helm package kafka-connector/ && helm package cron-connector/ && helm package nats-connector/ && helm package mqtt-connector/ && helm package pro-builder/  && helm package sqs-connector/
 	mv chart/*.tgz docs/
-	helm repo index docs --url https://github.com/Interstellarss/faas-share --merge ./docs/index.yaml
+	helm repo index docs --url https://ghcr.io/Interstellarss/faas-share --merge ./docs/index.yaml
 	./contrib/create-static-manifest.sh
 
 render-charts:
 	./contrib/create-static-manifest.sh
-	./contrib/create-static-manifest.sh ./chart/openfaas ./yaml_arm64 ./chart/openfaas/values-arm64.yaml
-	./contrib/create-static-manifest.sh ./chart/openfaas ./yaml_armhf ./chart/openfaas/values-armhf.yaml
+	./contrib/create-static-manifest.sh ./chart/faas-share ./yaml_arm64 ./chart/faas-share/values-arm64.yaml
+	./contrib/create-static-manifest.sh ./chart/faas-share ./yaml_armhf ./chart/faas-share/values-armhf.yaml
 
 start-kind: ## attempt to start a new dev environment
 	@./contrib/create_dev.sh
