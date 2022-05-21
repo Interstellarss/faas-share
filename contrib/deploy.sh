@@ -45,14 +45,14 @@ helm upgrade \
     openfaas \
     ./chart/openfaas \
     --namespace openfaas  \
-    --set basic_auth=true \
-    --set functionNamespace=openfaas-fn \
+    --set basic_auth=false \
+    --set functionNamespace=faas-share-fn \
     --set operator.create=$CREATE_OPERATOR
 
 if [ "${OPERATOR}" == "1" ]; then
 
     kubectl --context "kind-$DEVENV" patch -n openfaas deploy/gateway \
-      -p='[{"op": "add", "path": "/spec/template/spec/containers/1/command", "value": ["./faas-netes", "-operator=true"]} ]' --type=json
+      -p='[{"op": "add", "path": "/spec/template/spec/containers/1/command", "value": ["./faas-share", "-operator=true"]} ]' --type=json
 fi
 
 kubectl --context "kind-$DEVENV" rollout status deploy/prometheus -n openfaas

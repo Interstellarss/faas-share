@@ -29,8 +29,8 @@ export OPENFAAS_URL=http://127.0.0.1:8080
 # Login into the gateway
 echo ""
 echo "Login to the gateway..."
-cat ./password.txt | faas-cli login --username admin --password-stdin
-
+#cat ./password.txt | faas-cli login --username admin --password-stdin
+faas-cli login
 IS_DEPLOYED=$(faas-cli list | grep echo | wc -c)
 if [ $IS_DEPLOYED -gt 0 ];then
     echo ""
