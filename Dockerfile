@@ -1,4 +1,4 @@
-FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.17 as build
+FROM --platform=${BUILDPLATFORM:-linux/amd64} golang:1.18 as build
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
@@ -17,7 +17,12 @@ WORKDIR /go/src/github.com/Interstellarss/faas-share
 COPY . .
 
 RUN gofmt -l -d $(find . -type f -name '*.go' -not -path "./vendor/*")
-RUN CGO_ENABLED=${CGO_ENABLED} GOOS=${TARGETOS} GOARCH=${TARGETARCH} go test -v ./...
+
+RUN echo $CGO_ENABLED ${TARGETOS} ${TARGETARCH}
+
+# RUN CGO_ENABLED=${CGO_ENABLED} GOOS=${TARGETOS} GOARCH=${TARGETARCH} go test -v ./...
+
+
 
 RUN GOOS=${TARGETOS} GOARCH=${TARGETARCH} go build \
         --ldflags "-s -w \
@@ -30,7 +35,7 @@ LABEL org.label-schema.license="MIT" \
       org.label-schema.vcs-url="https://github.com/Interstellarss/faas-share" \
       org.label-schema.vcs-type="Git" \
       org.label-schema.name="faas-share/faas-share" \
-      org.label-schema.vendor="openfaas" \
+      org.label-schema.vendor="faas-share" \
       org.label-schema.docker.schema-version="1.0"
 
 RUN apk --no-cache add \
@@ -51,4 +56,4 @@ RUN chown -R app:app ./
 
 USER app
 
-CMD ["./faas-netes"]
+CMD ["./faas-share"]
