@@ -61,6 +61,6 @@ jobs:
             GIT_COMMIT=${{env.GIT_COMMIT}}
             VERSION=${{env.VERSION}}
           tags: |
-            ghcr.io/${{ steps.get_repo_owner.outputs.repo_owner }}/faas-netes:${{ github.sha }}
-            ghcr.io/${{ steps.get_repo_owner.outputs.repo_owner }}/faas-netes:${{ steps.get_tag.outputs.TAG }}
-            ghcr.io/${{ steps.get_repo_owner.outputs.repo_owner }}/faas-netes:latest
+            ghcr.io/${{ steps.get_repo_owner.outputs.repo_owner }}/faas-share:${{ github.sha }}
+            ghcr.io/${{ steps.get_repo_owner.outputs.repo_owner }}/faas-share:${{ steps.get_tag.outputs.TAG }}
+            ghcr.io/${{ steps.get_repo_owner.outputs.repo_owner }}/faas-share:latest
