@@ -134,7 +134,7 @@ faasnetesPro:
 operatorPro:
   image: ghcr.io/openfaasltd/faas-netes:0.1.3
 
-faas-share:
+faasshare:
   image: ghcr.io/Interstellarss/faas-share:latest
   readTimeout: "60s"
   writeTimeout: "60s"

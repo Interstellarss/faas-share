@@ -188,27 +188,27 @@ spec:
           - name: profiles_namespace
             value: {{ .Release.Namespace | quote }}
           - name: read_timeout
-            value: "{{ .Values.faasnetes.readTimeout }}"
+            value: "{{ .Values.faasshare.readTimeout }}"
           - name: write_timeout
-            value: "{{ .Values.faasnetes.writeTimeout }}"
+            value: "{{ .Values.faasshare.writeTimeout }}"
           - name: image_pull_policy
-            value: {{ .Values.faasnetes.imagePullPolicy | quote }}
+            value: {{ .Values.faasshare.imagePullPolicy | quote }}
           - name: http_probe
-            value: "{{ .Values.faasnetes.httpProbe }}"
+            value: "{{ .Values.faasshare.httpProbe }}"
           - name: set_nonroot_user
-            value: "{{ .Values.faasnetes.setNonRootUser }}"
+            value: "{{ .Values.faasshare.setNonRootUser }}"
           - name: readiness_probe_initial_delay_seconds
-            value: "{{ .Values.faasnetes.readinessProbe.initialDelaySeconds }}"
+            value: "{{ .Values.faasshare.readinessProbe.initialDelaySeconds }}"
           - name: readiness_probe_timeout_seconds
-            value: "{{ .Values.faasnetes.readinessProbe.timeoutSeconds }}"
+            value: "{{ .Values.faasshare.readinessProbe.timeoutSeconds }}"
           - name: readiness_probe_period_seconds
-            value: "{{ .Values.faasnetes.readinessProbe.periodSeconds }}"
+            value: "{{ .Values.faasshare.readinessProbe.periodSeconds }}"
           - name: liveness_probe_initial_delay_seconds
-            value: "{{ .Values.faasnetes.livenessProbe.initialDelaySeconds }}"
+            value: "{{ .Values.faasshare.livenessProbe.initialDelaySeconds }}"
           - name: liveness_probe_timeout_seconds
-            value: "{{ .Values.faasnetes.livenessProbe.timeoutSeconds }}"
+            value: "{{ .Values.faasshare.livenessProbe.timeoutSeconds }}"
           - name: liveness_probe_period_seconds
-            value: "{{ .Values.faasnetes.livenessProbe.periodSeconds }}"
+            value: "{{ .Values.faasshare.livenessProbe.periodSeconds }}"
           - name: cluster_role
             value: "{{ .Values.clusterRole }}"
         ports:
@@ -222,13 +222,13 @@ spec:
         {{- end }}
 
       {{- else }}
-      - name: faas-netes
+      - name: faas-share
         resources:
-          {{- .Values.faasnetes.resources | toYaml | nindent 12 }}
+          {{- .Values.faasshare.resources | toYaml | nindent 12 }}
       {{- if .Values.openfaasPro }}
         image: {{ .Values.faasnetesPro.image }}
       {{- else }}
-        image: {{ .Values.faasnetes.image }}
+        image: {{ .Values.faasshare.image }}
       {{- end }}
         imagePullPolicy: {{ .Values.openfaasImagePullPolicy }}
         {{- if .Values.securityContext }}
@@ -237,8 +237,8 @@ spec:
           runAsUser: 10001
         {{- end }}
         command:
-          - ./faas-netes
-          - -operator=false
+          - ./faas-share
+          - -operator=true
         {{- if .Values.openfaasPro }}
           - "-license-file=/var/secrets/license/license"
         {{- end }}
@@ -248,29 +248,29 @@ spec:
         - name: function_namespace
           value: {{ $functionNs | quote }}
         - name: read_timeout
-          value: "{{ .Values.faasnetes.readTimeout }}"
+          value: "{{ .Values.faasshare.readTimeout }}"
         - name: profiles_namespace
           value: {{ .Release.Namespace | quote }}
         - name: write_timeout
-          value: "{{ .Values.faasnetes.writeTimeout }}"
+          value: "{{ .Values.faasshare.writeTimeout }}"
         - name: image_pull_policy
-          value: {{ .Values.faasnetes.imagePullPolicy | quote }}
+          value: {{ .Values.faasshare.imagePullPolicy | quote }}
         - name: http_probe
-          value: "{{ .Values.faasnetes.httpProbe }}"
+          value: "{{ .Values.faasshare.httpProbe }}"
         - name: set_nonroot_user
-          value: "{{ .Values.faasnetes.setNonRootUser }}"
+          value: "{{ .Values.faasshare.setNonRootUser }}"
         - name: readiness_probe_initial_delay_seconds
-          value: "{{ .Values.faasnetes.readinessProbe.initialDelaySeconds }}"
+          value: "{{ .Values.faasshare.readinessProbe.initialDelaySeconds }}"
         - name: readiness_probe_timeout_seconds
-          value: "{{ .Values.faasnetes.readinessProbe.timeoutSeconds }}"
+          value: "{{ .Values.faasshare.readinessProbe.timeoutSeconds }}"
         - name: readiness_probe_period_seconds
-          value: "{{ .Values.faasnetes.readinessProbe.periodSeconds }}"
+          value: "{{ .Values.faasshare.readinessProbe.periodSeconds }}"
         - name: liveness_probe_initial_delay_seconds
-          value: "{{ .Values.faasnetes.livenessProbe.initialDelaySeconds }}"
+          value: "{{ .Values.faasshare.livenessProbe.initialDelaySeconds }}"
         - name: liveness_probe_timeout_seconds
-          value: "{{ .Values.faasnetes.livenessProbe.timeoutSeconds }}"
+          value: "{{ .Values.faasshare.livenessProbe.timeoutSeconds }}"
         - name: liveness_probe_period_seconds
-          value: "{{ .Values.faasnetes.livenessProbe.periodSeconds }}"
+          value: "{{ .Values.faasshare.livenessProbe.periodSeconds }}"
         - name: cluster_role
           value: "{{ .Values.clusterRole }}"
         volumeMounts:
