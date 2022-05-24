@@ -3,7 +3,7 @@
 set -e
 
 DEVENV=${OF_DEV_ENV:-kind}
-OPERATOR=${OPERATOR:-0}
+OPERATOR=${OPERATOR:-1}
 
 echo ""
 echo "Applying namespaces"
@@ -31,7 +31,7 @@ else
     echo -n $PASSWORD > password.txt
 fi
 
-CREATE_OPERATOR=false
+CREATE_OPERATOR=true
 if [ "${OPERATOR}" == "1" ]; then
     CREATE_OPERATOR="true"
 fi
@@ -43,7 +43,7 @@ helm upgrade \
     --kube-context "kind-$DEVENV" \
     --install \
     openfaas \
-    ./chart/openfaas \
+    ./chart/faas-share \
     --namespace openfaas  \
     --set basic_auth=true \
     --set functionNamespace=faas-share-fn \
