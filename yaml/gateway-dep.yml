@@ -6,7 +6,7 @@ metadata:
     app: faas-share
     component: gateway
   name: gateway
-  namespace: "openfaas"
+  namespace: "faas-share"
 spec:
   replicas: 1
   selector:
@@ -61,7 +61,7 @@ spec:
         - name: function_namespace
           value: "faas-share-fn"
         - name: faas_nats_address
-          value: "nats.openfaas.svc.cluster.local"
+          value: "nats.faas-share.svc.cluster.local"
         - name: faas_nats_port
           value: "4222"
         - name: faas_nats_channel
@@ -71,7 +71,7 @@ spec:
         - name: secret_mount_path
           value: "/var/secrets"
         - name: auth_proxy_url
-          value: "http://basic-auth-plugin.openfaas:8080/validate"
+          value: "http://basic-auth-plugin.faas-share:8080/validate"
         - name: auth_pass_body
           value: "false"
         - name: scale_from_zero
@@ -93,7 +93,7 @@ spec:
             requests:
               cpu: 50m
               memory: 120Mi
-        image: ghcr.io/interstellarss/faas-share:v0.1.14
+        image: ghcr.io/interstellarss/faas-share:v0.1.15
         imagePullPolicy: Always
         command:
           - ./faas-share
@@ -106,7 +106,7 @@ spec:
         - name: read_timeout
           value: "60s"
         - name: profiles_namespace
-          value: "openfaas"
+          value: "faas-share"
         - name: write_timeout
           value: "60s"
         - name: image_pull_policy

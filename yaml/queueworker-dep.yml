@@ -6,7 +6,7 @@ metadata:
     app: faas-share
     component: queue-worker
   name: queue-worker
-  namespace: "openfaas"
+  namespace: "faas-share"
 spec:
   replicas: 1
   selector:
@@ -33,13 +33,13 @@ spec:
         imagePullPolicy: Always
         env:
         - name: faas_nats_address
-          value: "nats.openfaas.svc.cluster.local"
+          value: "nats.faas-share.svc.cluster.local"
         - name: faas_nats_channel
           value: "faas-request"
         - name: faas_nats_queue_group
           value: "faas"
         - name: faas_gateway_address
-          value: "gateway.openfaas.svc.cluster.local"
+          value: "gateway.faas-share.svc.cluster.local"
         - name: "gateway_invoke"
           value: "true"
         - name: faas_function_suffix

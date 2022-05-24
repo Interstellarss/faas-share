@@ -6,7 +6,7 @@ metadata:
     app: faas-share
     component: faas-controller
   name: faas-share-controller
-  namespace: "openfaas"
+  namespace: "faas-share"
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
@@ -71,7 +71,7 @@ metadata:
     app: faas-share
     component: faas-controller
   name: faas-share-profiles
-  namespace: "openfaas"
+  namespace: "faas-share"
 rules:
   - apiGroups:
       - "openfaas.com"
@@ -97,7 +97,7 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: faas-share-controller
-    namespace: "openfaas"
+    namespace: "faas-share"
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -106,7 +106,7 @@ metadata:
     app: faas-share
     component: faas-controller
   name: faas-share-profiles
-  namespace: "openfaas"
+  namespace: "faas-share"
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: Role
@@ -114,4 +114,4 @@ roleRef:
 subjects:
   - kind: ServiceAccount
     name: faas-share-controller
-    namespace: "openfaas"
+    namespace: "faas-share"

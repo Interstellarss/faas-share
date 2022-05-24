@@ -17,7 +17,7 @@
 CHART_DIR=${1:-"./chart/faas-share"}
 OUTPUT_DIR=${2:-"./yaml"}
 VALUESNAME=${3:-"$CHART_DIR/values.yaml"}
-NAMEPSPACE=${4:-"openfaas"}
+NAMEPSPACE=${4:-"faas-share"}
 FUNCTIONNAMESPACE=${5:-"faas-share-fn"}
 
 TEMPLATE_FILE=$(find $CHART_DIR/templates/*.yaml -type f)

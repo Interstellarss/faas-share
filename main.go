@@ -1,4 +1,4 @@
-package meaning
+package main
 
 import (
 	"flag"

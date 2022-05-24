@@ -6,7 +6,7 @@ metadata:
     app: faas-share
     component: alertmanager
   name: alertmanager
-  namespace: "openfaas"
+  namespace: "faas-share"
 spec:
   replicas: 1
   selector:
@@ -18,7 +18,7 @@ spec:
         app: alertmanager
       annotations:
         sidecar.istio.io/inject: "true"
-        checksum/alertmanager-config: "da5b8ee899466673f7aabcfddbd09fe932ec0ac9c9f117e7081bfc28d54f2568"
+        checksum/alertmanager-config: "b36420e23f93cafb799c129d586bc113d8b422ed27cf17b16941205281e154b9"
     spec:
       containers:
       - name: alertmanager

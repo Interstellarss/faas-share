@@ -6,7 +6,7 @@ metadata:
     app: faas-share
     component: prometheus
   name: prometheus
-  namespace: "openfaas"
+  namespace: "faas-share"
 spec:
   type: ClusterIP
   ports:

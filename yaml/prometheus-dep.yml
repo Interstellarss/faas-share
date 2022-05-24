@@ -6,7 +6,7 @@ metadata:
     app: faas-share
     component: prometheus
   name: prometheus
-  namespace: "openfaas"
+  namespace: "faas-share"
 spec:
   replicas: 1
   selector:
@@ -18,7 +18,7 @@ spec:
         app: prometheus
       annotations:
         sidecar.istio.io/inject: "true"
-        checksum/prometheus-config: "6636c346b0ab1c80881ee1bc3206c081df08f7c20540fc99223a9dbf71bd2151"
+        checksum/prometheus-config: "4090e2a5da5d5a7a110d30933b959af3b2ee0e8ced5554a3d5c1768d848f1b28"
     spec:
       serviceAccountName: faas-share-prometheus
       containers:

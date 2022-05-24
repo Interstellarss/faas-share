@@ -6,7 +6,7 @@ metadata:
     app: faas-share
     component: basic-auth-plugin
   name: basic-auth-plugin
-  namespace: "openfaas"
+  namespace: "faas-share"
 spec:
   replicas: 1
   selector:

@@ -6,7 +6,7 @@ metadata:
     app: faas-share
     component: prometheus-config
   name: prometheus-config
-  namespace: "openfaas"
+  namespace: "faas-share"
 data:
   prometheus.yml: |
     global:
@@ -33,7 +33,7 @@ data:
           - role: pod
             namespaces:
               names:
-                - openfaas
+                - faas-share
                 - faas-share-fn
         relabel_configs:
         - action: labelmap

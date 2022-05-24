@@ -9,4 +9,4 @@ name: faas-share
 sources:
 - https://github.com/Interstellarss/faas-share
 - https://github.com/openfaas/faas
-version: 0.1.14
+version: 0.1.15

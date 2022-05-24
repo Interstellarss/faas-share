@@ -6,7 +6,7 @@ metadata:
     app: faas-share
     component: nats
   name: nats
-  namespace: "openfaas"
+  namespace: "faas-share"
 spec:
   type: ClusterIP
   ports:

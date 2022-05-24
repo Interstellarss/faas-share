@@ -3,7 +3,7 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: faas-share-prometheus
-  namespace: "openfaas"
+  namespace: "faas-share"
   labels:
     app: faas-share
     component: prometheus
@@ -12,7 +12,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: faas-share-prometheus
-  namespace: "openfaas"
+  namespace: "faas-share"
   labels:
     app: faas-share
     component: prometheus
@@ -44,7 +44,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: faas-share-prometheus
-  namespace: "openfaas"
+  namespace: "faas-share"
   labels:
     app: faas-share
     component: prometheus
@@ -55,7 +55,7 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: faas-share-prometheus
-  namespace: "openfaas"
+  namespace: "faas-share"
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
@@ -72,4 +72,4 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: faas-share-prometheus
-  namespace: "openfaas"
+  namespace: "faas-share"
