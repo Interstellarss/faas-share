@@ -1,6 +1,6 @@
 echo Installing with helm 👑
 
-helm repo add faas-share https://github.com/Interstellarss/faas-share
+helm repo add openfaas https://github.com/Interstellarss/faas-share
 
 kubectl apply -f \
    https://raw.githubusercontent.com/Interstellarss/faas-share/master/namespaces.yml
@@ -13,8 +13,8 @@ kubectl apply -f \
 echo "Installing chart 🍻"
 helm upgrade \
     --install \
-    faas-share \
-    openfaas/openfaas \
+    openfaas \
+    openfaas/faas-share\
     --namespace openfaas  \
     --set basic_auth=false \
     --set functionNamespace=faas-share-fn \

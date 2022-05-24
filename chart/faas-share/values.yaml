@@ -7,7 +7,7 @@ httpProbe: true               # Setting to true will use HTTP for readiness and 
 clusterRole: false            # Set to true for multiple namespaces, pro scaler and CPU/RAM metrics in OpenFaaS REST API
 createCRDs: true              # Set to false if applying CRDs in another way
 
-basic_auth: false            # Authentication for core components, no good reason to disable this
+basic_auth: true          # Authentication for core components, no good reason to disable this
 rbac: true                    # Kubernetes RBAC, no good reason to disable this
 generateBasicAuth: false      # Set to false if applying credentials separately from the chart, otherwise set to true
 securityContext: false
