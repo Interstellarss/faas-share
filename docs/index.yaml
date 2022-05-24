@@ -2,9 +2,9 @@ apiVersion: v1
 entries:
   cron-connector:
   - apiVersion: v1
-    created: "2022-05-24T16:03:22.492624+02:00"
+    created: "2022-05-24T16:15:33.533801+02:00"
     description: Trigger OpenFaaS Functions with cron
-    digest: 6479316d965e9f23a4daf1799f3cfdbecc90c6ede651ce9a81871161fdfb6b36
+    digest: 279cc80bbb23a45dbad868473c4bc8eef093eee0610ea83500a3ee6782f78610
     home: https://www.openfaas.com
     icon: https://raw.githubusercontent.com/openfaas/media/master/OpenFaaS_logo_stacked_opaque.png
     keywords:
@@ -24,9 +24,9 @@ entries:
     version: 0.5.3
   faas-share:
   - apiVersion: v2
-    created: "2022-05-24T16:03:22.499517+02:00"
+    created: "2022-05-24T16:15:33.541444+02:00"
     description: faas-share - Extend KubeShare to OpenFaaS
-    digest: 41ba8da1475ff4e200067ae991ef1e02d721d9f5e83b4122facdf476aef67076
+    digest: 0f74d374ef4c5d0d37450da2091408ca22dd5a0a89089f6697f03a048d1173d3
     home: https://github.com/Interstellarss/faas-share
     maintainers:
     - email: wangpu@in.tun.de
@@ -39,7 +39,7 @@ entries:
     - https://interstellarss.github.io/faas-share/faas-share-0.1.14.tgz
     version: 0.1.14
   - apiVersion: v1
-    created: "2022-05-24T16:03:22.498065+02:00"
+    created: "2022-05-24T16:15:33.539735+02:00"
     description: faas-share - Extend KubeShare to OpenFaaS
     digest: 02f06fd0c48d57d6a11534087fe4e4c01c7396b32e4a37d476bb48597322f539
     home: https://github.com/Interstellarss/faas-share
@@ -54,7 +54,7 @@ entries:
     - https://interstellarss.github.io/faas-share/faas-share-0.1.12.tgz
     version: 0.1.12
   - apiVersion: v1
-    created: "2022-05-24T16:03:22.494367+02:00"
+    created: "2022-05-24T16:15:33.537057+02:00"
     description: faas-share - Extend KubeShare to OpenFaaS
     digest: 1781ed8d6f26b5fd81b3beecb5b938e149672ea7ec6c2d43ae2d0e2da8e924dd
     home: https://github.com/Interstellarss/faas-share
@@ -70,9 +70,9 @@ entries:
     version: 0.1.11
   kafka-connector:
   - apiVersion: v1
-    created: "2022-05-24T16:03:22.499985+02:00"
+    created: "2022-05-24T16:15:33.541991+02:00"
     description: Connect OpenFaaS functions to Kafka topics
-    digest: 51cabdbd232906a428a052fda40bc04ce09f7e53e2ac9b8ab22db4efa38925db
+    digest: 2e97448e3ca06bb75ecd03cd19d3036ead01a07881ae9561beec41c4c0902ea2
     home: https://www.openfaas.com
     icon: https://raw.githubusercontent.com/openfaas/media/master/OpenFaaS_logo_stacked_opaque.png
     keywords:
@@ -91,9 +91,9 @@ entries:
     version: 0.7.0
   mqtt-connector:
   - apiVersion: v1
-    created: "2022-05-24T16:03:22.50031+02:00"
+    created: "2022-05-24T16:15:33.542347+02:00"
     description: Connect OpenFaaS functions to MQTT topics
-    digest: cf175c35417d42dfcd1cc1eb1472012cc2388b58be249f0865dc022d54693ad6
+    digest: 0950033d6825b5099249d9cd3a520c769e89ca8680ad4588c052e66597487dae
     home: https://www.openfaas.com
     icon: https://raw.githubusercontent.com/openfaas/media/master/OpenFaaS_logo_stacked_opaque.png
     keywords:
@@ -111,9 +111,9 @@ entries:
     version: 0.4.5
   nats-connector:
   - apiVersion: v1
-    created: "2022-05-24T16:03:22.500727+02:00"
+    created: "2022-05-24T16:15:33.542697+02:00"
     description: Trigger OpenFaaS Functions from NATS Pub/Sub
-    digest: 4f9f6404a5af2cc8e44635a9307c18f64c157ae21f82ecf088938e1c887f85d8
+    digest: 3d1fdf15c57bf8239540930256a8f436187ba593174f9a3a9cec9a41ddefa6ed
     home: https://www.openfaas.com
     icon: https://raw.githubusercontent.com/openfaas/media/master/OpenFaaS_logo_stacked_opaque.png
     keywords:
@@ -133,7 +133,7 @@ entries:
     version: 0.3.0
   openfaas:
   - apiVersion: v2
-    created: "2022-05-24T16:03:22.504213+02:00"
+    created: "2022-05-24T16:15:33.54562+02:00"
     description: OpenFaaS - Serverless Functions Made Simple
     digest: bde6971296aeda678c28b1f8328f9dd2a488be82777b73c694f1c49e3ef1a877
     home: https://www.openfaas.com
@@ -158,9 +158,9 @@ entries:
     version: 10.0.21
   probuilder:
   - apiVersion: v1
-    created: "2022-05-24T16:03:22.504654+02:00"
+    created: "2022-05-24T16:15:33.546002+02:00"
     description: Build OpenFaaS functions via a REST API
-    digest: 2a39502310d8fc182cd214ada31531ba43f5c2476f27b8a0b89b3d89f2a0d78c
+    digest: 020afe452811f7bcf550db083b8bf3b2b7f76d715578a1d082d8d79d4bbae374
     home: https://www.openfaas.com
     icon: https://raw.githubusercontent.com/openfaas/media/master/OpenFaaS_logo_stacked_opaque.png
     keywords:
@@ -179,9 +179,9 @@ entries:
     version: 0.2.0
   sqs-connector:
   - apiVersion: v1
-    created: "2022-05-24T16:03:22.505091+02:00"
+    created: "2022-05-24T16:15:33.546835+02:00"
     description: Connect OpenFaaS functions to SQS topics
-    digest: 2e68b79f8d0d8beacde4562954d11120060cea651f10d556ee997ca9c67a038b
+    digest: 65be99fa2a1b93c8e7ce0134fa4530ee16bf55fc416e651b86178730990c652e
     home: https://www.openfaas.com
     icon: https://raw.githubusercontent.com/openfaas/media/master/OpenFaaS_logo_stacked_opaque.png
     keywords:
@@ -198,4 +198,4 @@ entries:
     urls:
     - https://interstellarss.github.io/faas-share/sqs-connector-0.1.0.tgz
     version: 0.1.0
-generated: "2022-05-24T16:03:22.492098+02:00"
+generated: "2022-05-24T16:15:33.533255+02:00"
