@@ -151,7 +151,7 @@ faasshare:
     periodSeconds: 2           # Reduce to 1 for a faster cold-start, increase higher for lower-CPU usage
   resources:
     requests:
-      memory: "120Mi"
+      memory: "150Mi"
       cpu: "50m"
 
 # replaces faas-netes with openfaas-operator

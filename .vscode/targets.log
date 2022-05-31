@@ -8,7 +8,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This program built for i386-apple-darwin11.3.0
  
 
-# Make data base, printed on Tue May 24 15:42:47 2022
+# Make data base, printed on Mon May 30 14:15:28 2022
 
 # Variables
 
@@ -35,19 +35,20 @@ VSCODE_NLS_CONFIG = {"locale":"en-us","availableLanguages":{},"_languagePackSupp
 # environment
 _ = /usr/bin/make
 # makefile (from `Makefile', line 17)
-GIT_COMMIT := 49e0b6b8d58819d293d6458fd77fcd55d577feca
+GIT_COMMIT := 61b34fb4c03bf725cbc51108ce0aa6df87428955
 # makefile (from `Makefile', line 1)
 MAKEFILE_LIST :=  Makefile
 # environment
 VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
+ 
 # makefile (from `Makefile', line 16)
-VERSION := v0.1.14-3-g49e0b6b-dirty
+VERSION := v0.1.15-dirty
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
 __CFBundleIdentifier = com.microsoft.VSCode
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /var/folders/7m/b3h099s90tgbh61my4m6x9c80000gn/T/vscode-ipc-d430ed51-fc44-499b-8910-f1524e47f40a.sock
+VSCODE_IPC_HOOK_EXTHOST = /var/folders/7m/b3h099s90tgbh61my4m6x9c80000gn/T/vscode-ipc-2cacc174-8355-478f-83cb-f7fcb2107997.sock
 # environment
 VSCODE_CWD = /
 # environment
@@ -67,9 +68,9 @@ ELECTRON_RUN_AS_NODE = 1
 # default
 .FEATURES := target-specific order-only second-expansion else-if archives jobserver check-symlink
 # makefile (from `Makefile', line 4)
-TAG = 0.1.14
+TAG = 0.1.15
 # environment
-SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.XSae7OKqLB/Listeners
+SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.8yuqMDxpA5/Listeners
 # automatic
 %F = $(notdir $%)
 # environment
@@ -173,11 +174,12 @@ _CE_M =
 # default
 .INCLUDE_DIRS = /usr/local/include
 # environment
+ 
 MAKELEVEL := 0
 # environment
 CONDA_PREFIX = /Users/puxuan/opt/anaconda3
 # environment
-VSCODE_PID = 34410
+VSCODE_PID = 17704
 # environment
 _CE_CONDA = 
 # environment
@@ -191,9 +193,9 @@ LANG = C
 
 # Directories
 
-# . (device 16777221, inode 52289305): 34 files, no impossibilities.
+# . (device 16777222, inode 52289305): 35 files, no impossibilities.
 
-# 34 files, no impossibilities in 1 directories.
+# 35 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -277,7 +279,7 @@ push:
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-05-24 14:55:26
+#  Last modified 2022-05-24 23:24:25
 #  File has been updated.
 #  Successfully updated.
 # variable set hash-table stats:
@@ -297,7 +299,6 @@ render-charts:
 build:
 #  Phony target (prerequisite of .PHONY).
 #  Implicit rule search has not been done.
- 
 #  File does not exist.
 #  File has not been updated.
 
@@ -348,7 +349,7 @@ charts:
 #  commands to execute (from `Makefile', line 77):
 	cd chart && helm package faas-share/ && helm package kafka-connector/ && helm package cron-connector/ && helm package nats-connector/ && helm package mqtt-connector/ && helm package pro-builder/  && helm package sqs-connector/
 	mv chart/*.tgz docs/
-	helm repo index docs --url https://ghcr.io/Interstellarss/faas-share --merge ./docs/index.yaml
+	helm repo index docs --url https://interstellarss.github.io/faas-share --merge ./docs/index.yaml
 	./contrib/create-static-manifest.sh
 	
 
@@ -450,6 +451,6 @@ install:
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Tue May 24 15:42:47 2022
+# Finished Make data base on Mon May 30 14:15:28 2022
 
  
