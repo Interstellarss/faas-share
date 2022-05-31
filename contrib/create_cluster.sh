@@ -25,29 +25,26 @@ sudo sysctl net.bridge.bridge-nf-call-iptables=1
 
 
 sudo mkdir /etc/docker
-cat <<EOF | sudo tee /etc/docker/daemon.json
-{ "exec-opts": ["native.cgroupdriver=systemd"],
+echo "{ "exec-opts": ["native.cgroupdriver=systemd"],
 "log-driver": "json-file",
 "log-opts":
 { "max-size": "100m" },
 "storage-driver": "overlay2"
-}
-EOF
-
-
-sudo mkdir /etc/docker
-cat <<EOF | sudo tee /etc/docker/daemon.json
-{ "exec-opts": ["native.cgroupdriver=systemd"],
-"log-driver": "json-file",
-"log-opts":
-{ "max-size": "100m" },
-"storage-driver": "overlay2"
-}
-EOF
+}" | sudo tee /etc/docker/daemon.json
 
 sudo systemctl enable docker
 sudo systemctl daemon-reload
 sudo systemctl restart docker
+
+sudo kubeadm reset
+while true; do
+read -p "Are you sure you want to proceed? [y/N]" yn
+case $yn in
+    [Yy]* ) break;;
+    [Nn]* ) exit 1;;
+    * ) echo "Please answer yes or no,";;
+    esac
+    
 
 sudo kubeadm init --pod-network-cidr=10.244.0.0/16
 

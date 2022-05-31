@@ -5,7 +5,7 @@ kind: ServiceAccount
 metadata:
   labels:
     app: faas-share
-    chart: faas-share-0.1.14
+    chart: faas-share-0.1.15
     component: faas-controller
     heritage: Helm
     release: faas-share
@@ -20,7 +20,7 @@ metadata:
   namespace: "faas-share"
   labels:
     app: faas-share
-    chart: faas-share-0.1.14
+    chart: faas-share-0.1.15
     component: prometheus
     heritage: Helm
     release: faas-share
@@ -31,7 +31,7 @@ apiVersion: v1
 metadata:
   labels:
     app: faas-share
-    chart: faas-share-0.1.14
+    chart: faas-share-0.1.15
     component: alertmanager-config
     heritage: Helm
     release: faas-share
@@ -74,7 +74,7 @@ apiVersion: v1
 metadata:
   labels:
     app: faas-share
-    chart: faas-share-0.1.14
+    chart: faas-share-0.1.15
     component: prometheus-config
     heritage: Helm
     release: faas-share
@@ -983,7 +983,7 @@ kind: Role
 metadata:
   labels:
     app: faas-share
-    chart: faas-share-0.1.14
+    chart: faas-share-0.1.15
     component: faas-controller
     heritage: Helm
     release: faas-share
@@ -1043,7 +1043,7 @@ kind: Role
 metadata:
   labels:
     app: faas-share
-    chart: faas-share-0.1.14
+    chart: faas-share-0.1.15
     component: faas-controller
     heritage: Helm
     release: faas-share
@@ -1067,7 +1067,7 @@ metadata:
   namespace: "faas-share"
   labels:
     app: faas-share
-    chart: faas-share-0.1.14
+    chart: faas-share-0.1.15
     component: prometheus
     heritage: Helm
     release: faas-share
@@ -1087,7 +1087,7 @@ metadata:
   namespace: "faas-share-fn"
   labels:
     app: faas-share
-    chart: faas-share-0.1.14
+    chart: faas-share-0.1.15
     component: prometheus
     heritage: Helm
     release: faas-share
@@ -1105,7 +1105,7 @@ kind: RoleBinding
 metadata:
   labels:
     app: faas-share
-    chart: faas-share-0.1.14
+    chart: faas-share-0.1.15
     component: faas-controller
     heritage: Helm
     release: faas-share
@@ -1126,7 +1126,7 @@ kind: RoleBinding
 metadata:
   labels:
     app: faas-share
-    chart: faas-share-0.1.14
+    chart: faas-share-0.1.15
     component: faas-controller
     heritage: Helm
     release: faas-share
@@ -1149,7 +1149,7 @@ metadata:
   namespace: "faas-share"
   labels:
     app: faas-share
-    chart: faas-share-0.1.14
+    chart: faas-share-0.1.15
     component: prometheus
     heritage: Helm
     release: faas-share
@@ -1170,7 +1170,7 @@ metadata:
   namespace: "faas-share-fn"
   labels:
     app: faas-share
-    chart: faas-share-0.1.14
+    chart: faas-share-0.1.15
     component: prometheus
     heritage: Helm
     release: faas-share
@@ -1189,7 +1189,7 @@ kind: Service
 metadata:
   labels:
     app: faas-share
-    chart: faas-share-0.1.14
+    chart: faas-share-0.1.15
     component: alertmanager
     heritage: Helm
     release: faas-share
@@ -1209,7 +1209,7 @@ kind: Service
 metadata:
   labels:
     app: faas-share
-    chart: faas-share-0.1.14
+    chart: faas-share-0.1.15
     component: basic-auth-plugin
     heritage: Helm
     release: faas-share
@@ -1231,7 +1231,7 @@ kind: Service
 metadata:
   labels:
     app: faas-share
-    chart: faas-share-0.1.14
+    chart: faas-share-0.1.15
     component: gateway
     heritage: Helm
     release: faas-share
@@ -1254,7 +1254,7 @@ kind: Service
 metadata:
   labels:
     app: faas-share
-    chart: faas-share-0.1.14
+    chart: faas-share-0.1.15
     component: gateway
     heritage: Helm
     release: faas-share
@@ -1276,7 +1276,7 @@ kind: Service
 metadata:
   labels:
     app: faas-share
-    chart: faas-share-0.1.14
+    chart: faas-share-0.1.15
     component: nats
     heritage: Helm
     release: faas-share
@@ -1297,7 +1297,7 @@ kind: Service
 metadata:
   labels:
     app: faas-share
-    chart: faas-share-0.1.14
+    chart: faas-share-0.1.15
     component: prometheus
     heritage: Helm
     release: faas-share
@@ -1317,7 +1317,7 @@ kind: Deployment
 metadata:
   labels:
     app: faas-share
-    chart: faas-share-0.1.14
+    chart: faas-share-0.1.15
     component: alertmanager
     heritage: Helm
     release: faas-share
@@ -1334,7 +1334,7 @@ spec:
         app: alertmanager
       annotations:
         sidecar.istio.io/inject: "true"
-        checksum/alertmanager-config: "a00bcfe9461e7449584d51d9265dac81bed25e1597b884bc797077e0ea700974"
+        checksum/alertmanager-config: "b36420e23f93cafb799c129d586bc113d8b422ed27cf17b16941205281e154b9"
     spec:
       containers:
       - name: alertmanager
@@ -1388,7 +1388,7 @@ kind: Deployment
 metadata:
   labels:
     app: faas-share
-    chart: faas-share-0.1.14
+    chart: faas-share-0.1.15
     component: basic-auth-plugin
     heritage: Helm
     release: faas-share
@@ -1448,7 +1448,7 @@ kind: Deployment
 metadata:
   labels:
     app: faas-share
-    chart: faas-share-0.1.14
+    chart: faas-share-0.1.15
     component: gateway
     heritage: Helm
     release: faas-share
@@ -1539,8 +1539,8 @@ spec:
         resources:
             requests:
               cpu: 50m
-              memory: 120Mi
-        image: ghcr.io/interstellarss/faas-share:v0.1.14
+              memory: 150Mi
+        image: ghcr.io/interstellarss/faas-share:v0.1.15
         imagePullPolicy: Always
         command:
           - ./faas-share
@@ -1589,7 +1589,7 @@ kind: Deployment
 metadata:
   labels:
     app: faas-share
-    chart: faas-share-0.1.14
+    chart: faas-share-0.1.15
     component: nats
     heritage: Helm
     release: faas-share
@@ -1630,7 +1630,7 @@ kind: Deployment
 metadata:
   labels:
     app: faas-share
-    chart: faas-share-0.1.14
+    chart: faas-share-0.1.15
     component: prometheus
     heritage: Helm
     release: faas-share
@@ -1647,7 +1647,7 @@ spec:
         app: prometheus
       annotations:
         sidecar.istio.io/inject: "true"
-        checksum/prometheus-config: "6c1ab8ad42ce3c747d726602fe9e344ebc0b055a32c628bb7a4f19e01da54e3d"
+        checksum/prometheus-config: "4090e2a5da5d5a7a110d30933b959af3b2ee0e8ced5554a3d5c1768d848f1b28"
     spec:
       serviceAccountName: faas-share-prometheus
       containers:
@@ -1702,7 +1702,7 @@ kind: Deployment
 metadata:
   labels:
     app: faas-share
-    chart: faas-share-0.1.14
+    chart: faas-share-0.1.15
     component: queue-worker
     heritage: Helm
     release: faas-share
