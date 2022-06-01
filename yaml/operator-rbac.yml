@@ -17,8 +17,8 @@ metadata:
     app: faas-share
     component: openfaas-operator
 rules:
-- apiGroups: ["openfaas.com"]
-  resources: ["functions"]
+- apiGroups: ["kubeshare.nthu"]
+  resources: ["sharepods"]
   verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
 - apiGroups: [""]
   resources: ["events"]

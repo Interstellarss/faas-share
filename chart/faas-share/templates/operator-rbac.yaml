@@ -26,8 +26,8 @@ metadata:
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
 rules:
-- apiGroups: ["openfaas.com"]
-  resources: ["functions"]
+- apiGroups: ["kubeshare.nthu"]
+  resources: ["sharepods"]
   verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
 - apiGroups: [""]
   resources: ["events"]
