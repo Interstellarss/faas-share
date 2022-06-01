@@ -140,4 +140,4 @@ spec:
       - name: "kubeshare-library"
         hostPath:
           path: "/kubeshare/library"
-
+{{- end }}
