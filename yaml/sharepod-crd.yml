@@ -37,7 +37,7 @@ spec:
             type: string
           metadata:
             type: object
-          spec:
+  
     served: true
     storage: true
 status:
