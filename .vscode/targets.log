@@ -8,7 +8,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This program built for i386-apple-darwin11.3.0
  
 
-# Make data base, printed on Mon May 30 14:15:28 2022
+# Make data base, printed on Wed Jun  1 13:55:06 2022
 
 # Variables
 
@@ -35,20 +35,19 @@ VSCODE_NLS_CONFIG = {"locale":"en-us","availableLanguages":{},"_languagePackSupp
 # environment
 _ = /usr/bin/make
 # makefile (from `Makefile', line 17)
-GIT_COMMIT := 61b34fb4c03bf725cbc51108ce0aa6df87428955
+GIT_COMMIT := 2e518a78310d8e550da525164ee8201c33b1e7ab
 # makefile (from `Makefile', line 1)
 MAKEFILE_LIST :=  Makefile
 # environment
 VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
- 
 # makefile (from `Makefile', line 16)
-VERSION := v0.1.15-dirty
+VERSION := v0.1.15-2-g2e518a7-dirty
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
 __CFBundleIdentifier = com.microsoft.VSCode
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /var/folders/7m/b3h099s90tgbh61my4m6x9c80000gn/T/vscode-ipc-2cacc174-8355-478f-83cb-f7fcb2107997.sock
+VSCODE_IPC_HOOK_EXTHOST = /var/folders/7m/b3h099s90tgbh61my4m6x9c80000gn/T/vscode-ipc-c2ade5d5-c390-4e47-8699-ec0303b9503d.sock
 # environment
 VSCODE_CWD = /
 # environment
@@ -174,12 +173,11 @@ _CE_M =
 # default
 .INCLUDE_DIRS = /usr/local/include
 # environment
- 
 MAKELEVEL := 0
 # environment
 CONDA_PREFIX = /Users/puxuan/opt/anaconda3
 # environment
-VSCODE_PID = 17704
+VSCODE_PID = 30653
 # environment
 _CE_CONDA = 
 # environment
@@ -299,6 +297,7 @@ render-charts:
 build:
 #  Phony target (prerequisite of .PHONY).
 #  Implicit rule search has not been done.
+ 
 #  File does not exist.
 #  File has not been updated.
 
@@ -451,6 +450,6 @@ install:
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Mon May 30 14:15:28 2022
+# Finished Make data base on Wed Jun  1 13:55:07 2022
 
  

@@ -176,7 +176,6 @@ spec:
         imagePullPolicy: {{ .Values.openfaasImagePullPolicy }}
         command:
           - ./faas-share
-          - -operator=true
         {{- if .Values.openfaasPro }}
           - "-license-file=/var/secrets/license/license"
         {{- end }}

@@ -92,7 +92,7 @@ spec:
         resources:
             requests:
               cpu: 50m
-              memory: 120Mi
+              memory: 150Mi
         image: ghcr.io/interstellarss/faas-share:v0.1.15
         imagePullPolicy: Always
         command:
