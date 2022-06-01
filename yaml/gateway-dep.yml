@@ -97,7 +97,6 @@ spec:
         imagePullPolicy: Always
         command:
           - ./faas-share
-          - -operator=true
         env:
         - name: port
           value: "8081"
