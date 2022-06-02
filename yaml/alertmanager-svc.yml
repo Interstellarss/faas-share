@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: faas-share
+    component: alertmanager
+  name: alertmanager
+  namespace: "faas-share"
+spec:
+  type: ClusterIP
+  ports:
+    - port: 9093
+      protocol: TCP
+  selector:
+    app: alertmanager
