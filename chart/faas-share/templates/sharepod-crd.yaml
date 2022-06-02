@@ -1,4 +1,4 @@
-{{- $functionNs := default .Release.Namespace .Values.functionNamespace }}
+{{- $functionNs := faas-share-fn .Release.Namespace .Values.functionNamespace }}
 {{- if .Values.operator.create }}
 {{- if .Values.createCRDs }}
 
