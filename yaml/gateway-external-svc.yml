@@ -9,8 +9,6 @@ metadata:
   namespace: "faas-share"
 spec:
   type: LoadBalancer
-  externalIps:
-  - 172.0.0.1
   ports:
     - name: http
       port: 8080

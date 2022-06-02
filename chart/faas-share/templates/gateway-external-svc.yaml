@@ -16,8 +16,6 @@ metadata:
   namespace: {{ .Release.Namespace | quote }}
 spec:
   type: {{ .Values.serviceType }}
-  externalIps:
-  - 172.0.0.1
   ports:
     - name: http
       port: 8080
