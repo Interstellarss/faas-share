@@ -13,7 +13,7 @@ generateBasicAuth: false      # Set to false if applying credentials separately 
 securityContext: false
 
 exposeServices: true
-serviceType: NodePort        # serviceType for OpenFaaS gateway
+serviceType: LoadBalancer        # serviceType for OpenFaaS gateway
 async: true                  # No known reason to disable this, kept for legacy reasons 
 
 # Set to true to use legacy / community-edition auto-scaling
