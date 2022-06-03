@@ -40,7 +40,6 @@ func makeListHandler(defaultNamespace string,
 
 		opts := metav1.ListOptions{}
 		res, err := client.KubeshareV1().SharePods(lookupNamespace).List(r.Context(), opts)
-
 		//todo here
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)

@@ -9,7 +9,7 @@ metadata:
   labels:
     app: {{ template "openfaas.name" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-    component: openfaas-operator
+    component: faas-share-operator
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
 {{- if .Values.rbac }}
@@ -22,7 +22,7 @@ metadata:
   labels:
     app: {{ template "openfaas.name" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-    component: openfaas-operator
+    component: faas-share-operator
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
 rules:
@@ -53,7 +53,27 @@ metadata:
   labels:
     app: {{ template "openfaas.name" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
-    component: openfaas-operator
+    component: faas-share-operator
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: {{ .Release.Name }}-operator-rw
+subjects:
+- kind: ServiceAccount
+  name: {{ .Release.Name }}-operator
+  namespace: {{ .Release.Namespace | quote }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ .Release.Name }}-operator-rw2
+  namespace: {{ .Release.Namespace | quote }}
+  labels:
+    app: {{ template "openfaas.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    component: faas-share-operator
     heritage: {{ .Release.Service }}
     release: {{ .Release.Name }}
 roleRef:

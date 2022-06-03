@@ -1,8 +1,8 @@
 make --dry-run --always-make --keep-going --print-directory
 make: Entering directory `/Users/puxuan/go/src/github.com/Interstellarss/faas-share'
 docker build \
-	--build-arg GIT_COMMIT=e39504c78157cfa0286eaf42b2aa539469fc852c \
-	--build-arg VERSION=v0.1.16-10-ge39504c-dirty \
+	--build-arg GIT_COMMIT=d78cf64e410dad190761a35735259f34ae9d5bb5 \
+	--build-arg VERSION=v0.1.16-19-gd78cf64-dirty \
 	-t ghcr.io/interstellarss/faas-share:0.1.16 .
 make: Leaving directory `/Users/puxuan/go/src/github.com/Interstellarss/faas-share'
  

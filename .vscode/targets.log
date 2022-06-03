@@ -8,7 +8,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This program built for i386-apple-darwin11.3.0
  
 
-# Make data base, printed on Thu Jun  2 13:44:17 2022
+# Make data base, printed on Fri Jun  3 11:12:05 2022
 
 # Variables
 
@@ -27,6 +27,7 @@ VSCODE_LOG_NATIVE = false
 # automatic
 @F = $(notdir $@)
 # makefile
+ 
 CURDIR := /Users/puxuan/go/src/github.com/Interstellarss/faas-share
 # makefile
 SHELL = /bin/sh
@@ -35,20 +36,19 @@ VSCODE_NLS_CONFIG = {"locale":"en-us","availableLanguages":{},"_languagePackSupp
 # environment
 _ = /usr/bin/make
 # makefile (from `Makefile', line 17)
-GIT_COMMIT := e39504c78157cfa0286eaf42b2aa539469fc852c
+GIT_COMMIT := d78cf64e410dad190761a35735259f34ae9d5bb5
 # makefile (from `Makefile', line 1)
 MAKEFILE_LIST :=  Makefile
 # environment
 VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
 # makefile (from `Makefile', line 16)
-VERSION := v0.1.16-10-ge39504c-dirty
+VERSION := v0.1.16-19-gd78cf64-dirty
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
 __CFBundleIdentifier = com.microsoft.VSCode
- 
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /var/folders/7m/b3h099s90tgbh61my4m6x9c80000gn/T/vscode-ipc-69b99819-7c07-429d-a780-f8d7c4bcf205.sock
+VSCODE_IPC_HOOK_EXTHOST = /var/folders/7m/b3h099s90tgbh61my4m6x9c80000gn/T/vscode-ipc-eba9d652-375b-4dcb-a60e-9d830a814206.sock
 # environment
 VSCODE_CWD = /
 # environment
@@ -70,7 +70,7 @@ ELECTRON_RUN_AS_NODE = 1
 # makefile (from `Makefile', line 4)
 TAG = 0.1.16
 # environment
-SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.5tBkixf92m/Listeners
+SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.JMkvstV1Gh/Listeners
 # automatic
 %F = $(notdir $%)
 # environment
@@ -178,7 +178,7 @@ MAKELEVEL := 0
 # environment
 CONDA_PREFIX = /Users/puxuan/opt/anaconda3
 # environment
-VSCODE_PID = 1581
+VSCODE_PID = 1034
 # environment
 _CE_CONDA = 
 # environment
@@ -267,6 +267,7 @@ stop-kind:
 #  File has not been updated.
 
 push:
+ 
 #  Phony target (prerequisite of .PHONY).
 #  Implicit rule search has not been done.
 #  File does not exist.
@@ -288,7 +289,6 @@ render-charts:
 #  Phony target (prerequisite of .PHONY).
 #  Implicit rule search has not been done.
 #  File does not exist.
- 
 #  File has not been updated.
 #  commands to execute (from `Makefile', line 83):
 	./contrib/create-static-manifest.sh
@@ -451,6 +451,6 @@ install:
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Thu Jun  2 13:44:17 2022
+# Finished Make data base on Fri Jun  3 11:12:05 2022
 
  
