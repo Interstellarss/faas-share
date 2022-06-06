@@ -15,6 +15,8 @@ func makeResources(sharepod *kubesharev1.SharePod) (*corev1.ResourceRequirements
 		Requests: corev1.ResourceList{},
 	}
 
+	//sharepod.Status.
+
 	// Set Memory limits
 	if sharepod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUMemory] != "" {
 		qty, err := resource.ParseQuantity(sharepod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPUMemory])
@@ -39,6 +41,7 @@ func makeResources(sharepod *kubesharev1.SharePod) (*corev1.ResourceRequirements
 			return resources, err
 		}
 		resources.Requests[kubesharev1.ResourceNVIDIAGPU] = qty
+		resources.Limits[kubesharev1.ResourceNVIDIAGPU] = qty
 	}
 	return resources, nil
 }

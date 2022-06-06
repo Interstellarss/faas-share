@@ -105,7 +105,7 @@ func NewController(
 		deploymentsSynced: deploymentInformer.Informer().HasSynced,
 		sharepodsLister:   faasInformer.Lister(),
 		sharepodsSynced:   faasInformer.Informer().HasSynced,
-		workqueue:         workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "Functions"),
+		workqueue:         workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "Sharepods"),
 		recorder:          recorder,
 		factory:           factory,
 	}

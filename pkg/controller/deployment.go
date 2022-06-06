@@ -2,6 +2,7 @@ package controller
 
 import (
 	"encoding/json"
+	"fmt"
 
 	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
 	"github.com/google/go-cmp/cmp"
@@ -15,6 +16,8 @@ import (
 
 const (
 	annotationFunctionSpec = "faas-sahre.sharepod.spec"
+
+	PodManagerPosrtStart = 50050
 )
 
 // newDeployment creates a new Deployment for a Function resource. It also sets
@@ -96,7 +99,18 @@ func newDeployment(
 							Image:           sharepod.Name,
 							Ports:           []corev1.ContainerPort{},
 							ImagePullPolicy: corev1.PullPolicy(factory.Factory.Config.ImagePullPolicy),
-							Env:             []corev1.EnvVar{},
+							Env: append([]corev1.EnvVar{}, corev1.EnvVar{
+								Name:  "NVIDIA_VISIBLE_DEVICES",
+								Value: sharepod.Status.BoundDeviceID,
+							},
+								corev1.EnvVar{
+									Name:  "NVIDIA_DRIVER_CAPABILITIES",
+									Value: "compute,utility",
+								},
+								corev1.EnvVar{
+									Name:  "POD_NAME",
+									Value: fmt.Sprintf("%s/%s", sharepod.ObjectMeta.Namespace, sharepod.ObjectMeta.Name),
+								}),
 							//TODO here to compelt the makeResoruces function
 							Resources:      *resources,
 							LivenessProbe:  probes.Liveness,
