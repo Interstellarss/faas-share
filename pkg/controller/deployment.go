@@ -75,12 +75,6 @@ func newDeployment(
 				Value: fmt.Sprintf("%s/%s", sharepod.ObjectMeta.Namespace, sharepod.ObjectMeta.Name),
 			},
 		)
-		c.VolumeMounts = append(c.VolumeMounts,
-			corev1.VolumeMount{
-				Name:      "kubeshare-lib",
-				MountPath: KubeShareLibraryPath,
-			},
-		)
 		c.Resources = *resources
 		c.LivenessProbe = probes.Liveness
 		c.ReadinessProbe = probes.Readiness
