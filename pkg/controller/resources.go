@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"math"
-	"strconv"
 
 	//faasv1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
 	//faasv1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
@@ -10,6 +8,10 @@ import (
 	"k8s.io/apimachinery/pkg/api/resource"
 
 	corev1 "k8s.io/api/core/v1"
+)
+
+var (
+	ResourceQuantity1 = resource.MustParse("1")
 )
 
 // makeResources creates deployment resource limits and requests requirements from function specs
@@ -40,15 +42,17 @@ func makeResources(sharepod *kubesharev1.SharePod) (*corev1.ResourceRequirements
 
 	// Set GPU limits
 	if sharepod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPURequest] != "" {
-		qty_f, err := strconv.ParseFloat(sharepod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPURequest], 64)
-		if err != nil {
-			return resources, err
-		}
+		/*
+			qty_f, err := strconv.ParseFloat(sharepod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPURequest], 64)
+			if err != nil {
+				return resources, err
+			}
+		*/
 
-		qty := resource.MustParse(strconv.Itoa(int(math.Ceil(qty_f))))
+		//qty := resource.MustParse(strconv.Itoa(int(math.Ceil(qty_f))))
 
-		resources.Requests[kubesharev1.ResourceNVIDIAGPU] = qty
-		resources.Limits[kubesharev1.ResourceNVIDIAGPU] = qty
+		resources.Requests[kubesharev1.ResourceNVIDIAGPU] = ResourceQuantity1
+		resources.Limits[kubesharev1.ResourceNVIDIAGPU] = ResourceQuantity1
 	}
 	return resources, nil
 }
