@@ -17,6 +17,7 @@ import (
 const (
 	annotationFunctionSpec = "faas-sahre.sharepod.spec"
 
+	KubeShareLibraryPath = "/kubeshare/library"
 	PodManagerPosrtStart = 50050
 )
 
@@ -41,14 +42,52 @@ func newDeployment(
 	}
 
 	resources, err := makeResources(sharepod)
-	//if err != nil {
-	//	glog.Warningf("Function %s resources parsing failed: %v",
-	//		sharepod.Name, err)
-	//}
+	if err != nil {
+		glog.Warningf("Function %s resources parsing failed: %v",
+			sharepod.Name, err)
+	}
 
 	annotations := makeAnnotations(sharepod)
 
 	allowPrivilegeEscalation := false
+
+	specCopy := sharepod.Spec.DeepCopy()
+
+	containerSpec := specCopy.Containers
+
+	for i := range containerSpec {
+		c := &containerSpec[i]
+		c.Env = append(c.Env,
+			corev1.EnvVar{
+				Name:  "NVIDIA_VISIBLE_DEVICES",
+				Value: sharepod.Status.BoundDeviceID,
+			},
+			corev1.EnvVar{
+				Name:  "NVIDIA_DRIVER_CAPABILITIES",
+				Value: "compute,utility",
+			},
+			corev1.EnvVar{
+				Name:  "LD_PRELOAD",
+				Value: KubeShareLibraryPath + "/libgemhook.so.1",
+			},
+			corev1.EnvVar{
+				Name:  "POD_NAME",
+				Value: fmt.Sprintf("%s/%s", sharepod.ObjectMeta.Namespace, sharepod.ObjectMeta.Name),
+			},
+		)
+		c.VolumeMounts = append(c.VolumeMounts,
+			corev1.VolumeMount{
+				Name:      "kubeshare-lib",
+				MountPath: KubeShareLibraryPath,
+			},
+		)
+		c.Resources = *resources
+		c.LivenessProbe = probes.Liveness
+		c.ReadinessProbe = probes.Readiness
+		c.SecurityContext = &corev1.SecurityContext{
+			AllowPrivilegeEscalation: &allowPrivilegeEscalation,
+		}
+	}
 
 	deploymentSpec := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
@@ -93,33 +132,7 @@ func newDeployment(
 				},
 				Spec: corev1.PodSpec{
 					//NodeSelector: nodeSelector,
-					Containers: []corev1.Container{
-						{
-							Name:            sharepod.Name,
-							Image:           sharepod.Name,
-							Ports:           []corev1.ContainerPort{},
-							ImagePullPolicy: corev1.PullPolicy(factory.Factory.Config.ImagePullPolicy),
-							Env: append([]corev1.EnvVar{}, corev1.EnvVar{
-								Name:  "NVIDIA_VISIBLE_DEVICES",
-								Value: sharepod.Status.BoundDeviceID,
-							},
-								corev1.EnvVar{
-									Name:  "NVIDIA_DRIVER_CAPABILITIES",
-									Value: "compute,utility",
-								},
-								corev1.EnvVar{
-									Name:  "POD_NAME",
-									Value: fmt.Sprintf("%s/%s", sharepod.ObjectMeta.Namespace, sharepod.ObjectMeta.Name),
-								}),
-							//TODO here to compelt the makeResoruces function
-							Resources:      *resources,
-							LivenessProbe:  probes.Liveness,
-							ReadinessProbe: probes.Readiness,
-							SecurityContext: &corev1.SecurityContext{
-								AllowPrivilegeEscalation: &allowPrivilegeEscalation,
-							},
-						},
-					},
+					Containers: containerSpec,
 
 					//TODO here
 				},
