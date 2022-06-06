@@ -135,7 +135,7 @@ operatorPro:
   image: ghcr.io/openfaasltd/faas-netes:0.1.3
 
 faasshare:
-  image: ghcr.io/interstellarss/faas-share:v0.1.17-test
+  image: ghcr.io/interstellarss/faas-share:v0.1.17
   readTimeout: "60s"
   writeTimeout: "60s"
   imagePullPolicy: "Always"    # Image pull policy for deployed functions
@@ -157,7 +157,7 @@ faasshare:
 # replaces faas-netes with openfaas-operator
 
 operator:
-  image: ghcr.io/interstellarss/faas-share:v0.1.17-test
+  image: ghcr.io/interstellarss/faas-share:v0.1.17
   create: true
   # set this to false when creating multiple releases in the same cluster
   # must be true for the first one only
