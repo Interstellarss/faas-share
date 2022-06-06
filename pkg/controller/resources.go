@@ -1,7 +1,11 @@
 package controller
 
 import (
-	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
+	"math"
+	"strconv"
+
+	//faasv1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
+	//faasv1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
 	kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 
@@ -19,7 +23,7 @@ func makeResources(sharepod *kubesharev1.SharePod) (*corev1.ResourceRequirements
 
 	// Set Memory limits
 	if sharepod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUMemory] != "" {
-		qty, err := resource.ParseQuantity(sharepod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPUMemory])
+		qty, err := resource.ParseQuantity(sharepod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUMemory])
 		if err != nil {
 			return resources, err
 		}
@@ -27,19 +31,22 @@ func makeResources(sharepod *kubesharev1.SharePod) (*corev1.ResourceRequirements
 		resources.Requests[corev1.ResourceMemory] = qty
 	}
 	if sharepod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPULimit] != "" {
-		qty, err := resource.ParseQuantity(sharepod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPULimit])
+		qty, err := resource.ParseQuantity(sharepod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPULimit])
 		if err != nil {
 			return resources, err
 		}
 		resources.Limits[kubesharev1.ResourceNVIDIAGPU] = qty
 	}
 
-	// Set CPU limits
-	if sharepod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPURequest] != "" {
-		qty, err := resource.ParseQuantity(sharepod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPURequest])
+	// Set GPU limits
+	if sharepod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPURequest] != "" {
+		qty_f, err := strconv.ParseFloat(sharepod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPURequest], 64)
 		if err != nil {
 			return resources, err
 		}
+
+		qty := resource.MustParse(strconv.Itoa(int(math.Ceil(qty_f))))
+
 		resources.Requests[kubesharev1.ResourceNVIDIAGPU] = qty
 		resources.Limits[kubesharev1.ResourceNVIDIAGPU] = qty
 	}
