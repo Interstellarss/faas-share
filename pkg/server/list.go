@@ -5,17 +5,18 @@ import (
 	"net/http"
 
 	clientset "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned"
-	appsv1 "k8s.io/client-go/listers/apps/v1"
 	"k8s.io/klog"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	listers "github.com/Interstellarss/faas-share/pkg/client/listers/kubeshare/v1"
 
 	KubeshareV1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
 )
 
 func makeListHandler(defaultNamespace string,
 	client clientset.Interface,
-	deploymentLister appsv1.DeploymentLister) http.HandlerFunc {
+	sharepodLister listers.SharePodLister) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -50,7 +51,7 @@ func makeListHandler(defaultNamespace string,
 		sharepods := []KubeshareV1.SharePodStatus{}
 
 		for _, item := range res.Items {
-			desiredReplicas, availableReplicas, err := getReplicas(item.Name, lookupNamespace, deploymentLister)
+			desiredReplicas, availableReplicas, err := getReplicas(item.Name, lookupNamespace, sharepodLister)
 
 			if err != nil {
 				klog.Warningf("Function listing getReplicas error: %v", err)

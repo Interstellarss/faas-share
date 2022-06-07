@@ -74,6 +74,8 @@ type Controller struct {
 	// recorder is an event recorder for recording Event resources to the
 	// Kubernetes API.
 	recorder record.EventRecorder
+	//TODO: change the factory here
+	factory SharePodFactory
 }
 
 // NewController returns a new sample controller

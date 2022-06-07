@@ -20,7 +20,7 @@ async: true                  # No known reason to disable this, kept for legacy 
 # when openfaasPro is set to true to use the original 
 # auto-scaling logic
 # Then set proScaler.enabled=false
-ceScaling: false
+ceScaling: true
 
 # create pod security policies for OpenFaaS control plane
 # https://kubernetes.io/docs/concepts/policy/pod-security-policy/
@@ -38,7 +38,7 @@ openfaasImagePullPolicy: "Always"
 autoscaler:
   image: ghcr.io/openfaasltd/autoscaler:0.2.3
   replicas: 1
-  enabled: false
+  enabled: true
   resources:
     requests:
       memory: "128Mi"

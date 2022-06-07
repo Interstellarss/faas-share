@@ -10,16 +10,20 @@ import (
 	"github.com/gorilla/mux"
 
 	clientset "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned"
-	"k8s.io/client-go/kubernetes"
-	v1 "k8s.io/client-go/listers/apps/v1"
 	"k8s.io/klog"
+
+	listers "github.com/Interstellarss/faas-share/pkg/client/listers/kubeshare/v1"
 
 	"github.com/openfaas/faas-provider/types"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	sharepodtypes "github.com/Interstellarss/faas-share/pkg/sharepod"
+
+	v1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
 )
 
-func makeReplicaReader(defaultNamespace string, client clientset.Interface, lister v1.DeploymentLister) http.HandlerFunc {
+func makeReplicaReader(defaultNamespace string, client clientset.Interface, lister listers.SharePodLister) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		sharepodName := vars["name"]
@@ -35,30 +39,53 @@ func makeReplicaReader(defaultNamespace string, client clientset.Interface, list
 
 		opts := metav1.GetOptions{}
 
-		k8sfunc, err := client.KubeshareV1().SharePods(lookupNamespace).
+		k8sshr, err := client.KubeshareV1().SharePods(lookupNamespace).
 			Get(r.Context(), sharepodName, opts)
 
-		if err != nil || k8sfunc == nil {
+		if err != nil || k8sshr == nil {
 			w.WriteHeader(http.StatusNotFound)
 			w.Write([]byte(err.Error()))
 			return
 		}
+
+		desiredReplicas, availableReplicas, err := getReplicas(sharepodName, lookupNamespace, lister)
+
+		if err != nil {
+			klog.Warningf("Sharepod replica reader error: %v", err)
+		}
+
+		result := toSharepodStatus(*k8sshr)
+
+		result.AvailableReplicas = availableReplicas
+		result.Replicas = desiredReplicas
+
+		res, err := json.Marshal(result)
+		if err != nil {
+			klog.Errorf("Failed to marshal sharepod status: %s", err.Error())
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte("Failed to marshal sharepod status"))
+			return
+		}
+
+		w.Header().Set("Content-Type", "applications/json")
+		w.WriteHeader(http.StatusOK)
+		w.Write(res)
 	}
 }
 
-func getReplicas(sharepodName string, namespace string, lister v1.DeploymentLister) (uint64, uint64, error) {
-	dep, err := lister.Deployments(namespace).Get(sharepodName)
+func getReplicas(sharepodName string, namespace string, lister listers.SharePodLister) (uint64, uint64, error) {
+	shr, err := lister.SharePods(namespace).Get(sharepodName)
 	if err != nil {
 		return 0, 0, err
 	}
 
-	desiredReplicas := uint64(dep.Status.Replicas)
-	availableReplicas := uint64(dep.Status.AvailableReplicas)
+	desiredReplicas := uint64(shr.Status.Replicas)
+	availableReplicas := uint64(shr.Status.AvailableReplicas)
 
 	return desiredReplicas, availableReplicas, nil
 }
 
-func makeReplicaHandler(defaultNamespace string, kube kubernetes.Interface) http.HandlerFunc {
+func makeReplicaHandler(defaultNamespace string, shareclientset clientset.Interface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		sharepodName := vars["name"]
@@ -93,7 +120,7 @@ func makeReplicaHandler(defaultNamespace string, kube kubernetes.Interface) http
 
 		opts := metav1.GetOptions{}
 
-		dep, err := kube.AppsV1().Deployments(lookupNamespace).Get(r.Context(), sharepodName, opts)
+		shr, err := shareclientset.KubeshareV1().SharePods(lookupNamespace).Get(r.Context(), sharepodName, opts)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(err.Error()))
@@ -101,9 +128,9 @@ func makeReplicaHandler(defaultNamespace string, kube kubernetes.Interface) http
 			return
 		}
 
-		dep.Spec.Replicas = int32p(int32(req.Replicas))
+		shr.Status.Replicas = uint64(req.Replicas)
 
-		_, err = kube.AppsV1().Deployments(lookupNamespace).Update(r.Context(), dep, metav1.UpdateOptions{})
+		_, err = shareclientset.KubeshareV1().SharePods(lookupNamespace).Update(r.Context(), shr, metav1.UpdateOptions{})
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(err.Error()))
@@ -114,4 +141,20 @@ func makeReplicaHandler(defaultNamespace string, kube kubernetes.Interface) http
 		klog.Infof("Sharepod %s replica updated to %v", sharepodName, req.Replicas)
 		w.WriteHeader(http.StatusAccepted)
 	}
+}
+
+func toSharepodStatus(item v1.SharePod) sharepodtypes.SharepodStatus {
+	status := sharepodtypes.SharepodStatus{
+		Labels:      &item.Labels,
+		Annotations: &item.Annotations,
+		Name:        item.Name,
+		Containers:  item.Spec.Containers,
+		CreatedAt:   item.CreationTimestamp.Time,
+		//AvailableReplicas: item.Status.AvailableReplicas,
+		//Replicas:          item.Status.Replicas,
+	}
+
+	//shoud we specify limit & request here?
+
+	return status
 }
