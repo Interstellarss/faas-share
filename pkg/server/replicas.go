@@ -12,18 +12,18 @@ import (
 	clientset "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned"
 	"k8s.io/klog"
 
-	listers "github.com/Interstellarss/faas-share/pkg/client/listers/kubeshare/v1"
-
 	"github.com/openfaas/faas-provider/types"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	sharepodtypes "github.com/Interstellarss/faas-share/pkg/sharepod"
 
-	v1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
+	ofv1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
+
+	v1 "k8s.io/client-go/listers/apps/v1"
 )
 
-func makeReplicaReader(defaultNamespace string, client clientset.Interface, lister listers.SharePodLister) http.HandlerFunc {
+func makeReplicaReader(defaultNamespace string, client clientset.Interface, lister v1.DeploymentLister) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		sharepodName := vars["name"]
@@ -73,8 +73,8 @@ func makeReplicaReader(defaultNamespace string, client clientset.Interface, list
 	}
 }
 
-func getReplicas(sharepodName string, namespace string, lister listers.SharePodLister) (uint64, uint64, error) {
-	shr, err := lister.SharePods(namespace).Get(sharepodName)
+func getReplicas(sharepodName string, namespace string, lister v1.DeploymentLister) (uint64, uint64, error) {
+	shr, err := lister.Deployments(namespace).Get(sharepodName)
 	if err != nil {
 		return 0, 0, err
 	}
@@ -143,7 +143,7 @@ func makeReplicaHandler(defaultNamespace string, shareclientset clientset.Interf
 	}
 }
 
-func toSharepodStatus(item v1.SharePod) sharepodtypes.SharepodStatus {
+func toSharepodStatus(item ofv1.SharePod) sharepodtypes.SharepodStatus {
 	status := sharepodtypes.SharepodStatus{
 		Labels:      &item.Labels,
 		Annotations: &item.Annotations,

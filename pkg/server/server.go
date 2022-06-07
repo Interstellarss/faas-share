@@ -20,7 +20,9 @@ import (
 	"github.com/openfaas/faas-provider/proxy"
 	"github.com/openfaas/faas-provider/types"
 
-	listers "github.com/Interstellarss/faas-share/pkg/client/listers/kubeshare/v1"
+	//listers "github.com/Interstellarss/faas-share/pkg/client/listers/kubeshare/v1"
+
+	v1apps "k8s.io/client-go/listers/apps/v1"
 
 	//faassharek8s "github.com/Interstellarss/faas-share/pkg/k8s"
 
@@ -39,7 +41,7 @@ const defaultWriteTimeout = 8
 func New(client clientset.Interface,
 	kube kubernetes.Interface,
 	endpointsInformer coreinformer.EndpointsInformer,
-	sharepodLister listers.SharePodLister,
+	deploymentLister v1apps.DeploymentLister,
 	clusterRole bool,
 	cfg config.BootstrapConfig) *Server {
 
@@ -70,8 +72,8 @@ func New(client clientset.Interface,
 		FunctionProxy:  proxy.NewHandlerFunc(bootstrapConfig, sharepodLookup),
 		DeleteHandler:  makeDeleteHandler(sharepodNamespace, client),
 		DeployHandler:  makeApplyHandler(sharepodNamespace, client),
-		FunctionReader: makeListHandler(sharepodNamespace, client, sharepodLister),
-		ReplicaReader:  makeReplicaReader(sharepodNamespace, client, sharepodLister),
+		FunctionReader: makeListHandler(sharepodNamespace, client, deploymentLister),
+		ReplicaReader:  makeReplicaReader(sharepodNamespace, client, deploymentLister),
 		ReplicaUpdater: makeReplicaHandler(sharepodNamespace, client),
 		UpdateHandler:  makeHealthReader(),
 		HealthHandler:  makeHealthReader(),

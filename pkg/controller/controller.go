@@ -222,12 +222,12 @@ func (c *Controller) syncHandler(key string) error {
 		return nil
 	}
 
-	// Get the Function resource with this namespace/name
+	// Get the SharePod resource with this namespace/name
 	sharepod, err := c.sharepodsLister.SharePods(namespace).Get(name)
 	if err != nil {
 		// The Function resource may no longer exist, in which case we stop processing.
 		if errors.IsNotFound(err) {
-			runtime.HandleError(fmt.Errorf("function '%s' in work queue no longer exists", key))
+			runtime.HandleError(fmt.Errorf("sharepod '%s' in work queue no longer exists", key))
 			return nil
 		}
 
@@ -248,13 +248,6 @@ func (c *Controller) syncHandler(key string) error {
 	// If the resource doesn't exist, we'll create it
 	if errors.IsNotFound(err) {
 		err = nil
-		//still about secrets
-		/*
-			existingSecrets, err := c.getSecrets(sharepod.Namespace, sharepod.)
-			if err != nil {
-				return err
-			}
-		*/
 
 		glog.Infof("Creating deployment for '%s'", sharepod.Name)
 		deployment, err = c.kubeclientset.AppsV1().Deployments(sharepod.Namespace).Create(
@@ -386,7 +379,7 @@ func (c *Controller) handleObject(obj interface{}) {
 
 		function, err := c.sharepodsLister.SharePods(object.GetNamespace()).Get(ownerRef.Name)
 		if err != nil {
-			glog.Infof("Function '%s' deleted. Ignoring orphaned object '%s'", ownerRef.Name, object.GetSelfLink())
+			glog.Infof("Sharepod '%s' deleted. Ignoring orphaned object '%s'", ownerRef.Name, object.GetSelfLink())
 			return
 		}
 

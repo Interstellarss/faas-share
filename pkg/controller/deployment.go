@@ -41,7 +41,7 @@ func newDeployment(
 			sharepod.Name, err)
 	}
 
-	resources, err := makeResources(sharepod)
+	//resources, err := makeResources(sharepod)
 	if err != nil {
 		glog.Warningf("Function %s resources parsing failed: %v",
 			sharepod.Name, err)
@@ -75,13 +75,23 @@ func newDeployment(
 				Value: fmt.Sprintf("%s/%s", sharepod.ObjectMeta.Namespace, sharepod.ObjectMeta.Name),
 			},
 		)
-		c.Resources = *resources
 		c.LivenessProbe = probes.Liveness
 		c.ReadinessProbe = probes.Readiness
 		c.SecurityContext = &corev1.SecurityContext{
 			AllowPrivilegeEscalation: &allowPrivilegeEscalation,
 		}
 	}
+
+	specCopy.Volumes = append(specCopy.Volumes,
+		corev1.Volume{
+			Name: "kubeshare-lib",
+			VolumeSource: corev1.VolumeSource{
+				HostPath: &corev1.HostPathVolumeSource{
+					Path: KubeShareLibraryPath,
+				},
+			},
+		},
+	)
 
 	deploymentSpec := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
@@ -121,6 +131,13 @@ func newDeployment(
 			RevisionHistoryLimit: int32p(5),
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
+					OwnerReferences: []metav1.OwnerReference{
+						*metav1.NewControllerRef(sharepod, schema.GroupVersionKind{
+							Group:   faasv1.SchemeGroupVersion.Group,
+							Version: faasv1.SchemeGroupVersion.Version,
+							Kind:    "SharePod",
+						}),
+					},
 					Labels:      labels,
 					Annotations: annotations,
 				},
@@ -141,46 +158,6 @@ func newDeployment(
 		var currentAnnotations map[string]string
 		if existingDeployment != nil {
 			currentAnnotations = existingDeployment.Annotations
-		}
-	*/
-
-	//we do not need he Profile in our
-
-	// compare the annotations from args to the cache copy of the deployment annotations
-	// at this point we have already updated the annotations to the new value, if we
-	// compare to that it will produce an empty list
-	//profileNamespace := factory.Factory.Config.ProfilesNamespace
-	//profileList, err := factory.GetProfilesToRemove(ctx, profileNamespace, annotations, currentAnnotations)
-	/*
-		if err != nil {
-			// TODO: a simple warning doesn't seem strong enough if a profile can't be found or there is
-			// some other error
-			glog.Warningf("Function %s can not retrieve required Profiles in %s: %v", sharepod.Spec.Name, profileNamespace, err)
-		}
-		for _, profile := range profileList {
-			factory.RemoveProfile(profile, deploymentSpec)
-		}
-
-		if _, exists := annotations[k8s.ProfileAnnotationKey]; !exists {
-			glog.Infof("Function %s: no profiles specified", sharepod.Name)
-		}
-
-		profileList, err = factory.GetProfiles(ctx, profileNamespace, annotations)
-		if err != nil {
-			// TODO: a simple warning doesn't seem strong enough if a profile can't be found or there is
-			// some other error
-			glog.Warningf("Function %s can not retrieve required Profiles in %s: %v", sharepod.Name, profileNamespace, err)
-		}
-		// TODO: remove this or refactor to just print names
-		glog.Infof("Function %s: Applying profiles %+v", sharepod.Name, profileList)
-		for _, profile := range profileList {
-			factory.ApplyProfile(profile, deploymentSpec)
-		}
-
-		if err := UpdateSecrets(sharepod, deploymentSpec, existingSecrets); err != nil {
-			// TODO: a simple warning doesn't seem strong enough if we can't update the secrets
-			glog.Warningf("Function %s secrets update failed: %v",
-				sharepod.Name, err)
 		}
 	*/
 
