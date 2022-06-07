@@ -28,11 +28,11 @@ spec:
         secret:
           secretName: basic-auth
       {{- end }}
-      {{- if .Values.autoscaler.enabled }}
-      - name: license
-        secret:
-          secretName: openfaas-license
-      {{- end }}
+      #{{- if .Values.autoscaler.enabled }}
+      #- name: license
+      #  secret:
+      #    secretName: openfaas-license
+      #{{- end }}
       containers:
       - name:  autoscaler
         resources:
@@ -46,7 +46,7 @@ spec:
         {{- if .Values.autoscaler.enabled }}
         command:
           - "/usr/bin/autoscaler"
-          - "-license-file=/var/secrets/license/license"
+          # - "-license-file=/var/secrets/license/license"
       {{- if eq (or .Values.autoscaler.disableHorizontalScaling false) true }}
           - "-horizontal-scaling=false"
       {{- end }}
@@ -70,11 +70,11 @@ spec:
         - name: basic_auth
           value: "{{ .Values.basic_auth }}"
         volumeMounts:
-        {{- if .Values.autoscaler.enabled }}
-        - name: license
-          readOnly: true
-          mountPath: "/var/secrets/license"
-        {{- end }}
+        #{{- if .Values.autoscaler.enabled }}
+        #- name: license
+        #  readOnly: true
+        #  mountPath: "/var/secrets/license"
+        #{{- end }}
         - name: auth
           readOnly: true
           mountPath: "/var/secrets/autoscaler"

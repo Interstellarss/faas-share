@@ -23,9 +23,11 @@ spec:
       - name: auth
         secret:
           secretName: basic-auth
-      - name: license
-        secret:
-          secretName: openfaas-license
+      #
+      #- name: license
+      #  secret:
+      #    secretName: openfaas-license
+      #
       containers:
       - name:  autoscaler
         resources:
@@ -37,7 +39,7 @@ spec:
         imagePullPolicy: Always
         command:
           - "/usr/bin/autoscaler"
-          - "-license-file=/var/secrets/license/license"
+          # - "-license-file=/var/secrets/license/license"
         env:
         - name: gateway_url
           value: "http://gateway.faas-share:8080/"
@@ -52,9 +54,11 @@ spec:
         - name: basic_auth
           value: "true"
         volumeMounts:
-        - name: license
-          readOnly: true
-          mountPath: "/var/secrets/license"
+        #
+        #- name: license
+        #  readOnly: true
+        #  mountPath: "/var/secrets/license"
+        #
         - name: auth
           readOnly: true
           mountPath: "/var/secrets/autoscaler"

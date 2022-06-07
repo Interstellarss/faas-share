@@ -205,8 +205,8 @@ func runOperator(setup serverSetup, cfg config.BootstrapConfig) {
 		faasInformerfactory,
 		facory,
 	)
-
-	srv := server.New(shareClient, kubeClient, listers.EndpointsInformer, listers.DeploymentInformer.Lister(), cfg.ClusterRole, cfg)
+	listers.DeploymentInformer.Lister()
+	srv := server.New(shareClient, kubeClient, listers.EndpointsInformer, listers.SharepodsInformer.Lister(), cfg.ClusterRole, cfg)
 
 	//TODO here
 	go srv.Start()
