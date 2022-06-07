@@ -38,7 +38,7 @@ openfaasImagePullPolicy: "Always"
 autoscaler:
   image: ghcr.io/openfaasltd/autoscaler:0.2.3
   replicas: 1
-  enabled: true
+  enabled: false
   resources:
     requests:
       memory: "128Mi"
