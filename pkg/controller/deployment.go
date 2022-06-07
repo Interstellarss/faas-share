@@ -17,7 +17,7 @@ import (
 const (
 	annotationFunctionSpec = "faas-sahre.sharepod.spec"
 
-	KubeShareLibraryPath = "/kubeshare/library"
+	KubeShareLibraryPath = "/faas-share/library"
 	PodManagerPosrtStart = 50050
 )
 
@@ -73,6 +73,12 @@ func newDeployment(
 			corev1.EnvVar{
 				Name:  "POD_NAME",
 				Value: fmt.Sprintf("%s/%s", sharepod.ObjectMeta.Namespace, sharepod.ObjectMeta.Name),
+			},
+		)
+		c.VolumeMounts = append(c.VolumeMounts,
+			corev1.VolumeMount{
+				Name:      "kubeshare-lib",
+				MountPath: KubeShareLibraryPath,
 			},
 		)
 		c.LivenessProbe = probes.Liveness
@@ -144,6 +150,7 @@ func newDeployment(
 				Spec: corev1.PodSpec{
 					//NodeSelector: nodeSelector,
 					Containers: containerSpec,
+					Volumes:    specCopy.Volumes,
 
 					//TODO here
 				},
