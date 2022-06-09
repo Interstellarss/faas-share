@@ -1,4 +1,12 @@
-.PHONY: build local push namespaces install charts start-kind stop-kind build-buildx render-charts
+TARGET=kubeshare-scheduler kubeshare-device-manager kubeshare-config-client
+GO=go
+GO_MODULE=GO111MODULE=on
+BIN_DIR=bin/
+ALPINE_COMPILE_FLAGS=CGO_ENABLED=0 GOOS=linux GOARCH=amd64
+NVML_COMPILE_FLAGS=CGO_LDFLAGS_ALLOW='-Wl,--unresolved-symbols=ignore-in-object-files' GOOS=linux GOARCH=amd64
+PACKAGE_PREFIX=github.com/Interstellarss/faas-share/cmd/
+
+.PHONY: build local push namespaces install charts start-kind stop-kind build-buildx render-charts all clean $(TARGET)
 IMG_NAME?=faas-share
 
 TAG?=0.1.17
@@ -6,6 +14,8 @@ OWNER?=interstellarss
 SERVER?=ghcr.io
 export DOCKER_CLI_EXPERIMENTAL=enabled
 export DOCKER_BUILDKIT=1
+
+
 
 TOOLS_DIR := .tools
 
@@ -16,7 +26,7 @@ CODEGEN_PKG := $(GOPATH)/pkg/mod/k8s.io/code-generator@${CODEGEN_VERSION}
 VERSION := $(shell git describe --tags --dirty)
 GIT_COMMIT := $(shell git rev-parse HEAD)
 
-all: build-docker
+all: build-docker $(TARGET)
 
 $(TOOLS_DIR)/code-generator.mod: go.mod
 	@echo "syncing code-generator tooling version"
@@ -97,3 +107,12 @@ verify-codegen: ${CODEGEN_PKG}
 .PHONY: update-codegen
 update-codegen: ${CODEGEN_PKG}
 	./hack/update-codegen.sh
+
+kubeshare-device-manager kubeshare-scheduler:
+	$(GO_MODULE) $(ALPINE_COMPILE_FLAGS) $(GO) build -o $(BIN_DIR)$@ $(PACKAGE_PREFIX)$@
+
+kubeshare-config-client:
+	$(GO_MODULE) $(NVML_COMPILE_FLAGS) $(GO) build -o $(BIN_DIR)$@ $(PACKAGE_PREFIX)$@
+
+clean:
+	rm $(BIN_DIR)* 2>/dev/null; exit 0
