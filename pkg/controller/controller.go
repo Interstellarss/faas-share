@@ -32,7 +32,7 @@ import (
 
 const (
 	controllerAgentName = "faasshare-operator"
-	faasKind            = "Sharepod"
+	faasKind            = "SharePod"
 	functionPort        = 8080
 	LabelMinReplicas    = "com.openfaas.scale.min"
 	// SuccessSynced is used as part of the Event 'reason' when a Function is synced
@@ -46,7 +46,7 @@ const (
 	MessageResourceExists = "Resource %q already exists and is not managed by OpenFaaS"
 	// MessageResourceSynced is the message used for an Event fired when a Function
 	// is synced successfully
-	MessageResourceSynced = "Function synced successfully"
+	MessageResourceSynced = "SharePod synced successfully"
 )
 
 // Controller is the controller implementation for Function resources
