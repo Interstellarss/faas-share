@@ -14,4 +14,4 @@ FROM alpine:3.9
 
 COPY --from=build /tmp/build/Gemini/lib/libgemhook.so.1 /libgemhook.so.1
 
-CMD ["cp", "/libgemhook.so.1", "/kubeshare/library/libgemhook.so.1"]
+CMD ["cp", "/libgemhook.so.1", "/faas-share/library/libgemhook.so.1"]

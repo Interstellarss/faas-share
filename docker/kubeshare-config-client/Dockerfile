@@ -6,7 +6,7 @@ ENV GOLANG_VERSION 1.13.5
 ENV GOPATH /go
 ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
 
-WORKDIR /go/src/kubeshare
+WORKDIR /go/src/github.com/Interstellarss/faas-share
 
 COPY . .
 
@@ -20,6 +20,6 @@ FROM debian:stretch-slim
 ENV NVIDIA_VISIBLE_DEVICES      all
 ENV NVIDIA_DRIVER_CAPABILITIES  utility
 
-COPY --from=build /go/src/kubeshare/bin/kubeshare-config-client /usr/bin/kubeshare-config-client
+COPY --from=build /go/src/github.com/Interstellarss/faas-share/bin/kubeshare-config-client /usr/bin/kubeshare-config-client
 
 CMD ["kubeshare-config-client", "-alsologtostderr", "-server-ip=kubeshare-device-manager.kube-system.svc:9797", "-v=4"]

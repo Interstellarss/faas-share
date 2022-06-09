@@ -6,7 +6,7 @@ ENV GOLANG_VERSION 1.13.5
 ENV GOPATH /go
 ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
 
-WORKDIR /go/src/kubeshare
+WORKDIR /go/src/github.com/Interstellarss/faas-share
 
 COPY . .
 

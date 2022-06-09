@@ -4,7 +4,7 @@ FROM nvidia/cuda:10.0-devel AS build
 
 WORKDIR /tmp/build
 
-COPY . kubeshare
+COPY . faas-share
 
 RUN apt update && \
     apt install -y git && \

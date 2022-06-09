@@ -43,7 +43,7 @@ jobs:
             GIT_COMMIT=dev-${{env.GIT_COMMIT}}
             VERSION=dev-${{env.GIT_COMMIT}}
           tags: |
-            ghcr.io/${{ steps.get_repo_owner.outputs.repo_owner }}/faas-netes:${{ github.sha }}
+            ghcr.io/${{ steps.get_repo_owner.outputs.repo_owner }}/faas-share:${{ github.sha }}
 
       - name: Build multi-arch containers for validation only
         uses: docker/build-push-action@v2
@@ -56,7 +56,7 @@ jobs:
             GIT_COMMIT=dev-${{env.GIT_COMMIT}}
             VERSION=dev-${{env.GIT_COMMIT}}
           tags: |
-            ghcr.io/${{ steps.get_repo_owner.outputs.repo_owner }}/faas-netes:${{ github.sha }}
+            ghcr.io/${{ steps.get_repo_owner.outputs.repo_owner }}/faas-share:${{ github.sha }}
  # Todo - load the image into Kind before running tests
  # otherwise, this just tests the chart with images that
  # have already been built and pushed in an earlier job
