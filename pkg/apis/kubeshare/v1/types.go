@@ -62,12 +62,18 @@ type SharePod struct {
 	Spec corev1.PodSpec `json:"spec,omitempty"`
 }
 
+type PodM struct {
+	PodStatus     *corev1.PodStatus
+	PodObjectMeta *metav1.ObjectMeta
+}
+
 type SharePodStatus struct {
 	/*PodPhase          corev1.PodPhase
 	ConfigFilePhase   ConfigFilePhase
 	BoundDeviceID     string
 	StartTime         *metav1.Time
 	ContainerStatuses []corev1.ContainerStatus*/
+	podlists       map[string]*corev1.Pod
 	PodStatus      *corev1.PodStatus
 	PodObjectMeta  *metav1.ObjectMeta
 	BoundDeviceID  string
