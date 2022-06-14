@@ -2,7 +2,6 @@ package controller
 
 import (
 	"encoding/json"
-	"fmt"
 
 	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
 	"github.com/google/go-cmp/cmp"
@@ -17,8 +16,8 @@ import (
 const (
 	annotationFunctionSpec = "faas-sahre.sharepod.spec"
 
-	KubeShareLibraryPath = "/faas-share/library"
-	PodManagerPosrtStart = 50050
+	//KubeShareLibraryPath = "/faas-share/library"
+	//PodManagerPosrtStart = 50050
 )
 
 // newDeployment creates a new Deployment for a Function resource. It also sets
@@ -57,47 +56,12 @@ func newDeployment(
 
 	for i := range containerSpec {
 		c := &containerSpec[i]
-		c.Env = append(c.Env,
-			corev1.EnvVar{
-				Name:  "NVIDIA_VISIBLE_DEVICES",
-				Value: sharepod.Status.BoundDeviceID,
-			},
-			corev1.EnvVar{
-				Name:  "NVIDIA_DRIVER_CAPABILITIES",
-				Value: "compute,utility",
-			},
-			corev1.EnvVar{
-				Name:  "LD_PRELOAD",
-				Value: KubeShareLibraryPath + "/libgemhook.so.1",
-			},
-			corev1.EnvVar{
-				Name:  "POD_NAME",
-				Value: fmt.Sprintf("%s/%s", sharepod.ObjectMeta.Namespace, sharepod.ObjectMeta.Name),
-			},
-		)
-		c.VolumeMounts = append(c.VolumeMounts,
-			corev1.VolumeMount{
-				Name:      "kubeshare-lib",
-				MountPath: KubeShareLibraryPath,
-			},
-		)
 		c.LivenessProbe = probes.Liveness
 		c.ReadinessProbe = probes.Readiness
 		c.SecurityContext = &corev1.SecurityContext{
 			AllowPrivilegeEscalation: &allowPrivilegeEscalation,
 		}
 	}
-
-	specCopy.Volumes = append(specCopy.Volumes,
-		corev1.Volume{
-			Name: "kubeshare-lib",
-			VolumeSource: corev1.VolumeSource{
-				HostPath: &corev1.HostPathVolumeSource{
-					Path: KubeShareLibraryPath,
-				},
-			},
-		},
-	)
 
 	deploymentSpec := &appsv1.Deployment{
 		ObjectMeta: metav1.ObjectMeta{
@@ -137,23 +101,20 @@ func newDeployment(
 			RevisionHistoryLimit: int32p(5),
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
-					OwnerReferences: []metav1.OwnerReference{
-						*metav1.NewControllerRef(sharepod, schema.GroupVersionKind{
-							Group:   faasv1.SchemeGroupVersion.Group,
-							Version: faasv1.SchemeGroupVersion.Version,
-							Kind:    "SharePod",
-						}),
-					},
+					/*
+						OwnerReferences: []metav1.OwnerReference{
+							*metav1.NewControllerRef(sharepod, schema.GroupVersionKind{
+								Group:   faasv1.SchemeGroupVersion.Group,
+								Version: faasv1.SchemeGroupVersion.Version,
+								Kind:    "SharePod",
+							}),
+						},
+					*/
+					Namespace:   sharepod.Namespace,
 					Labels:      labels,
 					Annotations: annotations,
 				},
-				Spec: corev1.PodSpec{
-					//NodeSelector: nodeSelector,
-					Containers: containerSpec,
-					Volumes:    specCopy.Volumes,
-
-					//TODO here
-				},
+				Spec: *specCopy,
 			},
 		},
 	}

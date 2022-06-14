@@ -8,7 +8,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
-func scheduleSharePod(isGPUPod bool, gpu_request float64, gpu_mem int64, sharepod *kubesharev1.SharePod, nodeList []*corev1.Node, podList []*corev1.Pod, sharePodList []*kubesharev1.SharePod) (string, string) {
+func scheduleSharePod(isGPUPod bool, gpu_request float64, gpu_mem int64, gpupod *corev1.Pod, nodeList []*corev1.Node, podList []*corev1.Pod, sharePodList []*kubesharev1.SharePod) (string, string) {
 
 	// Implement custom scheduling algorithm and replace the function assignment
 	// Prototype: FUNC(bool, string, *kubesharev1.SharePod, NodeResources) (string, string, error)
@@ -16,12 +16,12 @@ func scheduleSharePod(isGPUPod bool, gpu_request float64, gpu_mem int64, sharepo
 
 	nodeResources := syncClusterResources(nodeList, podList, sharePodList)
 	for _, filter := range filters {
-		filter(nodeResources, sharepod)
+		filter(nodeResources, gpupod)
 	}
-	return ap(isGPUPod, gpu_request, gpu_mem, sharepod, nodeResources)
+	return ap(isGPUPod, gpu_request, gpu_mem, gpupod, nodeResources)
 }
 
-func ScheduleAlgorithmBestFit(isGPUPod bool, gpu_request float64, gpu_mem int64, sharepod *kubesharev1.SharePod, nodeResources NodeResources) (schedNodeName string, schedGPUID string) {
+func ScheduleAlgorithmBestFit(isGPUPod bool, gpu_request float64, gpu_mem int64, sharepod *corev1.Pod, nodeResources NodeResources) (schedNodeName string, schedGPUID string) {
 	type candidateNodeGPU struct {
 		NodeName string
 		GPUID    string

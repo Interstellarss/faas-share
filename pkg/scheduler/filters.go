@@ -1,16 +1,17 @@
 package scheduler
 
 import (
-	kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
+	//kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
+	corev1 "k8s.io/api/core/v1"
 )
 
-var filters = []func(NodeResources, *kubesharev1.SharePod){
+var filters = []func(NodeResources, *corev1.Pod){
 	GPUAffinityFilter,
 	GPUAntiAffinityFilter,
 	GPUExclusionFilter,
 }
 
-func GPUAffinityFilter(nodeResources NodeResources, sharepod *kubesharev1.SharePod) {
+func GPUAffinityFilter(nodeResources NodeResources, sharepod *corev1.Pod) {
 	affinityTag := ""
 	if val, ok := sharepod.ObjectMeta.Annotations[KubeShareScheduleAffinity]; ok {
 		affinityTag = val
@@ -33,7 +34,7 @@ func GPUAffinityFilter(nodeResources NodeResources, sharepod *kubesharev1.ShareP
 	}
 }
 
-func GPUExclusionFilter(nodeResources NodeResources, sharepod *kubesharev1.SharePod) {
+func GPUExclusionFilter(nodeResources NodeResources, sharepod *corev1.Pod) {
 	exclusionTag := ""
 	if val, ok := sharepod.ObjectMeta.Annotations[KubeShareScheduleExclusion]; ok {
 		exclusionTag = val
@@ -55,7 +56,7 @@ func GPUExclusionFilter(nodeResources NodeResources, sharepod *kubesharev1.Share
 	}
 }
 
-func GPUAntiAffinityFilter(nodeResources NodeResources, sharepod *kubesharev1.SharePod) {
+func GPUAntiAffinityFilter(nodeResources NodeResources, sharepod *corev1.Pod) {
 	antiAffinityTag := ""
 	if val, ok := sharepod.ObjectMeta.Annotations[KubeShareScheduleAntiAffinity]; ok {
 		antiAffinityTag = val
