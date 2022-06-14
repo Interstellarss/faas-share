@@ -73,6 +73,7 @@ type SharePodStatus struct {
 	BoundDeviceID     string
 	StartTime         *metav1.Time
 	ContainerStatuses []corev1.ContainerStatus*/
+	//TODO,: make bounddeviceids to store array of ids, and a map of replicateed pod to pod status
 	podlists       map[string]*corev1.Pod
 	PodStatus      *corev1.PodStatus
 	PodObjectMeta  *metav1.ObjectMeta
