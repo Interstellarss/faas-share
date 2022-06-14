@@ -291,6 +291,20 @@ func (c *Controller) syncHandler(key string) error {
 		return err
 	}
 
+	//move on if is owned by a sharepod
+	ownerRef := metav1.GetControllerOf(dep)
+	if ownerRef == nil {
+
+		return nil
+
+	} else if ownerRef != nil {
+		// If this object is not owned by a SharePod, we should not do anything more
+		// with it.
+		if ownerRef.Kind != "SharePod" {
+			return nil
+		}
+	}
+
 	sharepod, err := c.sharepodsLister.SharePods(namespace).Get(name)
 
 	if err != nil {

@@ -34,17 +34,17 @@ func newDeployment(
 	labels := makeLabels(sharepod)
 	//KubeShare does not support NodeSelector, so we dont need it here as well
 	//nodeSelector := makeNodeSelector(sharepod.)
-	probes, err := factory.MakeProbes(sharepod)
-	if err != nil {
-		glog.Warningf("Function %s probes parsing failed: %v",
-			sharepod.Name, err)
-	}
+	//probes, err := factory.MakeProbes(sharepod)
+	//if err != nil {
+	//	glog.Warningf("Function %s probes parsing failed: %v",
+	//		sharepod.Name, err)
+	//}
 
 	//resources, err := makeResources(sharepod)
-	if err != nil {
-		glog.Warningf("Function %s resources parsing failed: %v",
-			sharepod.Name, err)
-	}
+	//if err != nil {
+	//	glog.Warningf("Function %s resources parsing failed: %v",
+	//		sharepod.Name, err)
+	//}
 
 	annotations := makeAnnotations(sharepod)
 
@@ -56,8 +56,8 @@ func newDeployment(
 
 	for i := range containerSpec {
 		c := &containerSpec[i]
-		c.LivenessProbe = probes.Liveness
-		c.ReadinessProbe = probes.Readiness
+		//c.LivenessProbe = probes.Liveness
+		//c.ReadinessProbe = probes.Readiness
 		c.SecurityContext = &corev1.SecurityContext{
 			AllowPrivilegeEscalation: &allowPrivilegeEscalation,
 		}

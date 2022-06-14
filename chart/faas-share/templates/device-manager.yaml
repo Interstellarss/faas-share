@@ -84,7 +84,7 @@ spec:
   containers:
   - name: kubeshare-device-manager
     #image: ncy9371/kubeshare-device-manager:20200429135835
-    image: leslie233/kubeshare-device-manager:v0.1.18
+    image: leslie233/kubeshare-device-manager:latest
 ---
 
 apiVersion: apps/v1

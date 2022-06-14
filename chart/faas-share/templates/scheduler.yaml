@@ -65,5 +65,5 @@ spec:
   containers:
   - name: kubeshare-scheduler
     #image: ncy9371/kubeshare-scheduler:20200429135835
-    image: leslie233/kubeshare-scheduler:v0.1.18
+    image: leslie233/kubeshare-scheduler:latest
 {{- end }}
