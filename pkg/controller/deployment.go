@@ -246,3 +246,12 @@ func deploymentNeedsUpdate(sharepod *faasv1.SharePod, deployment *appsv1.Deploym
 func int32p(i int32) *int32 {
 	return &i
 }
+
+/*
+func (c *Controller) removeSharepodFromList(sharepod *faasv1.SharePod) {
+	namespace := sharepod.Namespace
+	name := sharepod.Name
+	//dep, err := c.deploymentsLister.Deployments(namespace).
+	//err := c.kubeclientset.AppsV1().Deployments(namespace).Delete(context.TODO() name)
+}
+*/

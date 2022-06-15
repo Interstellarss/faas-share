@@ -9,11 +9,13 @@ import (
 	"sync"
 	"time"
 
+	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/api/resource"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
+	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/klog"
 
 	kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
@@ -62,12 +64,12 @@ func (c *Controller) initNodesInfo() error {
 
 	dummyPodsLabel := labels.SelectorFromSet(labels.Set{kubesharev1.KubeShareRole: "dummyPod"})
 	if pods, err = c.podsLister.Pods("kube-system").List(dummyPodsLabel); err != nil {
-		errrr := fmt.Errorf("Error when list Pods: %s", err)
+		errrr := fmt.Errorf("error when list Pods: %s", err)
 		klog.Error(errrr)
 		return errrr
 	}
 	if sharepods, err = c.sharepodsLister.List(labels.Everything()); err != nil {
-		errrr := fmt.Errorf("Error when list SharePods: %s", err)
+		errrr := fmt.Errorf("error when list sharepods: %s", err)
 		klog.Error(errrr)
 		return errrr
 	}
@@ -403,7 +405,7 @@ func (c *Controller) getAndSetUUIDFromDummyPod(nodeName, GPUID, podName string, 
 	}
 
 	if !isFound {
-		err := fmt.Errorf("Cannot find UUID '%s' from dummy Pod: '%s' in UUID database.", uuid, podName)
+		err := fmt.Errorf("Cannot find UUID '%s' from dummy Pod: '%s' in UUID database. ", uuid, podName)
 		klog.Errorf(err.Error())
 		// possibly not print UUID yet, try again
 		time.Sleep(time.Second)
@@ -426,46 +428,64 @@ func (c *Controller) getAndSetUUIDFromDummyPod(nodeName, GPUID, podName string, 
 	return nil
 }
 
-func (c *Controller) removeSharePodFromList(sharepod *kubesharev1.SharePod) {
-	nodeName := sharepod.Spec.NodeName
-	GPUID := sharepod.Annotations[kubesharev1.KubeShareResourceGPUID]
-	key := fmt.Sprintf("%s/%s", sharepod.ObjectMeta.Namespace, sharepod.ObjectMeta.Name)
+func (c *Controller) removeSharePodDepFromList(sharepodDep *appsv1.Deployment) {
 
-	nodesInfoMux.Lock()
+	selector, err := metav1.LabelSelectorAsSelector(sharepodDep.Spec.Selector)
+	if err != nil {
+		//return err
+		utilruntime.HandleError(err)
+	}
 
-	if node, nodeOk := nodesInfo[nodeName]; nodeOk {
-		if gpu, gpuOk := node.GPUID2GPU[GPUID]; gpuOk {
-			podlist := gpu.PodList
-			for pod := podlist.Front(); pod != nil; pod = pod.Next() {
-				podRequest := pod.Value.(*PodRequest)
-				if podRequest.Key == key {
-					klog.Infof("Remove MtgpuPod %s from list, remaining %d MtgpuPod(s).", key, podlist.Len())
-					podlist.Remove(pod)
+	namepsace := sharepodDep.Namespace
 
-					uuid := gpu.UUID
-					remove := false
+	pods, err := c.podsLister.Pods(namepsace).List(selector)
 
-					if podlist.Len() == 0 {
-						delete(node.GPUID2GPU, GPUID)
-						remove = true
-					} else {
-						gpu.Usage -= podRequest.Request
-						gpu.Mem -= podRequest.Memory
-						syncConfig(nodeName, uuid, podlist)
+	if err != nil {
+		utilruntime.HandleError(err)
+	}
+
+	for _, pod := range pods {
+		nodeName := pod.Spec.NodeName
+		GPUID := pod.Annotations[kubesharev1.KubeShareResourceGPUID]
+		key := fmt.Sprintf("%s/%s", pod.ObjectMeta.Namespace, pod.ObjectMeta.Name)
+
+		nodesInfoMux.Lock()
+
+		if node, nodeOk := nodesInfo[nodeName]; nodeOk {
+			if gpu, gpuOk := node.GPUID2GPU[GPUID]; gpuOk {
+				podlist := gpu.PodList
+				for pod := podlist.Front(); pod != nil; pod = pod.Next() {
+					podRequest := pod.Value.(*PodRequest)
+					if podRequest.Key == key {
+						klog.Infof("Remove MtgpuPod %s from list, remaining %d MtgpuPod(s).", key, podlist.Len())
+						podlist.Remove(pod)
+
+						uuid := gpu.UUID
+						remove := false
+
+						if podlist.Len() == 0 {
+							delete(node.GPUID2GPU, GPUID)
+							remove = true
+						} else {
+							gpu.Usage -= podRequest.Request
+							gpu.Mem -= podRequest.Memory
+							syncConfig(nodeName, uuid, podlist)
+						}
+						node.PodManagerPortBitmap.Unmask(podRequest.PodManagerPort - PodManagerPortStart)
+
+						nodesInfoMux.Unlock()
+
+						if remove {
+							c.deleteDummyPod(nodeName, GPUID, uuid)
+						}
+						continue
 					}
-					node.PodManagerPortBitmap.Unmask(podRequest.PodManagerPort - PodManagerPortStart)
-
-					nodesInfoMux.Unlock()
-
-					if remove {
-						c.deleteDummyPod(nodeName, GPUID, uuid)
-					}
-					return
 				}
 			}
 		}
+		nodesInfoMux.Unlock()
 	}
-	nodesInfoMux.Unlock()
+
 }
 
 func (c *Controller) deleteDummyPod(nodeName, GPUID, uuid string) {

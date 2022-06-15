@@ -23,6 +23,8 @@ import (
 	"k8s.io/client-go/util/workqueue"
 	glog "k8s.io/klog"
 
+	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
+
 	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
 	clientset "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned"
 	faasscheme "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned/scheme"
@@ -120,7 +122,7 @@ func NewController(
 		UpdateFunc: func(old, new interface{}) {
 			controller.enqueueFunction(new)
 		},
-		//DeleteFunc: controller.handleDele,
+		DeleteFunc: controller.handleDeletedSharePod,
 	})
 
 	// Set up an event handler for when functions related resources like pods, deployments, replica sets
@@ -404,6 +406,27 @@ func (c *Controller) getSecrets(namespace string, secretNames []string) (map[str
 	return secrets, nil
 }
 */
+
+func (c *Controller) handleDeletedSharePod(obj interface{}) {
+	sharepod, ok := obj.(*faasv1.SharePod)
+
+	if !ok {
+		utilruntime.HandleError(fmt.Errorf("handleDeletedSharePod: cannot parse object"))
+		return
+	}
+
+	namespace := sharepod.Namespace
+
+	name := sharepod.Name
+
+	//go c.removeSharepodFromList(sharepod)
+	err := c.kubeclientset.AppsV1().Deployments(namespace).Delete(context.TODO(), name, metav1.DeleteOptions{})
+	if err != nil {
+		utilruntime.HandleError(fmt.Errorf("handleDeletedSharepod: error when deleting sharepod deployment"))
+	}
+	//
+	//c.kubeclientset.AppsV1().Deployments()
+}
 
 // getReplicas returns the desired number of replicas for a function taking into account
 // the min replicas label, HPA, the OF autoscaler and scaled to zero deployments

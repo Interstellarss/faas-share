@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	//appsv1 "k8s.io/api/apps/v1"
+	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -121,7 +121,7 @@ func NewController(
 		//UpdateFunc: func(old, new interface{}) {
 		///	controller.enqueueSharePod(new)
 		//},
-		DeleteFunc: controller.handleDeletedSharePod,
+		//DeleteFunc: controller.handleDeletedSharePod,
 	})
 
 	deploymentInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
@@ -130,6 +130,7 @@ func NewController(
 			controller.enqueueDeployment(new)
 		},
 		//delete func needed?
+		DeleteFunc: controller.handleDeletedSharePodDep,
 	})
 
 	// Set up an event handler for when Deployment resources change. This
@@ -305,7 +306,7 @@ func (c *Controller) syncHandler(key string) error {
 		}
 	}
 
-	sharepod, err := c.sharepodsLister.SharePods(namespace).Get(name)
+	//sharepod, err := c.sharepodsLister.SharePods(namespace).Get(name)
 
 	if err != nil {
 		if errors.IsNotFound(err) {
@@ -415,7 +416,7 @@ func (c *Controller) syncHandler(key string) error {
 
 		if (newpod.Spec.RestartPolicy == corev1.RestartPolicyNever && (newpod.Status.Phase == corev1.PodSucceeded || newpod.Status.Phase == corev1.PodFailed)) ||
 			(newpod.Spec.RestartPolicy == corev1.RestartPolicyOnFailure && newpod.Status.Phase == corev1.PodSucceeded) {
-			go c.removeSharePodFromList(sharepod)
+			go c.removeSharePodDepFromList(dep)
 		}
 		//pod.u
 
@@ -492,13 +493,13 @@ func (c *Controller) enqueueDeployment(obj interface{}) {
 	c.workqueue.Add(key)
 }
 
-func (c *Controller) handleDeletedSharePod(obj interface{}) {
-	sharepod, ok := obj.(*kubesharev1.SharePod)
+func (c *Controller) handleDeletedSharePodDep(obj interface{}) {
+	sharepodDep, ok := obj.(*appsv1.Deployment)
 	if !ok {
-		utilruntime.HandleError(fmt.Errorf("handleDeletedSharePod: cannot parse object"))
+		utilruntime.HandleError(fmt.Errorf("handleDeletedSharePodDep: cannot parse object"))
 		return
 	}
-	go c.removeSharePodFromList(sharepod)
+	go c.removeSharePodDepFromList(sharepodDep)
 }
 
 func (c *Controller) handleObject(obj interface{}) {
