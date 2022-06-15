@@ -30,7 +30,7 @@ func makeListHandler(defaultNamespace string,
 
 		lookupNamespace := defaultNamespace
 
-		if len(namespace) > 0 {
+		if len(namespace) > 0 && namespace != "faas-share" {
 			lookupNamespace = namespace
 		}
 
