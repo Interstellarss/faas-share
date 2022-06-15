@@ -6,8 +6,9 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # PARTICULAR PURPOSE.
 
 # This program built for i386-apple-darwin11.3.0
+ 
 
-# Make data base, printed on Tue Jun 14 20:25:20 2022
+# Make data base, printed on Wed Jun 15 16:58:49 2022
 
 # Variables
 
@@ -17,6 +18,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 ?F = $(notdir $?)
 # makefile (from `Makefile', line 14)
 SERVER = ghcr.io
+ 
 # environment
 VSCODE_LOG_NATIVE = false
 # makefile (from `Makefile', line 1)
@@ -40,19 +42,19 @@ _ = /usr/bin/make
 # environment
 TIGRESS_HOME = /Users/puxuan/downloads/tigress/3.1
 # makefile (from `Makefile', line 27)
-GIT_COMMIT := 575308b019c0a49ceb4dfdd5c36a7e4f9f5efb01
+GIT_COMMIT := 0c500427fcca0fa99eccd0e16f5e7e775245f340
 # makefile (from `Makefile', line 1)
 MAKEFILE_LIST :=  Makefile
 # environment
 VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
 # makefile (from `Makefile', line 26)
-VERSION := v0.1.18-dirty
+VERSION := v0.1.20-dirty
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
 __CFBundleIdentifier = com.microsoft.VSCode
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /var/folders/7m/b3h099s90tgbh61my4m6x9c80000gn/T/vscode-ipc-a8aaf100-4327-43fd-b96c-fa2e57b7d800.sock
+VSCODE_IPC_HOOK_EXTHOST = /var/folders/7m/b3h099s90tgbh61my4m6x9c80000gn/T/vscode-ipc-9dfe39aa-3531-4ccf-a5ba-16132aec1445.sock
 # environment
 VSCODE_CWD = /
 # environment
@@ -68,15 +70,13 @@ CODEGEN_VERSION :=
 # makefile (from `Makefile', line 22)
 GOPATH := /Users/puxuan/go
 # environment
-LaunchInstanceID = 55EF8776-596F-4445-AC7A-3B6FA747892E
-# environment
 VSCODE_LOG_STACK = false
 # environment
 ELECTRON_RUN_AS_NODE = 1
 # default
 .FEATURES := target-specific order-only second-expansion else-if archives jobserver check-symlink
 # makefile (from `Makefile', line 12)
-TAG = 0.1.18
+TAG = v0.1.20
 # environment
 SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.lEYH7JnHj5/Listeners
 # automatic
@@ -177,8 +177,6 @@ BIN_DIR = bin/
 LC_ALL = C
 # environment
 CONDA_PYTHON_EXE = /Users/puxuan/opt/anaconda3/bin/python
-# environment
-SECURITYSESSIONID = 18737
 # automatic
 ^F = $(notdir $^)
 # default
@@ -196,13 +194,13 @@ MAKELEVEL := 0
 # environment
 CONDA_PREFIX = /Users/puxuan/opt/anaconda3
 # environment
-VSCODE_PID = 23044
+VSCODE_PID = 30649
 # environment
 _CE_CONDA = 
 # environment
 LANG = C
 # variable set hash-table stats:
-# Load=95/1024=9%, Rehash=0, Collisions=6/149=4%
+# Load=93/1024=9%, Rehash=0, Collisions=6/147=4%
 
 # Pattern-specific Variable Values
 
@@ -274,7 +272,6 @@ stop-kind:
 #  Implicit rule search has not been done.
 #  Modification time never checked.
 #  File has not been updated.
- 
 #  commands to execute (from `Makefile', line 36):
 	@echo "(re)installing k8s.io/code-generator-${CODEGEN_VERSION}"
 	@cd $(TOOLS_DIR) && go mod download -modfile=code-generator.mod
@@ -297,8 +294,9 @@ push:
 
 # Not a target:
 Makefile:
+ 
 #  Implicit rule search has been done.
-#  Last modified 2022-06-14 10:43:07
+#  Last modified 2022-06-15 10:20:14
 #  File has been updated.
 #  Successfully updated.
 # variable set hash-table stats:
@@ -506,6 +504,6 @@ install:
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Tue Jun 14 20:25:20 2022
+# Finished Make data base on Wed Jun 15 16:58:49 2022
 
  

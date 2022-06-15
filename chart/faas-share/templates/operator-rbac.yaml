@@ -69,7 +69,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: {{ .Release.Name }}-operator-rw2
-  namespace: {{ .Release.Namespace | quote }}
+  namespace: "faas-share"
   labels:
     app: {{ template "openfaas.name" . }}
     chart: {{ .Chart.Name }}-{{ .Chart.Version }}
