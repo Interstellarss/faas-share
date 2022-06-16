@@ -127,7 +127,7 @@ spec:
           - name: liveness_probe_period_seconds
             value: "2"
           - name: cluster_role
-            value: "true"
+            value: "false"
         ports:
         - containerPort: 8081
           protocol: TCP
