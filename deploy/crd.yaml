@@ -1,10 +1,9 @@
-apiVersion: apiextensions.k8s.io/v1beta1
+apiVersion: apiextensions.k8s.io/v1
 kind: CustomResourceDefinition
 metadata:
     name: sharepods.kubeshare.nthu
 spec:
     group: kubeshare.nthu
-    version: v1
     scope: Namespaced
     names:
         plural: sharepods
@@ -12,3 +11,35 @@ spec:
         kind: SharePod
         shortNames:
         - shp
+    versions:    
+      - name: v1
+        served: true
+        storage: true
+        schema:
+          openAPIV3Schema:
+            description: Sharepods func describe an faas-share function
+            type: object
+            required:
+            - spec
+            - metadata
+            - kind
+            properties:
+              apiVersion:
+                type: string
+              kind:
+                description: 'Kind is a string value representing the REST resource this 
+                object represents. Servers may infer this from the endpoint the client 
+                submits requests to. Cannot be updated. In CamelCase. More info: 
+                https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+                type: string
+              metadata:
+                type: object
+              spec:
+                description: SharepodSpec is the spec for a Sharepod resource
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
+              status:
+                description: status of sharepod, need further updates
+                type: object
+                x-kubernetes-preserve-unknown-fields: true
+                
