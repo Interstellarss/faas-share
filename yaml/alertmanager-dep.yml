@@ -18,7 +18,7 @@ spec:
         app: alertmanager
       annotations:
         sidecar.istio.io/inject: "true"
-        checksum/alertmanager-config: "6d18b42b6e776079e3c74b616f3f233b42e3214837fbec48c66bbbc2a1696db2"
+        checksum/alertmanager-config: "1608705ce07a01cd5acd44033c8df1d457c56879b1e57b1d34b643ffec61cad3"
     spec:
       containers:
       - name: alertmanager
@@ -51,9 +51,6 @@ spec:
         - mountPath: /alertmanager.yml
           name: alertmanager-config
           subPath: alertmanager.yml
-        - name: auth
-          readOnly: true
-          mountPath: "/var/secrets"
       volumes:
         - name: alertmanager-config
           configMap:
@@ -62,6 +59,3 @@ spec:
               - key: alertmanager.yml
                 path: alertmanager.yml
                 mode: 0644
-        - name: auth
-          secret:
-            secretName: basic-auth

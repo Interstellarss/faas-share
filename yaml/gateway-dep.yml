@@ -24,9 +24,6 @@ spec:
       volumes:
       - name: faas-netes-temp-volume
         emptyDir: {}
-      - name: auth
-        secret:
-          secretName: basic-auth
       containers:
       - name: gateway
         resources:
@@ -66,14 +63,6 @@ spec:
           value: "4222"
         - name: faas_nats_channel
           value: "faas-request"
-        - name: basic_auth
-          value: "true"
-        - name: secret_mount_path
-          value: "/var/secrets"
-        - name: auth_proxy_url
-          value: "http://basic-auth-plugin.faas-share:8080/validate"
-        - name: auth_pass_body
-          value: "false"
         - name: scale_from_zero
           value: "true"
         - name: max_idle_conns
@@ -81,9 +70,6 @@ spec:
         - name: max_idle_conns_per_host
           value: "1024"
         volumeMounts:
-        - name: auth
-          readOnly: true
-          mountPath: "/var/secrets"
         ports:
         - name: http
           containerPort: 8080

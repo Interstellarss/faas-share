@@ -20,9 +20,6 @@ spec:
         app: queue-worker
     spec:
       volumes:
-      - name: auth
-        secret:
-          secretName: basic-auth
       containers:
       - name:  queue-worker
         resources:
@@ -61,11 +58,3 @@ spec:
           value: "false"
         - name: print_response_body
           value: "false"
-        - name: secret_mount_path
-          value: "/var/secrets/gateway"
-        - name: basic_auth
-          value: "true"
-        volumeMounts:
-        - name: auth
-          readOnly: true
-          mountPath: "/var/secrets/gateway"
