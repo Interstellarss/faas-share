@@ -247,8 +247,6 @@ spec:
           value: {{ $functionNs | quote }}
         - name: read_timeout
           value: "{{ .Values.faasshare.readTimeout }}"
-        - name: profiles_namespace
-          value: {{ .Release.Namespace | quote }}
         - name: write_timeout
           value: "{{ .Values.faasshare.writeTimeout }}"
         - name: image_pull_policy

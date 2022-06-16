@@ -45,9 +45,9 @@ func New(client clientset.Interface,
 	clusterRole bool,
 	cfg config.BootstrapConfig) *Server {
 
-	sharepodNamespace := "faas-share"
+	sharepodNamespace := "faas-share-fn"
 
-	if namespace, exists := os.LookupEnv("sharepod_namspace"); exists {
+	if namespace, exists := os.LookupEnv("function_namspace"); exists {
 		sharepodNamespace = namespace
 	}
 

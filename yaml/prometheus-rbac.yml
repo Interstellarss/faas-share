@@ -9,10 +9,9 @@ metadata:
     component: prometheus
 ---
 apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
+kind: ClusterRole
 metadata:
   name: faas-share-prometheus
-  namespace: "faas-share"
   labels:
     app: faas-share
     component: prometheus
@@ -22,53 +21,25 @@ rules:
     - services
     - endpoints
     - pods
+    - nodes
+    - nodes/proxy
   verbs: ["get", "list", "watch"]
+- nonResourceURLs: ["/metrics"]
+  verbs: ["get"]
 ---
-apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
-metadata:
-  name: faas-share-prometheus-fn
-  namespace: "faas-share-fn"
-  labels:
-    app: faas-share
-    component: prometheus
-rules:
-- apiGroups: [""]
-  resources:
-    - services
-    - endpoints
-    - pods
-  verbs: ["get", "list", "watch"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: faas-share-prometheus
-  namespace: "faas-share"
-  labels:
-    app: faas-share
-    component: prometheus
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: faas-share-prometheus
-subjects:
-- kind: ServiceAccount
-  name: faas-share-prometheus
-  namespace: "faas-share"
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
-metadata:
-  name: faas-share-prometheus-fn
   namespace: "faas-share-fn"
   labels:
     app: faas-share
     component: prometheus
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: faas-share-prometheus-fn
+  kind: ClusterRole
+  name: faas-share-prometheus
 subjects:
 - kind: ServiceAccount
   name: faas-share-prometheus

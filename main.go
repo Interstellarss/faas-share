@@ -87,7 +87,8 @@ func main() {
 	deployConfig := k8s.DeploymentConfig{
 		RuntimeHTTPPort: 8080,
 		HTTPProbe:       config.HTTPProbe,
-		SetNonRootUser:  config.SetNonRootUser,
+
+		//SetNonRootUser:  config.SetNonRootUser,
 		ReadinessProbe: &k8s.ProbeConfig{
 			InitialDelaySeconds: int32(config.ReadinessProbeInitialDelaySeconds),
 			TimeoutSeconds:      int32(config.ReadinessProbeTimeoutSeconds),
