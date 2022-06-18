@@ -240,6 +240,8 @@ func deploymentNeedsUpdate(sharepod *faasv1.SharePod, deployment *appsv1.Deploym
 		glog.V(3).Infof("No changes detected for %s", sharepod.Name)
 	}
 
+	//TODo check replicas:
+
 	return false
 }
 

@@ -151,6 +151,7 @@ func NewController(
 			}
 			controller.handleObject(new)
 		},
+		//TODO release pod when scale down?
 		DeleteFunc: controller.handleObject,
 	})
 

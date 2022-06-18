@@ -20,6 +20,7 @@ import (
 
 	ofv1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
 
+	"k8s.io/client-go/kubernetes"
 	v1 "k8s.io/client-go/listers/apps/v1"
 )
 
@@ -85,10 +86,10 @@ func getReplicas(sharepodName string, namespace string, lister v1.DeploymentList
 	return desiredReplicas, availableReplicas, nil
 }
 
-func makeReplicaHandler(defaultNamespace string, shareclientset clientset.Interface) http.HandlerFunc {
+func makeReplicaHandler(defaultNamespace string, kube kubernetes.Interface) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
-		sharepodName := vars["name"]
+		shrDepName := vars["name"]
 
 		q := r.URL.Query()
 		namespace := q.Get("namespace")
@@ -111,7 +112,7 @@ func makeReplicaHandler(defaultNamespace string, shareclientset clientset.Interf
 			bytesIn, _ := ioutil.ReadAll(r.Body)
 
 			if err := json.Unmarshal(bytesIn, &req); err != nil {
-				klog.Errorf("Function %s replica invalid JSON: %v", sharepodName, err)
+				klog.Errorf("Function %s replica invalid JSON: %v", shrDepName, err)
 				w.WriteHeader(http.StatusBadRequest)
 				w.Write([]byte(err.Error()))
 				return
@@ -120,25 +121,25 @@ func makeReplicaHandler(defaultNamespace string, shareclientset clientset.Interf
 
 		opts := metav1.GetOptions{}
 
-		shr, err := shareclientset.KubeshareV1().SharePods(lookupNamespace).Get(r.Context(), sharepodName, opts)
+		shrdep, err := kube.AppsV1().Deployments(lookupNamespace).Get(r.Context(), shrDepName, opts)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(err.Error()))
-			klog.Errorf("Sharepod %s get error: %v", sharepodName, err)
+			klog.Errorf("Sharepod %s get error: %v", shrDepName, err)
 			return
 		}
 
-		shr.Status.Replicas = uint64(req.Replicas)
+		shrdep.Spec.Replicas = int32p(int32(req.Replicas))
 
-		_, err = shareclientset.KubeshareV1().SharePods(lookupNamespace).Update(r.Context(), shr, metav1.UpdateOptions{})
+		_, err = kube.AppsV1().Deployments(lookupNamespace).Update(r.Context(), shrdep, metav1.UpdateOptions{})
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
 			w.Write([]byte(err.Error()))
-			klog.Errorf("Sharepod %s update error %v", sharepodName, err)
+			klog.Errorf("Sharepod %s update error %v", shrDepName, err)
 			return
 		}
 
-		klog.Infof("Sharepod %s replica updated to %v", sharepodName, req.Replicas)
+		klog.Infof("Sharepod %s replica updated to %v", shrDepName, req.Replicas)
 		w.WriteHeader(http.StatusAccepted)
 	}
 }

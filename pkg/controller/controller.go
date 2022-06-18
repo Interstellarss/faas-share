@@ -478,11 +478,11 @@ func getReplicas(sharepod *faasv1.SharePod, deployment *appsv1.Deployment) *int3
 		}
 	}
 
-	minrep := *minReplicas
+	//minrep := *minReplicas
 
-	minrep = minrep - 1
+	//minrep = minrep - 1
 
-	minReplicas = &minrep
+	//minReplicas = &minrep
 
 	return minReplicas
 }
