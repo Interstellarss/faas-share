@@ -3,6 +3,7 @@ package scheduler
 import (
 	"container/list"
 	"context"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"sync"
@@ -12,7 +13,6 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
-	"sigs.k8s.io/yaml"
 
 	// metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -309,12 +309,12 @@ func (c *Controller) bindSharePodToNode(gpupod *corev1.Pod, schedNode, schedGPUI
 		"spec":     map[string]string{"NodeName": schedNode},
 	}
 
-	patchBytes, error := yaml.Marshal(patchData)
+	patchBytes, error := json.Marshal(patchData)
 	if error != nil {
 		utilruntime.HandleError(error)
 	}
 	//_, err := c.kubeclientset.CoreV1().Pods(gpupodCopy.Namespace).Update(context.TODO(), gpupodCopy, metav1.UpdateOptions{})
-	newPod, err := c.kubeclientset.CoreV1().Pods(gpupodCopy.Namespace).Patch(context.TODO(), gpupodCopy.Name, types.ApplyPatchType, patchBytes, metav1.PatchOptions{})
+	newPod, err := c.kubeclientset.CoreV1().Pods(gpupodCopy.Namespace).Patch(context.TODO(), gpupodCopy.Name, types.MergePatchType, patchBytes, metav1.PatchOptions{})
 
 	gpupodCopy2 := newPod.DeepCopy()
 

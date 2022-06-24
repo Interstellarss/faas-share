@@ -2,12 +2,12 @@ package devicemanager
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
 	"time"
 
-	"gopkg.in/yaml.v2"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -421,11 +421,11 @@ func (c *Controller) syncHandler(key string) error {
 			//c.kubeclientset.CoreV1().Pods(namespace).
 			//newpod, err = c.kubeclientset.CoreV1().Pods(namespace).Update(context.TODO(), newPod(pod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid), metav1.UpdateOptions{})
 			patchData := patchSharepod(pod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid)
-			patchBytes, err := yaml.Marshal(patchData)
+			patchBytes, err := json.Marshal(patchData)
 			if err != nil {
 				utilruntime.HandleError(err)
 			}
-			newpod, err = c.kubeclientset.CoreV1().Pods(namespace).Patch(context.TODO(), pod.Name, types.ApplyPatchType, patchBytes, metav1.PatchOptions{})
+			newpod, err = c.kubeclientset.CoreV1().Pods(namespace).Patch(context.TODO(), pod.Name, types.MergePatchType, patchBytes, metav1.PatchOptions{})
 
 			if err != nil {
 				utilruntime.HandleError(err)
