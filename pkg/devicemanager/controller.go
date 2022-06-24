@@ -7,10 +7,12 @@ import (
 	"strings"
 	"time"
 
+	"gopkg.in/yaml.v2"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 
 	// "k8s.io/apimachinery/pkg/labels"
 
@@ -417,7 +419,19 @@ func (c *Controller) syncHandler(key string) error {
 			//newpod2, err = c.kubeclientset.CoreV1().Pods(namespace).Patch()
 			//TODO: perhaps change to patch?
 			//c.kubeclientset.CoreV1().Pods(namespace).
-			newpod, err = c.kubeclientset.CoreV1().Pods(namespace).Update(context.TODO(), newPod(pod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid), metav1.UpdateOptions{})
+			//newpod, err = c.kubeclientset.CoreV1().Pods(namespace).Update(context.TODO(), newPod(pod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid), metav1.UpdateOptions{})
+			patchData := patchSharepod(pod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid)
+			patchBytes, err := yaml.Marshal(patchData)
+			if err != nil {
+				utilruntime.HandleError(err)
+			}
+			newpod, err = c.kubeclientset.CoreV1().Pods(namespace).Patch(context.TODO(), pod.Name, types.ApplyPatchType, patchBytes, metav1.PatchOptions{})
+
+			if err != nil {
+				utilruntime.HandleError(err)
+			}
+
+			klog.Warningf("patched pod %s with Env %s", newpod.Name, &newpod.Spec.Containers[0].Env[0])
 		}
 
 		if err != nil {
@@ -661,4 +675,61 @@ func newPod(oldpod *corev1.Pod, isGPUPod bool, podManagerIP string, podManagerPo
 		},
 		Spec: *specCopy,
 	}
+}
+
+func patchSharepod(oldpod *corev1.Pod, isGPUPod bool, podManagerIP string, podManagerPort int, boundDeviceId string) map[string]interface{} {
+	specCopy := oldpod.Spec.DeepCopy()
+	//labelCopy := make(map[string]string, len(oldpod.ObjectMeta.Labels))
+	cData := map[string]interface{}{}
+	newEnvVar := []corev1.EnvVar{}
+
+	newEnvVar = append(newEnvVar,
+		corev1.EnvVar{
+			Name:  "NVIDIA_VISIBLE_DEVICES",
+			Value: boundDeviceId,
+		},
+		corev1.EnvVar{
+			Name:  "NVIDIA_DRIVER_CAPABILITIES",
+			Value: "compute,utility",
+		},
+		corev1.EnvVar{
+			Name:  "LD_PRELOAD",
+			Value: KubeShareLibraryPath + "/libgemhook.so.1",
+		},
+		corev1.EnvVar{
+			Name:  "POD_MANAGER_IP",
+			Value: podManagerIP,
+		},
+		corev1.EnvVar{
+			Name:  "POD_MANAGER_PORT",
+			Value: fmt.Sprintf("%d", podManagerPort),
+		},
+		corev1.EnvVar{
+			Name:  "POD_NAME",
+			Value: fmt.Sprintf("%s/%s", oldpod.ObjectMeta.Namespace, oldpod.ObjectMeta.Name),
+		})
+
+	for _, c := range specCopy.Containers {
+		cData[c.Name] = map[string]interface{}{
+			"env": newEnvVar,
+			"volumeMounts": corev1.VolumeMount{
+				Name:      "kubeshare-lib",
+				MountPath: KubeShareLibraryPath,
+			},
+		}
+	}
+
+	patchData := map[string]interface{}{
+		"containers": cData,
+		"volumes": corev1.Volume{
+			Name: "kubeshare-lib",
+			VolumeSource: corev1.VolumeSource{
+				HostPath: &corev1.HostPathVolumeSource{
+					Path: KubeShareLibraryPath,
+				},
+			},
+		},
+	}
+
+	return patchData
 }
