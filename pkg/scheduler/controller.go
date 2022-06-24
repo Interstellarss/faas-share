@@ -11,6 +11,8 @@ import (
 	//appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/types"
+	"sigs.k8s.io/yaml"
 
 	// metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -204,10 +206,14 @@ func (c *Controller) syncHandler(key string) error {
 	gpupod, err := c.podsLister.Pods(namespace).Get(name)
 	if err != nil {
 		if errors.IsNotFound(err) {
-			utilruntime.HandleError(fmt.Errorf("Pod of a SharePod '%s' in work queue no longer exists", key))
+			utilruntime.HandleError(fmt.Errorf("Pod '%s' in work queue no longer exists", key))
 			return nil
 		}
 		return err
+	}
+
+	if gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPURequest] == "" {
+		return nil
 	}
 
 	if gpupod.Spec.NodeName != "" {
@@ -270,7 +276,8 @@ func (c *Controller) syncHandler(key string) error {
 	}
 
 	//update pod
-
+	now := time.Now()
+	klog.Infof("Starting scheduling Sharepod %s at %s", name, now.String())
 	klog.Infof("SharePod '%s' had been scheduled to node '%s' GPUID '%s'.", key, schedNode, schedGPUID)
 
 	if err := c.bindSharePodToNode(gpupod, schedNode, schedGPUID); err != nil {
@@ -283,18 +290,35 @@ func (c *Controller) syncHandler(key string) error {
 
 func (c *Controller) bindSharePodToNode(gpupod *corev1.Pod, schedNode, schedGPUID string) error {
 	gpupodCopy := gpupod.DeepCopy()
-	gpupodCopy.Spec.NodeName = schedNode
-	if schedGPUID != "" {
-		if gpupodCopy.ObjectMeta.Annotations != nil {
-			gpupodCopy.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUID] = schedGPUID
-		} else {
-			gpupodCopy.ObjectMeta.Annotations = map[string]string{kubesharev1.KubeShareResourceGPUID: schedGPUID}
+	//gpupodCopy.Spec.NodeName = schedNode
+	/*
+		if schedGPUID != "" {
+			if gpupodCopy.ObjectMeta.Annotations != nil {
+				gpupodCopy.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUID] = schedGPUID
+			} else {
+				gpupodCopy.ObjectMeta.Annotations = map[string]string{kubesharev1.KubeShareResourceGPUID: schedGPUID}
+			}
 		}
-	}
+	*/
 
 	//_, err := c.kubeshareclientset.KubeshareV1().SharePods(gpupodCopy.Namespace).Update(context.TODO(), gpupodCopy, metav1.UpdateOptions{})
 	//may also update sharepod status?
-	_, err := c.kubeclientset.CoreV1().Pods(gpupodCopy.Namespace).Update(context.TODO(), gpupodCopy, metav1.UpdateOptions{})
+	//
+	patchData := map[string]interface{}{
+		"ObjectMeta": map[string]map[string]string{"Annotations": {kubesharev1.KubeShareResourceGPUID: schedGPUID}},
+		"Spec":       map[string]string{"NodeName": schedNode},
+	}
+
+	patchBytes, error := yaml.Marshal(patchData)
+	if error != nil {
+		utilruntime.HandleError(error)
+	}
+	//_, err := c.kubeclientset.CoreV1().Pods(gpupodCopy.Namespace).Update(context.TODO(), gpupodCopy, metav1.UpdateOptions{})
+	newPod, err := c.kubeclientset.CoreV1().Pods(gpupodCopy.Namespace).Patch(context.TODO(), gpupodCopy.Name, types.ApplyPatchType, patchBytes, metav1.PatchOptions{})
+
+	gpupodCopy2 := newPod.DeepCopy()
+
+	klog.Infof("Checking patched pod %s, with GPUID %s, and schedNode %s", gpupodCopy2.Name, gpupodCopy2.Annotations[kubesharev1.KubeShareResourceGPUID], gpupodCopy2.Spec.NodeName)
 
 	return err
 }

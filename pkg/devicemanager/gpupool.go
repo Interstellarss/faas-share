@@ -58,6 +58,7 @@ var (
 )
 
 func (c *Controller) initNodesInfo() error {
+	//TODO: need new InitnodeInfo for faas-share that go through
 	var pods []*corev1.Pod
 	var sharepods []*kubesharev1.SharePod
 	var err error

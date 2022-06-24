@@ -356,25 +356,29 @@ func (c *Controller) syncHandler(key string) error {
 			if err != nil || gpu_limit > 1.0 || gpu_limit < 0.0 {
 				utilruntime.HandleError(fmt.Errorf("SharePod %s/%s gpu_limit value error: %s", pod.ObjectMeta.Namespace, pod.ObjectMeta.Name, kubesharev1.KubeShareResourceGPULimit))
 				c.recorder.Event(pod, corev1.EventTypeWarning, ErrValueError, "Value error: "+kubesharev1.KubeShareResourceGPULimit)
-				return nil
+				//return nil
+				continue
 			}
 			gpu_request, err = strconv.ParseFloat(pod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPURequest], 64)
 			if err != nil || gpu_request > gpu_limit || gpu_request < 0.0 {
 				utilruntime.HandleError(fmt.Errorf("SharePod %s/%s gpu_request value error: %s", pod.ObjectMeta.Namespace, pod.ObjectMeta.Name, kubesharev1.KubeShareResourceGPURequest))
 				c.recorder.Event(pod, corev1.EventTypeWarning, ErrValueError, "Value error: "+kubesharev1.KubeShareResourceGPURequest)
-				return nil
+				//return nil
+				continue
 			}
 			gpu_mem, err = strconv.ParseInt(pod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUMemory], 10, 64)
 			if err != nil || gpu_mem < 0 {
 				utilruntime.HandleError(fmt.Errorf("SharePod %s/%s gpu_mem value error: %s", pod.ObjectMeta.Namespace, pod.ObjectMeta.Name, kubesharev1.KubeShareResourceGPUMemory))
 				c.recorder.Event(pod, corev1.EventTypeWarning, ErrValueError, "Value error: "+kubesharev1.KubeShareResourceGPUMemory)
-				return nil
+				//return nil
+				continue
 			}
 			GPUID = pod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUID]
 			if len(GPUID) == 0 {
 				utilruntime.HandleError(fmt.Errorf("SharePod %s/%s GPUID value error: %s", pod.ObjectMeta.Namespace, pod.ObjectMeta.Name, kubesharev1.KubeShareResourceGPUID))
 				c.recorder.Event(pod, corev1.EventTypeWarning, ErrValueError, "Value error: "+kubesharev1.KubeShareResourceGPUID)
-				return nil
+				//return nil
+				continue
 			}
 			isGPUPod = true
 		}
@@ -388,7 +392,8 @@ func (c *Controller) syncHandler(key string) error {
 				klog.Infof("SharePod %s is bound to GPU uuid: %s", key, physicalGPUuuid)
 			case 1:
 				klog.Infof("SharePod %s/%s is waiting for dummy Pod", pod.ObjectMeta.Namespace, pod.ObjectMeta.Name)
-				return nil
+				//return nil
+				continue
 			case 2:
 				err := fmt.Errorf("Resource exceed!")
 				utilruntime.HandleError(err)
@@ -401,13 +406,17 @@ func (c *Controller) syncHandler(key string) error {
 			default:
 				utilruntime.HandleError(fmt.Errorf("Unknown Error"))
 				c.recorder.Event(pod, corev1.EventTypeWarning, ErrValueError, "Unknown Error")
-				return nil
+				//return nil
+				continue
 			}
 			//sharepod.Status.BoundDeviceID = physicalGPUuuid
 		}
 
 		var newpod *corev1.Pod
 		if n, ok := nodesInfo[pod.Spec.NodeName]; ok {
+			//newpod2, err = c.kubeclientset.CoreV1().Pods(namespace).Patch()
+			//TODO: perhaps change to patch?
+			//c.kubeclientset.CoreV1().Pods(namespace).
 			newpod, err = c.kubeclientset.CoreV1().Pods(namespace).Update(context.TODO(), newPod(pod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid), metav1.UpdateOptions{})
 		}
 
