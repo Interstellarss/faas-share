@@ -305,8 +305,8 @@ func (c *Controller) bindSharePodToNode(gpupod *corev1.Pod, schedNode, schedGPUI
 	//may also update sharepod status?
 	//
 	patchData := map[string]interface{}{
-		"metadata": map[string]map[string]string{"Annotations": {kubesharev1.KubeShareResourceGPUID: schedGPUID}},
-		"spec":     map[string]string{"NodeName": schedNode},
+		"metadata": map[string]map[string]string{"annotations": {kubesharev1.KubeShareResourceGPUID: schedGPUID}},
+		"spec":     map[string]string{"nodeName": schedNode},
 	}
 
 	patchBytes, error := json.Marshal(patchData)
