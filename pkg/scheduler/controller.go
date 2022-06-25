@@ -288,6 +288,12 @@ func (c *Controller) syncHandler(key string) error {
 	return nil
 }
 
+type patchStringValue struct {
+	Op    string `json:"op"`
+	Path  string `json:"path"`
+	Value string `json:"value"`
+}
+
 func (c *Controller) bindSharePodToNode(gpupod *corev1.Pod, schedNode, schedGPUID string) error {
 	gpupodCopy := gpupod.DeepCopy()
 	//gpupodCopy.Spec.NodeName = schedNode
@@ -304,9 +310,24 @@ func (c *Controller) bindSharePodToNode(gpupod *corev1.Pod, schedNode, schedGPUI
 	//_, err := c.kubeshareclientset.KubeshareV1().SharePods(gpupodCopy.Namespace).Update(context.TODO(), gpupodCopy, metav1.UpdateOptions{})
 	//may also update sharepod status?
 	//
-	patchData := map[string]interface{}{
-		"metadata": map[string]map[string]string{"annotations": {kubesharev1.KubeShareResourceGPUID: schedGPUID}},
-		"spec":     map[string]string{"nodeName": schedNode},
+	/*
+		patchData := map[string]interface{}{
+			"metadata": map[string]map[string]string{"annotations": {kubesharev1.KubeShareResourceGPUID: schedGPUID}},
+			"spec":     map[string]string{"nodeName": schedNode},
+		}
+	*/
+
+	patchData := []patchStringValue{
+		{
+			Op:    "add",
+			Path:  "/metadata/annotations/" + kubesharev1.KubeShareResourceGPUID,
+			Value: schedGPUID,
+		},
+		{
+			Op:    "replace",
+			Path:  "/spec/nodename",
+			Value: schedNode,
+		},
 	}
 
 	patchBytes, error := json.Marshal(patchData)
