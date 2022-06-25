@@ -313,8 +313,9 @@ func (c *Controller) bindSharePodToNode(gpupod *corev1.Pod, schedNode, schedGPUI
 	if error != nil {
 		utilruntime.HandleError(error)
 	}
+	force := true
 	//_, err := c.kubeclientset.CoreV1().Pods(gpupodCopy.Namespace).Update(context.TODO(), gpupodCopy, metav1.UpdateOptions{})
-	newPod, err := c.kubeclientset.CoreV1().Pods(gpupodCopy.Namespace).Patch(context.TODO(), gpupodCopy.Name, types.MergePatchType, patchBytes, metav1.PatchOptions{})
+	newPod, err := c.kubeclientset.CoreV1().Pods(gpupodCopy.Namespace).Patch(context.TODO(), gpupodCopy.Name, types.JSONPatchType, patchBytes, metav1.PatchOptions{Force: &force})
 
 	gpupodCopy2 := newPod.DeepCopy()
 
