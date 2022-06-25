@@ -1,0 +1,18 @@
+apiVersion: kubeshare.nthu/v1
+kind: SharePod
+metadata:
+  name: mibilenet
+  namespace: faas-share-fn
+  labels:
+    "com.openfaas.scale.min": "1"
+    "com.openfaas.scale.max": "5"
+  annotations:
+    "kubeshare/gpu_request": "0.1"
+    "kubeshare/gpu_limit": "0.2"
+    "kubeshare/gpu_mem": "3145728000"
+spec:
+  terminationGracePeriodSeconds: 1
+  containers:
+  - name: mobilenet-test
+    image: leslie233/mobilenet-2:index
+    command: ["sh", "-c", "fwatchdog"]
