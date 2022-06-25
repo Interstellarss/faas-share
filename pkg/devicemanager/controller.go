@@ -444,7 +444,7 @@ func (c *Controller) syncHandler(key string) error {
 		}
 		//pod.u
 
-		c.recorder.Event(pod, corev1.EventTypeNormal, SuccessSynced, MessageResourceSynced)
+		c.recorder.Event(newpod, corev1.EventTypeNormal, SuccessSynced, MessageResourceSynced)
 	}
 
 	//c.recorder.Event(pods, corev1.EventTypeNormal, SuccessSynced, MessageResourceSynced)
