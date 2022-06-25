@@ -288,10 +288,10 @@ func (c *Controller) syncHandler(key string) error {
 	return nil
 }
 
-type patchStringValue struct {
-	Op    string `json:"op"`
-	Path  string `json:"path"`
-	Value string `json:"value"`
+type patchValue struct {
+	Op    string      `json:"op"`
+	Path  string      `json:"path"`
+	Value interface{} `json:"value"`
 }
 
 func (c *Controller) bindSharePodToNode(gpupod *corev1.Pod, schedNode, schedGPUID string) error {
@@ -317,15 +317,15 @@ func (c *Controller) bindSharePodToNode(gpupod *corev1.Pod, schedNode, schedGPUI
 		}
 	*/
 
-	patchData := []patchStringValue{
+	patchData := []patchValue{
 		{
 			Op:    "add",
-			Path:  "/metadata/annotations/" + kubesharev1.KubeShareResourceGPUID,
-			Value: schedGPUID,
+			Path:  "/metadata/annotations",
+			Value: map[string]string{"kubeshare/GPUID": schedGPUID},
 		},
 		{
 			Op:    "replace",
-			Path:  "/spec/nodename",
+			Path:  "/spec/nodeName",
 			Value: schedNode,
 		},
 	}
