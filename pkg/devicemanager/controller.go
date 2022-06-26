@@ -415,19 +415,21 @@ func (c *Controller) syncHandler(key string) error {
 				utilruntime.HandleError(fmt.Errorf("Unknown Error"))
 				c.recorder.Event(pod, corev1.EventTypeWarning, ErrValueError, "Unknown Error")
 				//return nil
-				continue
+				//continue
 			}
 			//sharepod.Status.BoundDeviceID = physicalGPUuuid
 		}
 
-		var newpod *corev1.Pod
+		//var newpod *corev1.Pod
 		if n, ok := nodesInfo[pod.Spec.NodeName]; ok {
 			//newpod2, err = c.kubeclientset.CoreV1().Pods(namespace).Patch()
 			//TODO: perhaps change to patch?
 			//c.kubeclientset.CoreV1().Pods(namespace).
 			//newpod, err = c.kubeclientset.CoreV1().Pods(namespace).Update(context.TODO(), newPod(pod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid), metav1.UpdateOptions{})
 			//patchData := patchSharepod(pod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid)
-			newpod = newPod(pod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid)
+			newpod := newPod(pod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid)
+
+			klog.Info("Testing log infor...")
 
 			patchData := []patchValue{
 				{
@@ -453,6 +455,7 @@ func (c *Controller) syncHandler(key string) error {
 			}
 
 			klog.Infof("Checking patched pod %s, with Volumes %s, and Container %s", newpod.Name, &newpod.Spec.Volumes[0], &newpod.Spec.Containers[0])
+			c.recorder.Event(newpod, corev1.EventTypeNormal, SuccessSynced, MessageResourceSynced)
 
 			//klog.Warningf("patched pod %s with Env %s", newpod.Name, &newpod.Spec.Containers[0].Env[0])
 		}
@@ -468,7 +471,6 @@ func (c *Controller) syncHandler(key string) error {
 		*/
 		//pod.u
 
-		c.recorder.Event(newpod, corev1.EventTypeNormal, SuccessSynced, MessageResourceSynced)
 	}
 
 	//c.recorder.Event(pods, corev1.EventTypeNormal, SuccessSynced, MessageResourceSynced)
