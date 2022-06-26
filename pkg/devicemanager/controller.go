@@ -261,6 +261,12 @@ func (c *Controller) processNextWorkItem() bool {
 	return true
 }
 
+type patchValue struct {
+	Op    string      `json:"op"`
+	Path  string      `json:"path"`
+	Value interface{} `json:"value"`
+}
+
 // syncHandler returns error when we want to re-process the key, otherwise returns nil
 func (c *Controller) syncHandler(key string) error {
 
@@ -420,12 +426,27 @@ func (c *Controller) syncHandler(key string) error {
 			//TODO: perhaps change to patch?
 			//c.kubeclientset.CoreV1().Pods(namespace).
 			//newpod, err = c.kubeclientset.CoreV1().Pods(namespace).Update(context.TODO(), newPod(pod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid), metav1.UpdateOptions{})
-			patchData := patchSharepod(pod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid)
+			//patchData := patchSharepod(pod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid)
+			newpod = newPod(pod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid)
+
+			patchData := []patchValue{
+				{
+					Op:    "replace",
+					Path:  "/spec/containers",
+					Value: newpod.Spec.Containers,
+				},
+				{
+					Op:    "replace",
+					Path:  "/spec/volumes",
+					Value: newpod.Spec.Volumes,
+				},
+			}
+
 			patchBytes, err := json.Marshal(patchData)
 			if err != nil {
 				utilruntime.HandleError(err)
 			}
-			newpod, err = c.kubeclientset.CoreV1().Pods(namespace).Patch(context.TODO(), pod.Name, types.MergePatchType, patchBytes, metav1.PatchOptions{})
+			newpod, err = c.kubeclientset.CoreV1().Pods(namespace).Patch(context.TODO(), pod.Name, types.JSONPatchType, patchBytes, metav1.PatchOptions{})
 
 			if err != nil {
 				utilruntime.HandleError(err)
