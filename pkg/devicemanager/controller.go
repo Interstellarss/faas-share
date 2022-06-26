@@ -452,17 +452,20 @@ func (c *Controller) syncHandler(key string) error {
 				utilruntime.HandleError(err)
 			}
 
-			klog.Warningf("patched pod %s with Env %s", newpod.Name, &newpod.Spec.Containers[0].Env[0])
+			klog.Infof("Checking patched pod %s, with Volumes %s, and Container %s", newpod.Name, &newpod.Spec.Volumes[0], &newpod.Spec.Containers[0])
+
+			//klog.Warningf("patched pod %s with Env %s", newpod.Name, &newpod.Spec.Containers[0].Env[0])
 		}
 
 		if err != nil {
 			return err
 		}
-
-		if (newpod.Spec.RestartPolicy == corev1.RestartPolicyNever && (newpod.Status.Phase == corev1.PodSucceeded || newpod.Status.Phase == corev1.PodFailed)) ||
-			(newpod.Spec.RestartPolicy == corev1.RestartPolicyOnFailure && newpod.Status.Phase == corev1.PodSucceeded) {
-			go c.removeSharePodDepFromList(dep)
-		}
+		/*
+			if (newpod.Spec.RestartPolicy == corev1.RestartPolicyNever && (newpod.Status.Phase == corev1.PodSucceeded || newpod.Status.Phase == corev1.PodFailed)) ||
+				(newpod.Spec.RestartPolicy == corev1.RestartPolicyOnFailure && newpod.Status.Phase == corev1.PodSucceeded) {
+				go c.removeSharePodDepFromList(dep)
+			}
+		*/
 		//pod.u
 
 		c.recorder.Event(newpod, corev1.EventTypeNormal, SuccessSynced, MessageResourceSynced)
