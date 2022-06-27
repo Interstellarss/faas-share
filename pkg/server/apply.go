@@ -14,7 +14,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/klog"
 
-	kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
+	faasshareV1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
 )
 
 func makeApplyHandler(defaultNamespace string, client clientset.Interface) http.HandlerFunc {
@@ -87,16 +87,18 @@ func makeApplyHandler(defaultNamespace string, client clientset.Interface) http.
 	}
 }
 
-func toSharepod(req sharepod.SharepodDeployment, namespace string) kubesharev1.SharePod {
-	sharepod := kubesharev1.SharePod{
+func toSharepod(req sharepod.SharepodDeployment, namespace string) faasshareV1.SharePod {
+	sharepod := faasshareV1.SharePod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:        req.Service,
 			Namespace:   namespace,
 			Annotations: req.Annotations,
 			Labels:      *req.Labels,
 		},
-		Spec: corev1.PodSpec{
-			Containers: req.Containers,
+		Spec: faasshareV1.SharePodSpec{
+			PodSpec: corev1.PodSpec{
+				Containers: req.Containers,
+			},
 		},
 	}
 

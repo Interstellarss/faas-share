@@ -9,7 +9,7 @@ import (
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	KubeshareV1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
+	KubeshareV1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
 
 	appsv1 "k8s.io/client-go/listers/apps/v1"
 )

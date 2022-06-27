@@ -18,6 +18,7 @@ import (
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/klog"
 
+	faasshareV1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
 	kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
 	"github.com/Interstellarss/faas-share/pkg/lib/bitmap"
 )
@@ -60,11 +61,11 @@ var (
 func (c *Controller) initNodesInfo() error {
 	//TODO: need new InitnodeInfo for faas-share that go through
 	var pods []*corev1.Pod
-	var sharepods []*kubesharev1.SharePod
+	var sharepods []*faasshareV1.SharePod
 	//var deployments []*appsv1.Deployment
 	var err error
 
-	dummyPodsLabel := labels.SelectorFromSet(labels.Set{kubesharev1.KubeShareRole: "dummyPod"})
+	dummyPodsLabel := labels.SelectorFromSet(labels.Set{faasshareV1.KubeShareRole: "dummyPod"})
 	if pods, err = c.podsLister.Pods("kube-system").List(dummyPodsLabel); err != nil {
 		errrr := fmt.Errorf("error when list Pods: %s", err)
 		klog.Error(errrr)
@@ -81,7 +82,7 @@ func (c *Controller) initNodesInfo() error {
 
 	for _, pod := range pods {
 		GPUID := ""
-		if gpuid, ok := pod.ObjectMeta.Labels[kubesharev1.KubeShareResourceGPUID]; !ok {
+		if gpuid, ok := pod.ObjectMeta.Labels[faasshareV1.KubeShareResourceGPUID]; !ok {
 			klog.Errorf("Error dummy Pod annotation: %s/%s", pod.ObjectMeta.Namespace, pod.ObjectMeta.Name)
 			continue
 		} else {
@@ -148,15 +149,15 @@ func (c *Controller) initNodesInfo() error {
 			GPUID := ""
 
 			var err error
-			gpu_limit, err = strconv.ParseFloat(pod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPULimit], 64)
+			gpu_limit, err = strconv.ParseFloat(pod.ObjectMeta.Annotations[faasshareV1.KubeShareResourceGPULimit], 64)
 			if err != nil || gpu_limit > 1.0 || gpu_limit < 0.0 {
 				continue
 			}
-			gpu_request, err = strconv.ParseFloat(pod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPURequest], 64)
+			gpu_request, err = strconv.ParseFloat(pod.ObjectMeta.Annotations[faasshareV1.KubeShareResourceGPURequest], 64)
 			if err != nil || gpu_request > gpu_limit || gpu_request < 0.0 {
 				continue
 			}
-			gpu_mem, err = strconv.ParseInt(pod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUMemory], 10, 64)
+			gpu_mem, err = strconv.ParseInt(pod.ObjectMeta.Annotations[faasshareV1.KubeShareResourceGPUMemory], 10, 64)
 			if err != nil || gpu_mem < 0 {
 				continue
 			}
@@ -168,7 +169,7 @@ func (c *Controller) initNodesInfo() error {
 				continue
 			}
 			// if Spec.NodeName is assigned but GPUID is empty, it's an error
-			if gpuid, ok := sharepod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUID]; !ok {
+			if gpuid, ok := sharepod.ObjectMeta.Annotations[faasshareV1.KubeShareResourceGPUID]; !ok {
 				continue
 			} else {
 				GPUID = gpuid
@@ -208,7 +209,8 @@ func (c *Controller) initNodesInfo() error {
 
 			if pod.Spec.Containers[0].Env[index].Value != "" {
 				if gpu.UUID == "" {
-					gpu.UUID = sharepod.Status.pod2BoundDeviceID[pod.Name]
+					tmp := *sharepod.Status.BoundDeviceIDs
+					gpu.UUID = tmp[pod.Name]
 				}
 			} else {
 				if gpu.UUID != "" {
@@ -338,7 +340,7 @@ func (c *Controller) getPhysicalGPUuuid(nodeName string, GPUID string, gpu_reque
 }
 
 func (c *Controller) createDummyPod(nodeName string, GPUID string) error {
-	podName := fmt.Sprintf("%s-%s-%s", kubesharev1.KubeShareDummyPodName, nodeName, GPUID)
+	podName := fmt.Sprintf("%s-%s-%s", faasshareV1.KubeShareDummyPodName, nodeName, GPUID)
 
 	createit := func() error {
 		klog.Infof("ERICYEH: creating dummy pod: %s", podName)
@@ -348,9 +350,9 @@ func (c *Controller) createDummyPod(nodeName string, GPUID string) error {
 				Name:      podName,
 				Namespace: "kube-system",
 				Labels: map[string]string{
-					kubesharev1.KubeShareRole:          "dummyPod",
-					kubesharev1.KubeShareNodeName:      nodeName,
-					kubesharev1.KubeShareResourceGPUID: GPUID,
+					faasshareV1.KubeShareRole:          "dummyPod",
+					faasshareV1.KubeShareNodeName:      nodeName,
+					faasshareV1.KubeShareResourceGPUID: GPUID,
 				},
 			},
 			Spec: corev1.PodSpec{
@@ -361,8 +363,8 @@ func (c *Controller) createDummyPod(nodeName string, GPUID string) error {
 						Name:  "sleepforever",
 						Image: "ncy9371/kubeshare-vgpupod:200217232846",
 						Resources: corev1.ResourceRequirements{
-							Requests: corev1.ResourceList{kubesharev1.ResourceNVIDIAGPU: ResourceQuantity1},
-							Limits:   corev1.ResourceList{kubesharev1.ResourceNVIDIAGPU: ResourceQuantity1},
+							Requests: corev1.ResourceList{faasshareV1.ResourceNVIDIAGPU: ResourceQuantity1},
+							Limits:   corev1.ResourceList{faasshareV1.ResourceNVIDIAGPU: ResourceQuantity1},
 						},
 					},
 				},

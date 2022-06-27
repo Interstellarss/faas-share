@@ -88,9 +88,11 @@ type SharePodStatus struct {
 	StartTime         *metav1.Time
 	ContainerStatuses []corev1.ContainerStatus*/
 	//TODO,: make bounddeviceids to store array of ids, and a map of replicateed pod to pod status
-	podlists      map[string]*corev1.Pod
-	PodStatus     *corev1.PodStatus
-	PodObjectMeta *metav1.ObjectMeta
+	podlist map[string]*corev1.Pod `json:"podList, omitempty"`
+
+	PodStatus *corev1.PodStatus
+
+	//PodObjectMeta *metav1.ObjectMeta
 
 	// readyReplicas is the number of pods targeted by this ReplicaSet with a Ready Condition.
 	// +optional
@@ -104,10 +106,12 @@ type SharePodStatus struct {
 	// More info: https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller/#what-is-a-replicationcontroller
 	Replicas int32 `json:"replicas" protobuf:"varint,1,opt,name=replicas"`
 
-	pod2BoundDeviceID map[string]string
+	//maping from pod 2 boundDeviceID
+	// +optional
+	BoundDeviceIDs *map[string]string `json:"boundDeviceIDs, omitempty"`
 
 	//BoundDeviceID     string
-	PodManagerPort int
+	PodManagerPort int `json:"podManagerPort, omitempty"`
 
 	//TODOs: add replicas spec for faas
 

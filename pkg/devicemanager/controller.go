@@ -518,7 +518,7 @@ func (c *Controller) syncHandler(key string) error {
 func (c *Controller) updateSharePodStatus(sharepod *kubesharev1.SharePod, pod *corev1.Pod, port int) error {
 	sharepodCopy := sharepod.DeepCopy()
 	sharepodCopy.Status.PodStatus = pod.Status.DeepCopy()
-	sharepodCopy.Status.PodObjectMeta = pod.ObjectMeta.DeepCopy()
+	//sharepodCopy.Status.PodObjectMeta = pod.ObjectMeta.DeepCopy()
 	if port != 0 {
 		sharepodCopy.Status.PodManagerPort = port
 	}
