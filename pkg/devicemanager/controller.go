@@ -149,6 +149,7 @@ func NewController(
 			if newDepl.ResourceVersion == oldDepl.ResourceVersion {
 				// Periodic resync will send update events for all known Deployments.
 				// Two different versions of the same Deployment will always have different RVs.
+				controller.handleObject(new)
 				return
 			}
 			controller.handleObject(new)
@@ -419,6 +420,7 @@ func (c *Controller) syncHandler(key string) error {
 				//return nil
 				//continue
 			}
+			klog.Infof("Pod %s in namespace %s should have GPUuuid %s", pod.Name, pod.Namespace, physicalGPUuuid)
 			//sharepod.Status.BoundDeviceID = physicalGPUuuid
 		}
 
@@ -431,7 +433,7 @@ func (c *Controller) syncHandler(key string) error {
 			//patchData := patchSharepod(pod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid)
 			newpod := newPod(pod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid)
 
-			klog.Info("Testing log infor...")
+			klog.Info("Testing log info for...")
 
 			patchData := []patchValue{
 				{
@@ -575,6 +577,9 @@ func (c *Controller) handleObject(obj interface{}) {
 	// get physical GPU UUID from dummy Pod
 	// get UUID here to prevent request throttling
 	if pod, ok := obj.(*corev1.Pod); ok {
+
+		klog.Infof("A pod %s is being proceed...", pod.Name)
+
 		if pod.ObjectMeta.Namespace == "kube-system" && strings.Contains(pod.ObjectMeta.Name, kubesharev1.KubeShareDummyPodName) && (pod.Status.Phase == corev1.PodRunning || pod.Status.Phase == corev1.PodFailed) {
 			// TODO: change the method of getting GPUID from label to more reliable source
 			// e.g. Pod name (kubeshare-dummypod-{NodeName}-{GPUID})
@@ -603,11 +608,26 @@ func (c *Controller) handleObject(obj interface{}) {
 	}
 
 	if ownerRef := metav1.GetControllerOf(object); ownerRef != nil {
-		// If this object is not owned by a SharePod, we should not do anything more
+		// If this object is not owned by a Replicaset and then by a Deployment, we should not do anything more
 		// with it.
-		if ownerRef.Kind != "SharePod" && ownerRef.Kind != "Deployment" && ownerRef.Kind != "Replicaset" {
+		if ownerRef.Kind != "Replicaset" {
+			klog.Infof("Object %s is not owned by a replicaset", object.GetName())
 			return
 		}
+
+		replicaset, err := c.kubeclientset.AppsV1().ReplicaSets(object.GetNamespace()).Get(context.TODO(), ownerRef.Name, metav1.GetOptions{})
+
+		if err != nil {
+			klog.Errorf("Error finding replica set")
+			return
+		}
+		ownerRefReplica := metav1.GetControllerOf(replicaset)
+
+		if ownerRefReplica.Kind != "Deployment" {
+			klog.Infof("Not owned by a Deployment!")
+			return
+		}
+		//ownerRefReplica := metav1.GetControllerOf()
 
 		foo, err := c.deploymentLister.Deployments(object.GetNamespace()).Get(ownerRef.Name)
 
@@ -617,6 +637,7 @@ func (c *Controller) handleObject(obj interface{}) {
 		}
 		newOwnerRef := metav1.GetControllerOf(foo)
 		if newOwnerRef.Kind != "SharePod" {
+			klog.V(4).Infof("Not owned by a Sharepod!")
 			return
 		}
 		c.enqueueDeployment(foo)
