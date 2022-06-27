@@ -61,6 +61,7 @@ func (c *Controller) initNodesInfo() error {
 	//TODO: need new InitnodeInfo for faas-share that go through
 	var pods []*corev1.Pod
 	var sharepods []*kubesharev1.SharePod
+	//var deployments []*appsv1.Deployment
 	var err error
 
 	dummyPodsLabel := labels.SelectorFromSet(labels.Set{kubesharev1.KubeShareRole: "dummyPod"})
@@ -122,88 +123,116 @@ func (c *Controller) initNodesInfo() error {
 	var processDummyPodLaterList []processDummyPodLaterItem
 
 	for _, sharepod := range sharepods {
-		gpu_request := 0.0
-		gpu_limit := 0.0
-		gpu_mem := int64(0)
-		GPUID := ""
 
-		var err error
-		gpu_limit, err = strconv.ParseFloat(sharepod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPULimit], 64)
-		if err != nil || gpu_limit > 1.0 || gpu_limit < 0.0 {
-			continue
-		}
-		gpu_request, err = strconv.ParseFloat(sharepod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPURequest], 64)
-		if err != nil || gpu_request > gpu_limit || gpu_request < 0.0 {
-			continue
-		}
-		gpu_mem, err = strconv.ParseInt(sharepod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUMemory], 10, 64)
-		if err != nil || gpu_mem < 0 {
+		dep, err := c.deploymentLister.Deployments(sharepod.Namespace).Get(sharepod.Name)
+
+		if err != nil {
 			continue
 		}
 
-		// after this line, sharepod requires GPU
-
-		// this sharepod may not be scheduled yet
-		if sharepod.Spec.NodeName == "" {
-			continue
-		}
-		// if Spec.NodeName is assigned but GPUID is empty, it's an error
-		if gpuid, ok := sharepod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUID]; !ok {
-			continue
-		} else {
-			GPUID = gpuid
+		selector, err := metav1.LabelSelectorAsSelector(dep.Spec.Selector)
+		if err != nil {
+			return err
 		}
 
-		node, ok := nodesInfo[sharepod.Spec.NodeName]
-		if !ok {
-			klog.Errorf("SharePod '%s/%s' doesn't have corresponding dummy Pod!", sharepod.ObjectMeta.Namespace, sharepod.ObjectMeta.Name)
-			continue
-		}
-		gpu, ok := node.GPUID2GPU[GPUID]
-		if !ok {
-			klog.Errorf("SharePod '%s/%s' doesn't have corresponding dummy Pod!", sharepod.ObjectMeta.Namespace, sharepod.ObjectMeta.Name)
-			continue
+		pods, err := c.podsLister.Pods(dep.Namespace).List(selector)
+
+		if err != nil {
+			return err
 		}
 
-		gpu.Usage += gpu_request
-		gpu.Mem += gpu_mem
-		gpu.PodList.PushBack(&PodRequest{
-			Key:            fmt.Sprintf("%s/%s", sharepod.ObjectMeta.Namespace, sharepod.ObjectMeta.Name),
-			Request:        gpu_request,
-			Limit:          gpu_limit,
-			Memory:         gpu_mem,
-			PodManagerPort: sharepod.Status.PodManagerPort,
-		})
-		node.PodManagerPortBitmap.Mask(sharepod.Status.PodManagerPort - PodManagerPortStart)
+		for _, pod := range pods {
+			gpu_request := 0.0
+			gpu_limit := 0.0
+			gpu_mem := int64(0)
+			GPUID := ""
 
-		if sharepod.Status.BoundDeviceID != "" {
-			if gpu.UUID == "" {
-				gpu.UUID = sharepod.Status.BoundDeviceID
+			var err error
+			gpu_limit, err = strconv.ParseFloat(pod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPULimit], 64)
+			if err != nil || gpu_limit > 1.0 || gpu_limit < 0.0 {
+				continue
 			}
-		} else {
-			if gpu.UUID != "" {
-				c.workqueue.Add(fmt.Sprintf("%s/%s", sharepod.ObjectMeta.Namespace, sharepod.ObjectMeta.Name))
+			gpu_request, err = strconv.ParseFloat(pod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPURequest], 64)
+			if err != nil || gpu_request > gpu_limit || gpu_request < 0.0 {
+				continue
+			}
+			gpu_mem, err = strconv.ParseInt(pod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUMemory], 10, 64)
+			if err != nil || gpu_mem < 0 {
+				continue
+			}
+
+			// after this line, pod of a sharepod requires GPU
+
+			// this sharepod may not be scheduled yet
+			if pod.Spec.NodeName == "" {
+				continue
+			}
+			// if Spec.NodeName is assigned but GPUID is empty, it's an error
+			if gpuid, ok := sharepod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUID]; !ok {
+				continue
 			} else {
-				notFound := true
-				for _, item := range processDummyPodLaterList {
-					if item.NodeName == sharepod.Spec.NodeName && item.GPUID == GPUID {
-						notFound = false
-					}
+				GPUID = gpuid
+			}
+
+			node, ok := nodesInfo[sharepod.Spec.NodeName]
+			if !ok {
+				klog.Errorf("SharePod '%s/%s' doesn't have corresponding dummy Pod!", sharepod.ObjectMeta.Namespace, sharepod.ObjectMeta.Name)
+				continue
+			}
+			gpu, ok := node.GPUID2GPU[GPUID]
+			if !ok {
+				klog.Errorf("SharePod '%s/%s' doesn't have corresponding dummy Pod!", sharepod.ObjectMeta.Namespace, sharepod.ObjectMeta.Name)
+				continue
+			}
+			gpu.Usage += gpu_request
+			gpu.Mem += gpu_mem
+			gpu.PodList.PushBack(&PodRequest{
+				Key:            fmt.Sprintf("%s/%s", sharepod.ObjectMeta.Namespace, sharepod.ObjectMeta.Name),
+				Request:        gpu_request,
+				Limit:          gpu_limit,
+				Memory:         gpu_mem,
+				PodManagerPort: sharepod.Status.PodManagerPort,
+			})
+
+			node.PodManagerPortBitmap.Mask(sharepod.Status.PodManagerPort - PodManagerPortStart)
+
+			//find bounddeviceID
+			var index int
+			for i, Env := range pod.Spec.Containers[0].Env {
+				if Env.Name == "NVIDIA_VISIBLE_DEVICES" {
+					index = i
+					break
 				}
-				if notFound {
-					processDummyPodLaterList = append(processDummyPodLaterList, processDummyPodLaterItem{
-						NodeName: sharepod.Spec.NodeName,
-						GPUID:    GPUID,
-					})
+				continue
+			}
+
+			if pod.Spec.Containers[0].Env[index].Value != "" {
+				if gpu.UUID == "" {
+					gpu.UUID = sharepod.Status.BoundDeviceID
+				}
+			} else {
+				if gpu.UUID != "" {
+					c.workqueue.Add(fmt.Sprintf("%s/%s", sharepod.ObjectMeta.Namespace, sharepod.ObjectMeta.Name))
+				} else {
+					notFound := true
+					for _, item := range processDummyPodLaterList {
+						if item.NodeName == pod.Spec.NodeName && item.GPUID == GPUID {
+							notFound = false
+						}
+					}
+					if notFound {
+						processDummyPodLaterList = append(processDummyPodLaterList, processDummyPodLaterItem{
+							NodeName: sharepod.Spec.NodeName,
+							GPUID:    GPUID,
+						})
+					}
 				}
 			}
 		}
 	}
-
 	for _, item := range processDummyPodLaterList {
 		go c.createDummyPod(item.NodeName, item.GPUID)
 	}
-
 	return nil
 }
 

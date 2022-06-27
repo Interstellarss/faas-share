@@ -613,8 +613,11 @@ func (c *Controller) handleObject(obj interface{}) {
 			klog.V(4).Infof("ignoring orphaned object '%s' of SharePod '%s'", object.GetSelfLink(), ownerRef.Name)
 			return
 		}
-
-		c.enqueueSharePod(foo)
+		newOwnerRef := metav1.GetControllerOf(foo)
+		if newOwnerRef.Kind != "SharePod" {
+			return
+		}
+		c.enqueueDeployment(foo)
 		return
 	}
 }
