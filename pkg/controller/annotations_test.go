@@ -3,7 +3,7 @@ package controller
 import (
 	"testing"
 
-	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
+	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
 
 	corev1 "k8s.io/api/core/v1"
 
@@ -18,11 +18,13 @@ func Test_makeAnnotations_NoKeys(t *testing.T) {
 			Name:        "test",
 			Annotations: map[string]string{"kubeshare/gpu_request": "0.5"},
 		},
-		Spec: corev1.PodSpec{
-			Containers: []corev1.Container{
-				{
-					Name:  "kubesec",
-					Image: "docker.io/kubesec/kubesec",
+		Spec: faasv1.SharePodSpec{
+			PodSpec: corev1.PodSpec{
+				Containers: []corev1.Container{
+					{
+						Name:  "kubesec",
+						Image: "docker.io/kubesec/kubesec",
+					},
 				},
 			},
 		},
@@ -60,14 +62,7 @@ func Test_makeAnnotations_WithKeyAndValue(t *testing.T) {
 				"key2": "value2",
 			},
 		},
-		Spec: corev1.PodSpec{
-			/*
-				Annotations: &map[string]string{
-					"key":  "value",
-					"key2": "value2",
-				},
-			*/
-		},
+		Spec: faasv1.SharePodSpec{},
 	}
 
 	annotations := makeAnnotations(&spec)

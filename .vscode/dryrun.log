@@ -1,8 +1,8 @@
 make --dry-run --always-make --keep-going --print-directory
 make: Entering directory `/Users/puxuan/go/src/github.com/Interstellarss/faas-share'
 docker build \
-	--build-arg GIT_COMMIT=f2bcfa66787317979b902507abef6a1307938488 \
-	--build-arg VERSION=v0.1.20-13-gf2bcfa6-dirty \
+	--build-arg GIT_COMMIT=7d075aece5accaf64f5c813062496a9ca5e9ffb1 \
+	--build-arg VERSION=v0.1.20-18-g7d075ae-dirty \
 	-t ghcr.io/interstellarss/faas-share:v0.1.20 .
 GO111MODULE=on CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/kubeshare-scheduler github.com/Interstellarss/faas-share/cmd/kubeshare-scheduler
 GO111MODULE=on CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o bin/kubeshare-device-manager github.com/Interstellarss/faas-share/cmd/kubeshare-device-manager

@@ -18,7 +18,7 @@ import (
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/klog"
 
-	kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
+	kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
 	"github.com/Interstellarss/faas-share/pkg/lib/bitmap"
 )
 
@@ -174,7 +174,7 @@ func (c *Controller) initNodesInfo() error {
 				GPUID = gpuid
 			}
 
-			node, ok := nodesInfo[sharepod.Spec.NodeName]
+			node, ok := nodesInfo[pod.Spec.NodeName]
 			if !ok {
 				klog.Errorf("SharePod '%s/%s' doesn't have corresponding dummy Pod!", sharepod.ObjectMeta.Namespace, sharepod.ObjectMeta.Name)
 				continue
@@ -208,7 +208,7 @@ func (c *Controller) initNodesInfo() error {
 
 			if pod.Spec.Containers[0].Env[index].Value != "" {
 				if gpu.UUID == "" {
-					gpu.UUID = sharepod.Status.BoundDeviceID
+					gpu.UUID = sharepod.Status.pod2BoundDeviceID[pod.Name]
 				}
 			} else {
 				if gpu.UUID != "" {
@@ -222,7 +222,7 @@ func (c *Controller) initNodesInfo() error {
 					}
 					if notFound {
 						processDummyPodLaterList = append(processDummyPodLaterList, processDummyPodLaterItem{
-							NodeName: sharepod.Spec.NodeName,
+							NodeName: pod.Spec.NodeName,
 							GPUID:    GPUID,
 						})
 					}

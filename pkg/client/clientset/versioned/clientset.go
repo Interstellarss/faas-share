@@ -22,7 +22,7 @@ import (
 	"fmt"
 	"net/http"
 
-	kubesharev1 "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned/typed/kubeshare/v1"
+	kubesharev1 "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned/typed/faas_share/v1"
 	discovery "k8s.io/client-go/discovery"
 	rest "k8s.io/client-go/rest"
 	flowcontrol "k8s.io/client-go/util/flowcontrol"

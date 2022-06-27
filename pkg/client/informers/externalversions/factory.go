@@ -24,8 +24,8 @@ import (
 	time "time"
 
 	versioned "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned"
+	faasshare "github.com/Interstellarss/faas-share/pkg/client/informers/externalversions/faas_share"
 	internalinterfaces "github.com/Interstellarss/faas-share/pkg/client/informers/externalversions/internalinterfaces"
-	kubeshare "github.com/Interstellarss/faas-share/pkg/client/informers/externalversions/kubeshare"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
@@ -172,9 +172,9 @@ type SharedInformerFactory interface {
 	ForResource(resource schema.GroupVersionResource) (GenericInformer, error)
 	WaitForCacheSync(stopCh <-chan struct{}) map[reflect.Type]bool
 
-	Kubeshare() kubeshare.Interface
+	Kubeshare() faasshare.Interface
 }
 
-func (f *sharedInformerFactory) Kubeshare() kubeshare.Interface {
-	return kubeshare.New(f, f.namespace, f.tweakListOptions)
+func (f *sharedInformerFactory) Kubeshare() faasshare.Interface {
+	return faasshare.New(f, f.namespace, f.tweakListOptions)
 }

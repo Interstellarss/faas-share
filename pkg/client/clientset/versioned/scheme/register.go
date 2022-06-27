@@ -19,7 +19,7 @@ limitations under the License.
 package scheme
 
 import (
-	kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
+	kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"

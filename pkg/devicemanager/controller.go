@@ -32,11 +32,11 @@ import (
 
 	appslisters "k8s.io/client-go/listers/apps/v1"
 
-	kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
+	kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
 	clientset "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned"
 	kubesharescheme "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned/scheme"
-	informers "github.com/Interstellarss/faas-share/pkg/client/informers/externalversions/kubeshare/v1"
-	listers "github.com/Interstellarss/faas-share/pkg/client/listers/kubeshare/v1"
+	informers "github.com/Interstellarss/faas-share/pkg/client/informers/externalversions/faas_share/v1"
+	listers "github.com/Interstellarss/faas-share/pkg/client/listers/faas_share/v1"
 )
 
 const controllerAgentName = "kubeshare-controller"
