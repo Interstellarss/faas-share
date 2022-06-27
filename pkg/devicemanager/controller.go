@@ -337,6 +337,7 @@ func (c *Controller) syncHandler(key string) error {
 	}
 
 	for _, pod := range pods {
+
 		if pod.Spec.NodeName == "" {
 			utilruntime.HandleError(fmt.Errorf(""))
 			return nil
@@ -393,6 +394,7 @@ func (c *Controller) syncHandler(key string) error {
 		// GPU Pod needs to be filled with request, limit, memory, and GPUID, or none of them.
 		// If something weird, reject it (record the reason to user then return nil)
 		if isGPUPod {
+			klog.Infof("Starting synchrize with pod %s, in namespace %s", pod.Name, pod.Namespace)
 			var errCode int
 			physicalGPUuuid, errCode = c.getPhysicalGPUuuid(pod.Spec.NodeName, GPUID, gpu_request, gpu_limit, gpu_mem, key, &physicalGPUport)
 			switch errCode {

@@ -1,12 +1,13 @@
 
 apiVersion: v1
 description: faas-share - Extend KubeShare to OpenFaaS
-home: https://github.com/Interstellarss/faas-share
+home: https://github.com/Interstellarss/faas-share-charts
 maintainers:
   - email: wangpu@in.tun.de
     name: puxuanwang
 name: faas-share
 sources:
-- https://github.com/Interstellarss/faas-share-charts
+- https://github.com/openfaas/faas
 - https://github.com/Interstellarss/faas-share
+- https://github.com/NTHU-LSALAB/KubeShare
 version: 0.1.20
