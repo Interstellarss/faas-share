@@ -610,7 +610,7 @@ func (c *Controller) handleObject(obj interface{}) {
 	if ownerRef := metav1.GetControllerOf(object); ownerRef != nil {
 		// If this object is not owned by a Replicaset and then by a Deployment, we should not do anything more
 		// with it.
-		if ownerRef.Kind != "Replicaset" {
+		if ownerRef.Kind != "ReplicaSet" {
 			klog.Infof("Object %s is not owned by a replicaset", object.GetName())
 			return
 		}
