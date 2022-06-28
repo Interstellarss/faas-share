@@ -1,7 +1,7 @@
 package controller
 
 import (
-	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
+	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
 	"github.com/Interstellarss/faas-share/pkg/k8s"
 	"github.com/Interstellarss/faas-share/pkg/sharepod"
 	appsv1 "k8s.io/api/apps/v1"

@@ -12,13 +12,15 @@ require (
 	github.com/openfaas/faas-provider v0.18.9
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.12.1
-	k8s.io/api v0.24.0
-	k8s.io/apimachinery v0.24.0
+	k8s.io/api v0.24.2
+	k8s.io/apimachinery v0.24.2
 	//k8s.io/client-go v0.21.3
-	k8s.io/client-go v0.24.0
+	k8s.io/client-go v0.24.2
 	k8s.io/klog v1.0.0
 	k8s.io/klog/v2 v2.60.1
+)
 
+require (
 	github.com/PuerkitoBio/purell v1.1.1 // indirect
 	github.com/PuerkitoBio/urlesc v0.0.0-20170810143723-de5bf2ad4578 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect

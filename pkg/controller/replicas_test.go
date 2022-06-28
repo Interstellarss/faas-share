@@ -6,10 +6,9 @@ import (
 	appsv1 "k8s.io/api/apps/v1"
 	"k8s.io/client-go/kubernetes/fake"
 
-	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
+	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
 	"github.com/Interstellarss/faas-share/pkg/k8s"
 
-	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -52,7 +51,7 @@ func Test_Replicas(t *testing.T) {
 		},
 		{
 			"return existing replicas when label is missing and deployment has replicas set by HPA",
-			&faasv1.SharePod{ObjectMeta: metav1.ObjectMeta{}, Spec: corev1.PodSpec{}},
+			&faasv1.SharePod{ObjectMeta: metav1.ObjectMeta{}, Spec: faasv1.SharePodSpec{}},
 			&appsv1.Deployment{Spec: appsv1.DeploymentSpec{Replicas: int32p(3)}},
 			int32p(3),
 		},

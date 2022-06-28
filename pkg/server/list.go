@@ -11,12 +11,14 @@ import (
 
 	KubeshareV1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
 
-	appsv1 "k8s.io/client-go/listers/apps/v1"
+	//appsv1 "k8s.io/client-go/listers/apps/v1"
+
+	lister "github.com/Interstellarss/faas-share/pkg/client/listers/faas_share/v1"
 )
 
 func makeListHandler(defaultNamespace string,
 	client clientset.Interface,
-	deploymentLister appsv1.DeploymentLister) http.HandlerFunc {
+	sharepodLister lister.SharePodLister) http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
@@ -51,15 +53,15 @@ func makeListHandler(defaultNamespace string,
 		sharepods := []KubeshareV1.SharePodStatus{}
 
 		for _, item := range res.Items {
-			desiredReplicas, availableReplicas, err := getReplicas(item.Name, lookupNamespace, deploymentLister)
+			//desiredReplicas, availableReplicas, err := getReplicas(item.Name, lookupNamespace, deploymentLister)
 
 			if err != nil {
 				klog.Warningf("Function listing getReplicas error: %v", err)
 			}
 
 			sharepod := item.Status
-			sharepod.AvailableReplicas = availableReplicas
-			sharepod.Replicas = desiredReplicas
+			sharepod.AvailableReplicas = sharepod.AvailableReplicas
+			sharepod.Replicas = sharepod.Replicas
 
 			sharepods = append(sharepods, sharepod)
 			//sharepod.PodStatus.

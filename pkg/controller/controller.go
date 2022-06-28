@@ -7,7 +7,6 @@ import (
 	"strings"
 	"time"
 
-	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -17,7 +16,6 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/scheme"
 	typedcorev1 "k8s.io/client-go/kubernetes/typed/core/v1"
-	appslisters "k8s.io/client-go/listers/apps/v1"
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/record"
 	"k8s.io/client-go/util/workqueue"
@@ -25,11 +23,14 @@ import (
 
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 
-	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
+	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
 	clientset "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned"
 	faasscheme "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned/scheme"
 	informers "github.com/Interstellarss/faas-share/pkg/client/informers/externalversions"
-	listers "github.com/Interstellarss/faas-share/pkg/client/listers/kubeshare/v1"
+	listers "github.com/Interstellarss/faas-share/pkg/client/listers/faas_share/v1"
+
+	coreinformers "k8s.io/client-go/informers/core/v1"
+	corelisters "k8s.io/client-go/listers/core/v1"
 )
 
 const (
@@ -51,18 +52,35 @@ const (
 	MessageResourceSynced = "SharePod synced successfully"
 )
 
+var (
+	KeyFunc = cache.DeletionHandlingMetaNamespaceKeyFunc
+)
+
 // Controller is the controller implementation for Function resources
 type Controller struct {
-	// kubeclientset is a standard kubernetes clientset
-	kubeclientset kubernetes.Interface
+	// kubeclient is a standard kubernetes clientset
+	kubeclient kubernetes.Interface
 	// faasclientset is a clientset for our own API group
 	faasclientset clientset.Interface
 
 	//here is different from the controller in KubeShare, need to check here
-	deploymentsLister appslisters.DeploymentLister
-	deploymentsSynced cache.InformerSynced
-	sharepodsLister   listers.SharePodLister
-	sharepodsSynced   cache.InformerSynced
+	//deploymentsLister appslisters.DeploymentLister
+	//deploymentsSynced cache.InformerSynced
+	sharepodsLister listers.SharePodLister
+
+	// sharepodsSynced returns true if the pod store has been synced at least once.
+	// Added as a member to the struct to allow injection for testing.
+	sharepodsSynced cache.InformerSynced
+
+	// A store of pods, populated by the shared informer passed to our custom replication controller
+	podLister corelisters.PodLister
+
+	// podListerSynced returns true if the pod store has been synced at least once.
+	// Added as a member to the struct to allow injection for testing.
+	podListerSynced cache.InformerSynced
+	podInformer     coreinformers.PodInformer
+
+	expectations *controller.UID
 
 	// workqueue is a rate limited work queue. This is used to queue work to be
 	// processed instead of performing it as soon as a change happens. This
@@ -73,6 +91,8 @@ type Controller struct {
 	// recorder is an event recorder for recording Event resources to the
 	// Kubernetes API.
 	recorder record.EventRecorder
+
+	eventBroadcaster record.EventBroadcaster
 
 	// OpenFaaS function factory
 	factory FunctionFactory
@@ -87,7 +107,7 @@ func NewController(
 	factory FunctionFactory) *Controller {
 
 	// obtain references to shared index informers for the Deployment and Function types
-	deploymentInformer := kubeInformerFactory.Apps().V1().Deployments()
+	//deploymentInformer := kubeInformerFactory.Apps().V1().Deployments()
 	faasInformer := faasInformerFactory.Kubeshare().V1().SharePods()
 
 	// Create event broadcaster
@@ -101,15 +121,15 @@ func NewController(
 	recorder := eventBroadcaster.NewRecorder(scheme.Scheme, corev1.EventSource{Component: controllerAgentName})
 
 	controller := &Controller{
-		kubeclientset:     kubeclientset,
-		faasclientset:     faasclientset,
-		deploymentsLister: deploymentInformer.Lister(),
-		deploymentsSynced: deploymentInformer.Informer().HasSynced,
-		sharepodsLister:   faasInformer.Lister(),
-		sharepodsSynced:   faasInformer.Informer().HasSynced,
-		workqueue:         workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "Sharepods"),
-		recorder:          recorder,
-		factory:           factory,
+		kubeclient:    kubeclientset,
+		faasclientset: faasclientset,
+		//deploymentsLister: deploymentInformer.Lister(),
+		//deploymentsSynced: deploymentInformer.Informer().HasSynced,
+		sharepodsLister: faasInformer.Lister(),
+		sharepodsSynced: faasInformer.Informer().HasSynced,
+		workqueue:       workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "Sharepods"),
+		recorder:        recorder,
+		factory:         factory,
 	}
 
 	glog.Info("Setting up event handlers")
@@ -118,12 +138,24 @@ func NewController(
 	//
 	// Set up an event handler for when Function resources change
 	faasInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
-		AddFunc: controller.enqueueFunction,
+		AddFunc: controller.enqueueSHR,
 		UpdateFunc: func(old, new interface{}) {
 			controller.enqueueFunction(new)
 		},
 		DeleteFunc: controller.handleDeletedSharePod,
 	})
+
+	podInformer.Informer().AddEventHandler(cach.ResourceEventHandlerFuncs{
+		//TODO define behaviors for adding or updating, and delete pods
+
+	})
+
+	//seems we do not need a Indexer here to find this Sharepod vary fast
+	/*
+		faasInformer.Informer().AddIndexers(cache.Indexers{
+
+		})
+	*/
 
 	// Set up an event handler for when functions related resources like pods, deployments, replica sets
 	// can't be materialized. This logs abnormal events like ImagePullBackOff, back-off restarting failed container,
@@ -152,12 +184,19 @@ func NewController(
 // workers to finish processing their current work items.
 func (c *Controller) Run(threadiness int, stopCh <-chan struct{}) error {
 	defer runtime.HandleCrash()
+
+	//Start events processing pipeline
+	//need to figure a way here, inconsistency with version
+	//c.eventBroadcaster.StartStructuredLogging(0)
+	//c.eventBroadcaster.StartRecordingToSink(&corev1.EventSinkImpl{Interface: c.kubeclient.CoreV1().Events("")})
+	//defer c.eventBroadcaster.Shutdown()
+
 	defer c.workqueue.ShutDown()
 
 	// Start the informer factories to begin populating the informer caches
 	// Wait for the caches to be synced before starting workers
 	glog.Info("Waiting for informer caches to sync")
-	if ok := cache.WaitForCacheSync(stopCh, c.deploymentsSynced, c.sharepodsSynced); !ok {
+	if ok := cache.WaitForCacheSync(stopCh, c.podListerSynced, c.sharepodsSynced); !ok {
 		return fmt.Errorf("failed to wait for caches to sync")
 	}
 
@@ -176,14 +215,14 @@ func (c *Controller) Run(threadiness int, stopCh <-chan struct{}) error {
 
 // runWorker is a long-running function that will continually call the
 // processNextWorkItem function in order to read and process a message on the workqueue.
-func (c *Controller) runWorker() {
-	for c.processNextWorkItem() {
+func (c *Controller) runWorker(ctx context.Context) {
+	for c.processNextWorkItem(ctx) {
 	}
 }
 
 // processNextWorkItem will read a single work item off the workqueue and
 // attempt to process it, by calling the syncHandler.
-func (c *Controller) processNextWorkItem() bool {
+func (c *Controller) processNextWorkItem(ctx) bool {
 	obj, shutdown := c.workqueue.Get()
 
 	if shutdown {
@@ -236,37 +275,15 @@ func (c *Controller) syncHandler(key string) error {
 		return err
 	}
 
-	deploymentName := sharepod.Name
-	if deploymentName == "" {
-		// We choose to absorb the error here as the worker would requeue the
-		// resource otherwise. Instead, the next time the resource is updated
-		// the resource will be queued again.
-		runtime.HandleError(fmt.Errorf("%s: deployment name must be specified", key))
-		return nil
-	}
-
 	// Get the deployment with the name specified in Function.spec
-	deployment, err := c.deploymentsLister.Deployments(sharepod.GetNamespace()).Get(deploymentName)
+	//deployment, err := c.deploymentsLister.Deployments(sharepod.GetNamespace()).Get(deploymentName)
 	// If the resource doesn't exist, we'll create it
-	if errors.IsNotFound(err) {
-		err = nil
-
-		glog.Infof("Creating deployment for '%s'", sharepod.Name)
-		deployment, err = c.kubeclientset.AppsV1().Deployments(sharepod.Namespace).Create(
-			context.TODO(),
-			newDeployment(sharepod, deployment, c.factory),
-			metav1.CreateOptions{},
-		)
-		if err != nil {
-			return err
-		}
-	}
 
 	svcGetOptions := metav1.GetOptions{}
-	_, getSvcErr := c.kubeclientset.CoreV1().Services(sharepod.Namespace).Get(context.TODO(), deploymentName, svcGetOptions)
+	_, getSvcErr := c.kubeclient.CoreV1().Services(sharepod.Namespace).Get(context.TODO(), sharepod.Name, svcGetOptions)
 	if errors.IsNotFound(getSvcErr) {
 		glog.Infof("Creating ClusterIP service for '%s'", sharepod.Name)
-		if _, err := c.kubeclientset.CoreV1().Services(sharepod.Namespace).Create(context.TODO(), newService(sharepod), metav1.CreateOptions{}); err != nil {
+		if _, err := c.kubeclient.CoreV1().Services(sharepod.Namespace).Create(context.TODO(), newService(sharepod), metav1.CreateOptions{}); err != nil {
 			// If an error occurs during Service Create, we'll requeue the item
 			if errors.IsAlreadyExists(err) {
 				err = nil
@@ -286,44 +303,38 @@ func (c *Controller) syncHandler(key string) error {
 
 	// If the Deployment is not controlled by this Function resource, we should log
 	// a warning to the event recorder and ret
-	if !metav1.IsControlledBy(deployment, sharepod) {
-		msg := fmt.Sprintf(MessageResourceExists, deployment.Name)
-		c.recorder.Event(sharepod, corev1.EventTypeWarning, ErrResourceExists, msg)
-		return fmt.Errorf(msg)
+	/*
+		if !metav1.IsControlledBy(deployment, sharepod) {
+			msg := fmt.Sprintf(MessageResourceExists, deployment.Name)
+			c.recorder.Event(sharepod, corev1.EventTypeWarning, ErrResourceExists, msg)
+			return fmt.Errorf(msg)
+		}
+
+		// Update the Deployment resource if the Function definition differs
+		if deploymentNeedsUpdate(sharepod, deployment) {
+			glog.Infof("Updating deployment for '%s'", sharepod.Name)
+
+
+			deployment, err = c.kubeclient.AppsV1().Deployments(sharepod.Namespace).Update(
+				context.TODO(),
+				newDeployment(sharepod, deployment, c.factory),
+				metav1.UpdateOptions{},
+			)
+
+			if err != nil {
+				glog.Errorf("Updating deployment for '%s' failed: %v", sharepod.Name, err)
+			}
+	*/
+
+	existingService, err := c.kubeclient.CoreV1().Services(sharepod.Namespace).Get(context.TODO(), sharepod.Name, metav1.GetOptions{})
+	if err != nil {
+		return err
 	}
 
-	// Update the Deployment resource if the Function definition differs
-	if deploymentNeedsUpdate(sharepod, deployment) {
-		glog.Infof("Updating deployment for '%s'", sharepod.Name)
-
-		//Still secrets here
-		/*
-			existingSecrets, err := c.getSecrets(sharepod.Namespace, sharepod.Spec.Secrets)
-			if err != nil {
-				return err
-			}
-		*/
-
-		deployment, err = c.kubeclientset.AppsV1().Deployments(sharepod.Namespace).Update(
-			context.TODO(),
-			newDeployment(sharepod, deployment, c.factory),
-			metav1.UpdateOptions{},
-		)
-
-		if err != nil {
-			glog.Errorf("Updating deployment for '%s' failed: %v", sharepod.Name, err)
-		}
-
-		existingService, err := c.kubeclientset.CoreV1().Services(sharepod.Namespace).Get(context.TODO(), sharepod.Name, metav1.GetOptions{})
-		if err != nil {
-			return err
-		}
-
-		existingService.Annotations = makeAnnotations(sharepod)
-		_, err = c.kubeclientset.CoreV1().Services(sharepod.Namespace).Update(context.TODO(), existingService, metav1.UpdateOptions{})
-		if err != nil {
-			glog.Errorf("Updating service for '%s' failed: %v", sharepod.Name, err)
-		}
+	existingService.Annotations = makeAnnotations(sharepod)
+	_, err = c.kubeclient.CoreV1().Services(sharepod.Namespace).Update(context.TODO(), existingService, metav1.UpdateOptions{})
+	if err != nil {
+		glog.Errorf("Updating service for '%s' failed: %v", sharepod.Name, err)
 	}
 
 	// If an error occurs during Update, we'll requeue the item so we can
@@ -340,13 +351,16 @@ func (c *Controller) syncHandler(key string) error {
 // enqueueFunction takes a Function resource and converts it into a namespace/name
 // string which is then put onto the work queue. This method should *not* be
 // passed resources of any type other than Function.
-func (c *Controller) enqueueFunction(obj interface{}) {
+func (c *Controller) addSHR(obj interface{}) {
+	//shr := obj.(*faasv1.SharePod)
+
 	var key string
 	var err error
 	if key, err = cache.MetaNamespaceKeyFunc(obj); err != nil {
 		runtime.HandleError(err)
 		return
 	}
+	//c.enqueueSHR(shr)
 	c.workqueue.AddRateLimited(key)
 }
 
@@ -406,6 +420,15 @@ func (c *Controller) getSecrets(namespace string, secretNames []string) (map[str
 	return secrets, nil
 }
 */
+func (c *Controller) enqueeuSHR(shr *faasv1.SharePod) {
+	key, err := c.KeyFunc(rs)
+	if err != nil {
+		utilruntime.HandleError(fmt.Errorf("couldn't get key for object %#v: %v", rs, err))
+		return
+	}
+
+	rsc.queue.Add(key)
+}
 
 func (c *Controller) handleDeletedSharePod(obj interface{}) {
 	sharepod, ok := obj.(*faasv1.SharePod)
@@ -420,7 +443,7 @@ func (c *Controller) handleDeletedSharePod(obj interface{}) {
 	name := sharepod.Name
 
 	//go c.removeSharepodFromList(sharepod)
-	err := c.kubeclientset.AppsV1().Deployments(namespace).Delete(context.TODO(), name, metav1.DeleteOptions{})
+	err := c.kubeclient.AppsV1().Deployments(namespace).Delete(context.TODO(), name, metav1.DeleteOptions{})
 	if err != nil {
 		utilruntime.HandleError(fmt.Errorf("handleDeletedSharepod: error when deleting sharepod deployment"))
 	}
@@ -428,9 +451,28 @@ func (c *Controller) handleDeletedSharePod(obj interface{}) {
 	//c.kubeclientset.AppsV1().Deployments()
 }
 
+func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.Pod, shr *faasv1.SharePod) error {
+	diff := len(filteredPods) - int(*(shr.Spec.Replicas))
+
+	shrKey, err := KeyFunc(shr)
+
+	if err != nil {
+		utilruntime.HandleError(fmt.Errorf("couldn't get key for %v %#v: %v", shr.Kind, shr, err))
+		return nil
+	}
+
+	if diff < 0 {
+		diff *= -1
+
+		//may also set for burstresplicas?
+
+	}
+
+}
+
 // getReplicas returns the desired number of replicas for a function taking into account
 // the min replicas label, HPA, the OF autoscaler and scaled to zero deployments
-func getReplicas(sharepod *faasv1.SharePod, deployment *appsv1.Deployment) *int32 {
+func getReplicas(sharepod *faasv1.SharePod) *int32 {
 	var minReplicas *int32
 
 	// extract min replicas from label if specified
@@ -445,39 +487,35 @@ func getReplicas(sharepod *faasv1.SharePod, deployment *appsv1.Deployment) *int3
 	}
 
 	// extract current deployment replicas if specified
-	var deploymentReplicas *int32
-	if deployment != nil {
-		deploymentReplicas = deployment.Spec.Replicas
-	}
+	sharepodReplicas := sharepod.Spec.Replicas
 
 	// do not set replicas if min replicas is not set
 	// and current deployment has no replicas count
-	if minReplicas == nil && deploymentReplicas == nil {
+	if minReplicas == nil && sharepodReplicas == nil {
 		return nil
 	}
 
 	// set replicas to min if deployment has no replicas and min replicas exists
-	if minReplicas != nil && deploymentReplicas == nil {
+	if minReplicas != nil && sharepodReplicas == nil {
 		return minReplicas
 	}
 
 	// do not override replicas when deployment is scaled to zero
-	if deploymentReplicas != nil && *deploymentReplicas == 0 {
-		return deploymentReplicas
+	if sharepodReplicas != nil && *sharepodReplicas == 0 {
+		return sharepodReplicas
 	}
 
 	// do not override replicas when min is not specified
-	if minReplicas == nil && deploymentReplicas != nil {
-		return deploymentReplicas
+	if minReplicas == nil && sharepodReplicas != nil {
+		return sharepodReplicas
 	}
 
 	// do not override HPA or OF autoscaler replicas if the value is greater than min
-	if minReplicas != nil && deploymentReplicas != nil {
-		if *deploymentReplicas >= *minReplicas {
-			return deploymentReplicas
+	if minReplicas != nil && sharepodReplicas != nil {
+		if *sharepodReplicas >= *minReplicas {
+			return sharepodReplicas
 		}
 	}
-
 	//minrep := *minReplicas
 
 	//minrep = minrep - 1

@@ -6,7 +6,7 @@ import (
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/util/intstr"
 
-	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
+	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
 )
 
 // newService creates a new ClusterIP Service for a Function resource. It also sets

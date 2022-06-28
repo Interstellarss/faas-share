@@ -22,7 +22,6 @@ import (
 	"github.com/Interstellarss/faas-share/pkg/config"
 	"github.com/Interstellarss/faas-share/pkg/k8s"
 
-	v1apps "k8s.io/client-go/informers/apps/v1"
 	v1core "k8s.io/client-go/informers/core/v1"
 
 	kubeinformers "k8s.io/client-go/informers"
@@ -136,8 +135,9 @@ func main() {
 }
 
 type customInformers struct {
-	EndpointsInformer  v1core.EndpointsInformer
-	DeploymentInformer v1apps.DeploymentInformer
+	EndpointsInformer v1core.EndpointsInformer
+
+	//DeploymentInformer v1apps.DeploymentInformer
 	//TODO here, may need to change
 	SharepodsInformer v1.SharePodInformer
 }
@@ -172,9 +172,9 @@ func startInformers(setup serverSetup, stopCh <-chan struct{}) customInformers {
 	//profielInformerFactory.Start()
 	//we may not meed
 	return customInformers{
-		EndpointsInformer:  endpoints,
-		DeploymentInformer: deployments,
-		SharepodsInformer:  sharepods,
+		EndpointsInformer: endpoints,
+		//DeploymentInformer: deployments,
+		SharepodsInformer: sharepods,
 	}
 
 }
@@ -206,8 +206,8 @@ func runOperator(setup serverSetup, cfg config.BootstrapConfig) {
 		faasInformerfactory,
 		facory,
 	)
-	listers.DeploymentInformer.Lister()
-	srv := server.New(shareClient, kubeClient, listers.EndpointsInformer, listers.DeploymentInformer.Lister(), cfg.ClusterRole, cfg)
+	listers.SharepodsInformer.Lister()
+	srv := server.New(shareClient, kubeClient, listers.EndpointsInformer, listers.SharepodsInformer.Lister(), cfg.ClusterRole, cfg)
 
 	//TODO here
 	go srv.Start()

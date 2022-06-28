@@ -3,7 +3,7 @@ package controller
 import (
 	"testing"
 
-	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
+	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
 	"github.com/Interstellarss/faas-share/pkg/k8s"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -16,21 +16,23 @@ func Test_newDeployment(t *testing.T) {
 		ObjectMeta: metav1.ObjectMeta{
 			Name: "kubesec",
 		},
-		Spec: corev1.PodSpec{
-			Containers: []corev1.Container{
-				{
-					Name:  "kubesec",
-					Image: "docker.io/kubesec/kubesec",
-					//SecurityContext: ,
-					//ReadinessProbe: &corev1.Probe{},
+		Spec: faasv1.SharePodSpec{
+			PodSpec: corev1.PodSpec{
+				Containers: []corev1.Container{
+					{
+						Name:  "kubesec",
+						Image: "docker.io/kubesec/kubesec",
+						//SecurityContext: ,
+						//ReadinessProbe: &corev1.Probe{},
+					},
 				},
+				/*
+					Name:                   "kubesec",
+					Image:                  "docker.io/kubesec/kubesec",
+					Annotations:            &map[string]string{},
+					ReadOnlyRootFilesystem: true,
+				*/
 			},
-			/*
-				Name:                   "kubesec",
-				Image:                  "docker.io/kubesec/kubesec",
-				Annotations:            &map[string]string{},
-				ReadOnlyRootFilesystem: true,
-			*/
 		},
 	}
 	k8sConfig := k8s.DeploymentConfig{
@@ -82,17 +84,19 @@ func Test_newDeployment_withExecProbe(t *testing.T) {
 			Name:        "kubesec",
 			Annotations: map[string]string{},
 		},
-		Spec: corev1.PodSpec{
-			Containers: []corev1.Container{
-				{
-					Image: "docker.io/kubesec/kubesec",
+		Spec: faasv1.SharePodSpec{
+			PodSpec: corev1.PodSpec{
+				Containers: []corev1.Container{
+					{
+						Image: "docker.io/kubesec/kubesec",
+					},
 				},
+				//ReadOnlyRootFilesystem: true,
+				//Name:                   "kubesec",
+				//Image:                  "docker.io/kubesec/kubesec",
+				//Annotations:            &map[string]string{},
+				//ReadOnlyRootFilesystem: true,
 			},
-			//ReadOnlyRootFilesystem: true,
-			//Name:                   "kubesec",
-			//Image:                  "docker.io/kubesec/kubesec",
-			//Annotations:            &map[string]string{},
-			//ReadOnlyRootFilesystem: true,
 		},
 	}
 	k8sConfig := k8s.DeploymentConfig{
@@ -129,12 +133,14 @@ func Test_newDeployment_PrometheusScrape_NotOverridden(t *testing.T) {
 				"prometheus.io.scrape": "true",
 			},
 		},
-		Spec: corev1.PodSpec{
-			//Name:  "kubesec",
-			Containers: []corev1.Container{
-				{
-					//Name: "kubespec",
-					Image: "docker.io/kubesec/kubesec",
+		Spec: faasv1.SharePodSpec{
+			PodSpec: corev1.PodSpec{
+				//Name:  "kubesec",
+				Containers: []corev1.Container{
+					{
+						//Name: "kubespec",
+						Image: "docker.io/kubesec/kubesec",
+					},
 				},
 			},
 		},

@@ -91,8 +91,8 @@ func Test_makeApplyHandler(t *testing.T) {
 	if err != nil {
 		t.Errorf("error validating sharepod: %v", err)
 	}
-	if updatedSharepod.Spec.Containers[0].Image != fn.Containers[0].Image {
-		t.Errorf("expected image '%s' got: '%s'", fn.Containers[0].Image, updatedSharepod.Spec.Containers[0].Image)
+	if updatedSharepod.Spec.PodSpec.Containers[0].Image != fn.Containers[0].Image {
+		t.Errorf("expected image '%s' got: '%s'", fn.Containers[0].Image, updatedSharepod.Spec.PodSpec.Containers[0].Image)
 	}
 
 	updatedLabels := updatedSharepod.Labels

@@ -3,13 +3,10 @@ package controller
 import (
 	"encoding/json"
 
-	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
+	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
 	"github.com/google/go-cmp/cmp"
 	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/apimachinery/pkg/util/intstr"
 	glog "k8s.io/klog"
 )
 
@@ -23,6 +20,7 @@ const (
 // newDeployment creates a new Deployment for a Function resource. It also sets
 // the appropriate OwnerReferences on the resource so handleObject can discover
 // the Function resource that 'owns' it.
+/*
 func newDeployment(
 	sharepod *faasv1.SharePod,
 	existingDeployment *appsv1.Deployment,
@@ -52,7 +50,7 @@ func newDeployment(
 
 	specCopy := sharepod.Spec.DeepCopy()
 
-	containerSpec := specCopy.Containers
+	containerSpec := specCopy.PodSpec. Containers
 
 	for i := range containerSpec {
 		c := &containerSpec[i]
@@ -109,7 +107,7 @@ func newDeployment(
 								Kind:    "SharePod",
 							}),
 						},
-					*/
+
 					Namespace:   sharepod.Namespace,
 					Labels:      labels,
 					Annotations: annotations,
@@ -122,17 +120,16 @@ func newDeployment(
 	//factory.ConfigureReadOnlyRootFilesystem(sharepod, deploymentSpec)
 	factory.ConfigureContainerUserID(deploymentSpec)
 
-	/*
+
 		var currentAnnotations map[string]string
 		if existingDeployment != nil {
 			currentAnnotations = existingDeployment.Annotations
 		}
-	*/
+
 
 	return deploymentSpec
 }
 
-/*
 func makeEnvVars(sharepod *faasv1.SharePod) []corev1.EnvVar {
 	envVars := []corev1.EnvVar{}
 
@@ -216,7 +213,7 @@ func makeNodeSelector(constraints []string) map[string]string {
 */
 
 // deploymentNeedsUpdate determines if the function spec is different from the deployment spec
-func deploymentNeedsUpdate(sharepod *faasv1.SharePod, deployment *appsv1.Deployment) bool {
+func sharepodNeedsUpdate(sharepod *faasv1.SharePod, deployment *appsv1.Deployment) bool {
 	prevFnSpecJson := deployment.ObjectMeta.Annotations[annotationFunctionSpec]
 	if prevFnSpecJson == "" {
 		// is a new deployment or is an old deployment that is missing the annotation
@@ -230,7 +227,9 @@ func deploymentNeedsUpdate(sharepod *faasv1.SharePod, deployment *appsv1.Deploym
 		return true
 	}
 	prevFn := faasv1.SharePod{
-		Spec: *prevFnSpec,
+		Spec: faasv1.SharePodSpec{
+			PodSpec: *prevFnSpec,
+		},
 	}
 
 	if diff := cmp.Diff(prevFn.Spec, sharepod.Spec); diff != "" {
