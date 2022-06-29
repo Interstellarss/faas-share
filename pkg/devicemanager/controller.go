@@ -469,13 +469,14 @@ func (c *Controller) syncHandler(key string) error {
 					utilruntime.HandleError(err)
 				}
 			*/
-
-			err := c.kubeclientset.CoreV1().Pods(namespace).Delete(context.TODO(), pod.Name, metav1.DeleteOptions{})
+			var gracetime int64
+			gracetime = 0
+			err := c.kubeclientset.CoreV1().Pods(namespace).Delete(context.TODO(), pod.Name, metav1.DeleteOptions{GracePeriodSeconds: &gracetime})
 			if err != nil {
 				utilruntime.HandleError(err)
 			}
 
-			newpod, err := c.kubeclientset.CoreV1().Pods(namespace).Create(context.TODO(), newPod(oldPod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid), metav1.CreateOptions{})
+			newpod, err := c.kubeclientset.CoreV1().Pods(namespace).Create(context.TODO(), newPod(oldPod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid, dep.Name), metav1.CreateOptions{})
 
 			if err != nil {
 				utilruntime.HandleError(err)
@@ -647,7 +648,7 @@ func (c *Controller) handleObject(obj interface{}) {
 // newDeployment creates a new Deployment for a SharePod resource. It also sets
 // the appropriate OwnerReferences on the resource so handleObject can discover
 // the SharePod resource that 'owns' it.
-func newPod(oldpod *corev1.Pod, isGPUPod bool, podManagerIP string, podManagerPort int, boundDeviceId string) *corev1.Pod {
+func newPod(oldpod *corev1.Pod, isGPUPod bool, podManagerIP string, podManagerPort int, boundDeviceId string, depName string) *corev1.Pod {
 	specCopy := oldpod.Spec.DeepCopy()
 	labelCopy := make(map[string]string, len(oldpod.ObjectMeta.Labels))
 	for key, val := range oldpod.ObjectMeta.Labels {
@@ -716,9 +717,13 @@ func newPod(oldpod *corev1.Pod, isGPUPod bool, podManagerIP string, podManagerPo
 
 	ownerRef := oldpod.ObjectMeta.DeepCopy().OwnerReferences
 
+	//ownerRef.
+
+	newName := depName + boundDeviceId
+
 	return &corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:            oldpod.ObjectMeta.Name,
+			Name:            newName,
 			Namespace:       oldpod.ObjectMeta.Namespace,
 			OwnerReferences: ownerRef,
 			Annotations:     annotationCopy,
