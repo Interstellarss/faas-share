@@ -303,26 +303,28 @@ func (c *Controller) syncHandler(key string) error {
 	//move on if is owned by a sharepod
 	ownerRef := metav1.GetControllerOf(dep)
 	if ownerRef == nil {
-
+		klog.Warning("Not the deployment we are looking for ...")
 		return nil
 
 	} else if ownerRef != nil {
 		// If this object is not owned by a SharePod, we should not do anything more
 		// with it.
 		if ownerRef.Kind != "SharePod" {
+			klog.Warning("Noth the deployment we are looking for ...")
 			return nil
 		}
 	}
 
 	//sharepod, err := c.sharepodsLister.SharePods(namespace).Get(name)
-
-	if err != nil {
-		if errors.IsNotFound(err) {
-			utilruntime.HandleError(fmt.Errorf("SharePod '%s' in not found", key))
-			return nil
+	/*
+		if err != nil {
+			if errors.IsNotFound(err) {
+				utilruntime.HandleError(fmt.Errorf("SharePod '%s' in not found", key))
+				return nil
+			}
+			return err
 		}
-		return err
-	}
+	*/
 
 	selector, err := metav1.LabelSelectorAsSelector(dep.Spec.Selector)
 	if err != nil {
@@ -337,18 +339,18 @@ func (c *Controller) syncHandler(key string) error {
 
 	for _, pod := range pods {
 
-		oldPod := pod.DeepCopy()
+		//check is pod already have gpuid
+		if pod.Annotations[kubesharev1.KubeShareResourceGPURequest] == "" || pod.Annotations[kubesharev1.KubeShareResourceGPUID] == "" {
+			klog.Info("Not a GPU pod for sure, skipping ...")
+			continue
+		}
 
 		if pod.Spec.NodeName == "" {
 			utilruntime.HandleError(fmt.Errorf(""))
 			return nil
 		}
 
-		//check is pod already have gpuid
-		if pod.Annotations[kubesharev1.KubeShareResourceGPURequest] == "" || pod.Annotations[kubesharev1.KubeShareResourceGPUID] == "" {
-			klog.Info("Not a GPU pod for sure, skipping ...")
-			continue
-		}
+		oldPod := pod.DeepCopy()
 
 		isGPUPod := false
 		gpu_request := 0.0
@@ -363,28 +365,28 @@ func (c *Controller) syncHandler(key string) error {
 			pod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUMemory] != "" ||
 			pod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUID] != "" {
 			var err error
-			gpu_limit, err = strconv.ParseFloat(pod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPULimit], 64)
+			gpu_limit, err = strconv.ParseFloat(oldPod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPULimit], 64)
 			if err != nil || gpu_limit > 1.0 || gpu_limit < 0.0 {
-				utilruntime.HandleError(fmt.Errorf("SharePod %s/%s gpu_limit value error: %s", pod.ObjectMeta.Namespace, pod.ObjectMeta.Name, kubesharev1.KubeShareResourceGPULimit))
+				utilruntime.HandleError(fmt.Errorf("SharePod %s/%s gpu_limit value error: %s", oldPod.ObjectMeta.Namespace, pod.ObjectMeta.Name, kubesharev1.KubeShareResourceGPULimit))
 				c.recorder.Event(pod, corev1.EventTypeWarning, ErrValueError, "Value error: "+kubesharev1.KubeShareResourceGPULimit)
 				//return nil
 				continue
 			}
-			gpu_request, err = strconv.ParseFloat(pod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPURequest], 64)
+			gpu_request, err = strconv.ParseFloat(oldPod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPURequest], 64)
 			if err != nil || gpu_request > gpu_limit || gpu_request < 0.0 {
 				utilruntime.HandleError(fmt.Errorf("SharePod %s/%s gpu_request value error: %s", pod.ObjectMeta.Namespace, pod.ObjectMeta.Name, kubesharev1.KubeShareResourceGPURequest))
 				c.recorder.Event(pod, corev1.EventTypeWarning, ErrValueError, "Value error: "+kubesharev1.KubeShareResourceGPURequest)
 				//return nil
 				continue
 			}
-			gpu_mem, err = strconv.ParseInt(pod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUMemory], 10, 64)
+			gpu_mem, err = strconv.ParseInt(oldPod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUMemory], 10, 64)
 			if err != nil || gpu_mem < 0 {
 				utilruntime.HandleError(fmt.Errorf("SharePod %s/%s gpu_mem value error: %s", pod.ObjectMeta.Namespace, pod.ObjectMeta.Name, kubesharev1.KubeShareResourceGPUMemory))
 				c.recorder.Event(pod, corev1.EventTypeWarning, ErrValueError, "Value error: "+kubesharev1.KubeShareResourceGPUMemory)
 				//return nil
 				continue
 			}
-			GPUID = pod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUID]
+			GPUID = oldPod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUID]
 			if len(GPUID) == 0 {
 				utilruntime.HandleError(fmt.Errorf("SharePod %s/%s GPUID value error: %s", pod.ObjectMeta.Namespace, pod.ObjectMeta.Name, kubesharev1.KubeShareResourceGPUID))
 				c.recorder.Event(pod, corev1.EventTypeWarning, ErrValueError, "Value error: "+kubesharev1.KubeShareResourceGPUID)
@@ -395,7 +397,7 @@ func (c *Controller) syncHandler(key string) error {
 			klog.Infof("This pod is GPU? %s", isGPUPod)
 		}
 		//for now simply this
-		if len(pod.Spec.Volumes) > 1 {
+		if len(oldPod.Spec.Volumes) > 1 {
 			klog.Infof("pod %s is a GPU pod, but already patched based on the volume length, skipping ...")
 			continue
 		}
@@ -410,7 +412,7 @@ func (c *Controller) syncHandler(key string) error {
 		// GPU Pod needs to be filled with request, limit, memory, and GPUID, or none of them.
 		// If something weird, reject it (record the reason to user then return nil)
 		if isGPUPod {
-			klog.Infof("Starting synchrize with pod %s, in namespace %s", pod.Name, pod.Namespace)
+			klog.Infof("Starting synchrize with pod %s, in namespace %s", oldPod.Name, oldPod.Namespace)
 			var errCode int
 			physicalGPUuuid, errCode = c.getPhysicalGPUuuid(oldPod.Spec.NodeName, GPUID, gpu_request, gpu_limit, gpu_mem, key, &physicalGPUport)
 			switch errCode {
