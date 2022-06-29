@@ -394,24 +394,35 @@ func (c *Controller) syncHandler(key string) error {
 			isGPUPod = true
 			klog.Infof("This pod is GPU? %s", isGPUPod)
 		}
+		//for now simply this
+		if len(pod.Spec.Volumes) > 1 {
+			klog.Infof("pod %s is a GPU pod, but already patched based on the volume length, skipping ...")
+			continue
+		}
 
+		var gracetime int64
+		gracetime = 0
+		err := c.kubeclientset.CoreV1().Pods(namespace).Delete(context.TODO(), pod.Name, metav1.DeleteOptions{GracePeriodSeconds: &gracetime})
+		if err != nil {
+			utilruntime.HandleError(err)
+		}
 		// GPU Pod needs to be filled with request, limit, memory, and GPUID, or none of them.
 		// If something weird, reject it (record the reason to user then return nil)
 		if isGPUPod {
 			klog.Infof("Starting synchrize with pod %s, in namespace %s", pod.Name, pod.Namespace)
 			var errCode int
-			physicalGPUuuid, errCode = c.getPhysicalGPUuuid(pod.Spec.NodeName, GPUID, gpu_request, gpu_limit, gpu_mem, key, &physicalGPUport)
+			physicalGPUuuid, errCode = c.getPhysicalGPUuuid(oldPod.Spec.NodeName, GPUID, gpu_request, gpu_limit, gpu_mem, key, &physicalGPUport)
 			switch errCode {
 			case 0:
 				klog.Infof("SharePod %s is bound to GPU uuid: %s", key, physicalGPUuuid)
 			case 1:
-				klog.Infof("SharePod %s/%s is waiting for dummy Pod", pod.ObjectMeta.Namespace, pod.ObjectMeta.Name)
+				klog.Infof("SharePod %s/%s is waiting for dummy Pod", oldPod.ObjectMeta.Namespace, oldPod.ObjectMeta.Name)
 				//return nil
 				continue
 			case 2:
 				err := fmt.Errorf("Resource exceed!")
 				utilruntime.HandleError(err)
-				c.recorder.Event(pod, corev1.EventTypeWarning, ErrValueError, "Resource exceed")
+				c.recorder.Event(oldPod, corev1.EventTypeWarning, ErrValueError, "Resource exceed")
 				return err
 			case 3:
 				err := fmt.Errorf("Pod manager port pool is full!")
@@ -419,19 +430,14 @@ func (c *Controller) syncHandler(key string) error {
 				return err
 			default:
 				utilruntime.HandleError(fmt.Errorf("Unknown Error"))
-				c.recorder.Event(pod, corev1.EventTypeWarning, ErrValueError, "Unknown Error")
+				c.recorder.Event(oldPod, corev1.EventTypeWarning, ErrValueError, "Unknown Error")
 				//return nil
 				//continue
 			}
-			klog.Infof("Pod %s in namespace %s should have GPUuuid %s", pod.Name, pod.Namespace, physicalGPUuuid)
+			klog.Infof("Pod %s in namespace %s should have GPUuuid %s", oldPod.Name, oldPod.Namespace, physicalGPUuuid)
 			//sharepod.Status.BoundDeviceID = physicalGPUuuid
 		}
 
-		//for now simply this
-		if len(pod.Spec.Volumes) > 1 {
-			klog.Infof("pod %s is a GPU pod, but already patched based on the volume length, skipping ...")
-			continue
-		}
 		//var newpod *corev1.Pod
 		if n, ok := nodesInfo[pod.Spec.NodeName]; ok {
 			//newpod2, err = c.kubeclientset.CoreV1().Pods(namespace).Patch()
@@ -469,12 +475,6 @@ func (c *Controller) syncHandler(key string) error {
 					utilruntime.HandleError(err)
 				}
 			*/
-			var gracetime int64
-			gracetime = 0
-			err := c.kubeclientset.CoreV1().Pods(namespace).Delete(context.TODO(), pod.Name, metav1.DeleteOptions{GracePeriodSeconds: &gracetime})
-			if err != nil {
-				utilruntime.HandleError(err)
-			}
 
 			newpod, err := c.kubeclientset.CoreV1().Pods(namespace).Create(context.TODO(), newPod(oldPod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid, dep.Name), metav1.CreateOptions{})
 
