@@ -400,6 +400,7 @@ func (c *Controller) syncHandler(key string) error {
 			continue
 		}
 
+		klog.Warningf("deleting this pod %s before creating a new one ...", pod.Name)
 		var gracetime int64
 		gracetime = 0
 		err := c.kubeclientset.CoreV1().Pods(namespace).Delete(context.TODO(), pod.Name, metav1.DeleteOptions{GracePeriodSeconds: &gracetime})
@@ -439,7 +440,7 @@ func (c *Controller) syncHandler(key string) error {
 		}
 
 		//var newpod *corev1.Pod
-		if n, ok := nodesInfo[pod.Spec.NodeName]; ok {
+		if n, ok := nodesInfo[oldPod.Spec.NodeName]; ok {
 			//newpod2, err = c.kubeclientset.CoreV1().Pods(namespace).Patch()
 			//TODO: perhaps change to patch?
 			//c.kubeclientset.CoreV1().Pods(namespace).
