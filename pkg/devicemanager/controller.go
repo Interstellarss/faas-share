@@ -620,40 +620,19 @@ func (c *Controller) handleObject(obj interface{}) {
 	}
 
 	if ownerRef := metav1.GetControllerOf(object); ownerRef != nil {
-		// If this object is not owned by a Replicaset and then by a Deployment, we should not do anything more
+		// If this object is not owned by a SharePod, we should not do anything more
 		// with it.
-		if ownerRef.Kind != "ReplicaSet" || ownerRef.Kind != "SharePod" {
-			klog.Infof("Object %s is not owned by a replicaset", object.GetName())
+		if ownerRef.Kind != "SharePod" {
 			return
 		}
 
-		replicaset, err := c.kubeclientset.AppsV1().ReplicaSets(object.GetNamespace()).Get(context.TODO(), ownerRef.Name, metav1.GetOptions{})
-
-		if err != nil {
-			klog.Errorf("Error finding replica set")
-			return
-		}
-		ownerRefReplica := metav1.GetControllerOf(replicaset)
-
-		if ownerRefReplica.Kind != "Deployment" {
-			klog.Infof("Not owned by a Deployment!")
-			return
-		}
-		//ownerRefReplica := metav1.GetControllerOf()
-
-		foo, err := c.deploymentLister.Deployments(object.GetNamespace()).Get(ownerRef.Name)
-
+		foo, err := c.sharepodsLister.SharePods(object.GetNamespace()).Get(ownerRef.Name)
 		if err != nil {
 			klog.V(4).Infof("ignoring orphaned object '%s' of SharePod '%s'", object.GetSelfLink(), ownerRef.Name)
 			return
 		}
 
-		newOwnerRef := metav1.GetControllerOf(foo)
-		if newOwnerRef.Kind != "SharePod" {
-			klog.V(4).Infof("Not owned by a Sharepod!")
-			return
-		}
-		c.enqueueDeployment(foo)
+		c.enqueueSharePod(foo)
 		return
 	}
 }
