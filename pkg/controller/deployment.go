@@ -114,7 +114,7 @@ func newDeployment(
 					Labels:      labels,
 					Annotations: annotations,
 				},
-				Spec: *specCopy,
+				Spec: corev1.PodSpec{},
 			},
 		},
 	}
