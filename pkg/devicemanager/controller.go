@@ -2,7 +2,6 @@ package devicemanager
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
@@ -12,7 +11,6 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/types"
 
 	// "k8s.io/apimachinery/pkg/labels"
 
@@ -439,28 +437,38 @@ func (c *Controller) syncHandler(key string) error {
 			//c.kubeclientset.CoreV1().Pods(namespace).
 			//newpod, err = c.kubeclientset.CoreV1().Pods(namespace).Update(context.TODO(), newPod(pod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid), metav1.UpdateOptions{})
 			//patchData := patchSharepod(pod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid)
-			newpod := newPod(pod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid)
 
-			klog.Info("Testing log info for...")
+			/*
+				newpod := newPod(pod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid)
 
-			patchData := []patchValue{
-				{
-					Op:    "add",
-					Path:  "/spec/containers",
-					Value: newpod.Spec.Containers,
-				},
-				{
-					Op:    "replace",
-					Path:  "/spec/volumes",
-					Value: newpod.Spec.Volumes,
-				},
-			}
+				klog.Info("Testing log info for...")
 
-			patchBytes, err := json.Marshal(patchData)
-			if err != nil {
-				utilruntime.HandleError(err)
-			}
-			newpod, err = c.kubeclientset.CoreV1().Pods(namespace).Patch(context.TODO(), pod.Name, types.JSONPatchType, patchBytes, metav1.PatchOptions{})
+
+				patchData := []patchValue{
+					{
+						Op:    "add",
+						Path:  "/spec/containers",
+						Value: newpod.Spec.Containers,
+					},
+					{
+						Op:    "replace",
+						Path:  "/spec/volumes",
+						Value: newpod.Spec.Volumes,
+					},
+				}
+
+				patchBytes, err := json.Marshal(patchData)
+				if err != nil {
+					utilruntime.HandleError(err)
+				}
+				newpod, err = c.kubeclientset.CoreV1().Pods(namespace).Patch(context.TODO(), pod.Name, types.JSONPatchType, patchBytes, metav1.PatchOptions{})
+
+				if err != nil {
+					utilruntime.HandleError(err)
+				}
+			*/
+
+			newpod, err := c.kubeclientset.CoreV1().Pods(namespace).Update(context.TODO(), newPod(pod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid), metav1.UpdateOptions{})
 
 			if err != nil {
 				utilruntime.HandleError(err)
