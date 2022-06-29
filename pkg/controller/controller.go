@@ -39,7 +39,8 @@ import (
 	"k8s.io/kubernetes/pkg/controller"
 	k8scontroller "k8s.io/kubernetes/pkg/controller"
 
-	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	//faasv1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
 )
 
 const (
@@ -491,18 +492,33 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 		// prevented from spamming the API service with the pod create requests
 		// after one of its pods fails.  Conveniently, this also prevents the
 		// event spam that those failures would generate.
-		successfulCreation, err := slowStartbatch(diff, k8scontroller.SlowStartInitialBatchSize, func() (corev1.Pod, error) {
+		successfulCreations, err := slowStartbatch(diff, k8scontroller.SlowStartInitialBatchSize, func() (corev1.Pod, error) {
 			newPod, err := c.kubeclient.CoreV1().Pods(shrCopy.Namespace).Create(context.TODO(), newPod(shr), metav1.CreateOptions{})
 
 			//
 			if err != nil {
 				if apierrors.HasStatusCause(err, v1.NamespaceTerminatingCause) {
-					return nil
+					return *newPod, nil
 				}
 			}
-			return err
+			return *newPod, err
 		})
 
+		// Any skipped pods that we never attempted to start shouldn't be expected.
+		// The skipped pods will be retried later. The next controller resync will
+		// retry the slow start process.
+		if skippedPods := diff - successfulCreations; skippedPods > 0 {
+			klog.V(2).Infof("Slow-start failure. Skipping creation of %d pods, decrementing expectations for %v %v/%v", skippedPods, shr.Kind, shr.Namespace, shr.Name)
+			for i := 0; i < skippedPods; i++ {
+
+				//Decrement the expected number of creates because the informer won't observe this pod
+				c.expectations.CreationObserved(shrKey)
+			}
+		}
+		return err
+
+	} else if diff > 0 {
+		klog.V(2).InfoS("Too many replicas", "replicaSet")
 	}
 
 }
