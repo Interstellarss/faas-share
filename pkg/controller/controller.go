@@ -5,9 +5,11 @@ import (
 	"fmt"
 	"strconv"
 	"strings"
+	"sync"
 	"time"
 
 	corev1 "k8s.io/api/core/v1"
+	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/util/runtime"
@@ -19,7 +21,9 @@ import (
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/record"
 	"k8s.io/client-go/util/workqueue"
+	"k8s.io/klog"
 	glog "k8s.io/klog"
+	"k8s.io/utils/integer"
 
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 
@@ -31,6 +35,11 @@ import (
 
 	coreinformers "k8s.io/client-go/informers/core/v1"
 	corelisters "k8s.io/client-go/listers/core/v1"
+
+	"k8s.io/kubernetes/pkg/controller"
+	k8scontroller "k8s.io/kubernetes/pkg/controller"
+
+	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
 )
 
 const (
@@ -63,6 +72,8 @@ type Controller struct {
 	// faasclientset is a clientset for our own API group
 	faasclientset clientset.Interface
 
+	podControl k8scontroller.PodControlInterface
+
 	//here is different from the controller in KubeShare, need to check here
 	//deploymentsLister appslisters.DeploymentLister
 	//deploymentsSynced cache.InformerSynced
@@ -80,7 +91,7 @@ type Controller struct {
 	podListerSynced cache.InformerSynced
 	podInformer     coreinformers.PodInformer
 
-	expectations *controller.UID
+	expectations *k8scontroller.UIDTrackingControllerExpectations
 
 	// workqueue is a rate limited work queue. This is used to queue work to be
 	// processed instead of performing it as soon as a change happens. This
@@ -104,7 +115,8 @@ func NewController(
 	faasclientset clientset.Interface,
 	kubeInformerFactory kubeinformers.SharedInformerFactory,
 	faasInformerFactory informers.SharedInformerFactory,
-	factory FunctionFactory) *Controller {
+	factory FunctionFactory,
+	podControl controller.PodControlInterface) *Controller {
 
 	// obtain references to shared index informers for the Deployment and Function types
 	//deploymentInformer := kubeInformerFactory.Apps().V1().Deployments()
@@ -125,6 +137,8 @@ func NewController(
 		faasclientset: faasclientset,
 		//deploymentsLister: deploymentInformer.Lister(),
 		//deploymentsSynced: deploymentInformer.Informer().HasSynced,
+		podControl:      podControl,
+		expectations:    k8scontroller.NewUIDTrackingControllerExpectations(k8scontroller.NewControllerExpectations()),
 		sharepodsLister: faasInformer.Lister(),
 		sharepodsSynced: faasInformer.Informer().HasSynced,
 		workqueue:       workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "Sharepods"),
@@ -145,7 +159,7 @@ func NewController(
 		DeleteFunc: controller.handleDeletedSharePod,
 	})
 
-	podInformer.Informer().AddEventHandler(cach.ResourceEventHandlerFuncs{
+	podInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
 		//TODO define behaviors for adding or updating, and delete pods
 
 	})
@@ -421,13 +435,13 @@ func (c *Controller) getSecrets(namespace string, secretNames []string) (map[str
 }
 */
 func (c *Controller) enqueeuSHR(shr *faasv1.SharePod) {
-	key, err := c.KeyFunc(rs)
+	key, err := controller.KeyFunc(shr)
 	if err != nil {
-		utilruntime.HandleError(fmt.Errorf("couldn't get key for object %#v: %v", rs, err))
+		utilruntime.HandleError(fmt.Errorf("couldn't get key for object %#v: %v", shr, err))
 		return
 	}
 
-	rsc.queue.Add(key)
+	shr.queue.Add(key)
 }
 
 func (c *Controller) handleDeletedSharePod(obj interface{}) {
@@ -443,10 +457,7 @@ func (c *Controller) handleDeletedSharePod(obj interface{}) {
 	name := sharepod.Name
 
 	//go c.removeSharepodFromList(sharepod)
-	err := c.kubeclient.AppsV1().Deployments(namespace).Delete(context.TODO(), name, metav1.DeleteOptions{})
-	if err != nil {
-		utilruntime.HandleError(fmt.Errorf("handleDeletedSharepod: error when deleting sharepod deployment"))
-	}
+	//todo: keep these pod? or keep the vGPU
 	//
 	//c.kubeclientset.AppsV1().Deployments()
 }
@@ -455,6 +466,8 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 	diff := len(filteredPods) - int(*(shr.Spec.Replicas))
 
 	shrKey, err := KeyFunc(shr)
+
+	shrCopy := shr.DeepCopy()
 
 	if err != nil {
 		utilruntime.HandleError(fmt.Errorf("couldn't get key for %v %#v: %v", shr.Kind, shr, err))
@@ -466,8 +479,71 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 
 		//may also set for burstresplicas?
 
+		c.expectations.ExpectCreations(shrKey, diff)
+
+		klog.V(2).Infof("Too few replicas for this SharePod...\n need %d replicas, creating %d", *(&shrCopy.Spec.Replicas), diff)
+
+		// Batch the pod creates. Batch sizes start at SlowStartInitialBatchSize
+		// and double with each successful iteration in a kind of "slow start".
+		// This handles attempts to start large numbers of pods that would
+		// likely all fail with the same error. For example a project with a
+		// low quota that attempts to create a large number of pods will be
+		// prevented from spamming the API service with the pod create requests
+		// after one of its pods fails.  Conveniently, this also prevents the
+		// event spam that those failures would generate.
+		successfulCreation, err := slowStartbatch(diff, k8scontroller.SlowStartInitialBatchSize, func() (corev1.Pod, error) {
+			newPod, err := c.kubeclient.CoreV1().Pods(shrCopy.Namespace).Create(context.TODO(), newPod(shr), metav1.CreateOptions{})
+
+			//
+			if err != nil {
+				if apierrors.HasStatusCause(err, v1.NamespaceTerminatingCause) {
+					return nil
+				}
+			}
+			return err
+		})
+
 	}
 
+}
+
+// slowStartBatch tries to call the provided function a total of 'count' times,
+// starting slow to check for errors, then speeding up if calls succeed.
+//
+// It groups the calls into batches, starting with a group of initialBatchSize.
+// Within each batch, it may call the function multiple times concurrently.
+//
+// If a whole batch succeeds, the next batch may get exponentially larger.
+// If there are any failures in a batch, all remaining batches are skipped
+// after waiting for the current batch to complete.
+//
+// It returns the number of successful calls to the function.
+func slowStartbatch(count int, initailBatchSize int, fn func() (corev1.Pod, error)) (int, error) {
+	remaining := count
+	successes := 0
+	for batchSize := integer.IntMin(remaining, initailBatchSize); batchSize > 0; batchSize = integer.IntMin(2*batchSize, remaining) {
+		errCh := make(chan error, batchSize)
+		var wg sync.WaitGroup
+		wg.Add(batchSize)
+		for i := 0; i < batchSize; i++ {
+			go func() {
+				defer wg.Done()
+				if _, err := fn(); err != nil {
+					errCh <- err
+				}
+			}()
+		}
+
+		wg.Wait()
+		curSuccesses := batchSize - len(errCh)
+		successes += curSuccesses
+		if len(errCh) > 0 {
+			return successes, <-errCh
+		}
+		remaining -= batchSize
+	}
+
+	return successes, nil
 }
 
 // getReplicas returns the desired number of replicas for a function taking into account
@@ -523,4 +599,23 @@ func getReplicas(sharepod *faasv1.SharePod) *int32 {
 	//minReplicas = &minrep
 
 	return minReplicas
+}
+
+func newPod(sharepod *faasv1.SharePod) *corev1.Pod {
+	podSpecCopy := sharepod.Spec.PodSpec.DeepCopy()
+
+	metadataCopy := sharepod.ObjectMeta.DeepCopy()
+
+	label := controller.makeLabels()
+
+	newPod := &corev1.Pod{
+		ObjectMeta: metav1.ObjectMeta{},
+		Spec:       corev1.PodSpec{
+
+			//Containers: ,
+		},
+	}
+
+	return newPod
+
 }
