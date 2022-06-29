@@ -8,7 +8,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This program built for i386-apple-darwin11.3.0
  
 
-# Make data base, printed on Wed Jun 29 11:02:11 2022
+# Make data base, printed on Wed Jun 29 13:06:02 2022
 
 # Variables
 
@@ -41,19 +41,19 @@ _ = /usr/bin/make
 # environment
 TIGRESS_HOME = /Users/puxuan/downloads/tigress/3.1
 # makefile (from `Makefile', line 27)
-GIT_COMMIT := 7d075aece5accaf64f5c813062496a9ca5e9ffb1
+GIT_COMMIT := fa551dad89390c1b493b6795772d4728552cf7a8
 # makefile (from `Makefile', line 1)
 MAKEFILE_LIST :=  Makefile
 # environment
 VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
 # makefile (from `Makefile', line 26)
-VERSION := v0.1.20-18-g7d075ae-dirty
+VERSION := v0.1.20-3-gfa551da-dirty
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
 __CFBundleIdentifier = com.microsoft.VSCode
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /var/folders/7m/b3h099s90tgbh61my4m6x9c80000gn/T/vscode-ipc-3a83d532-b888-478f-bc86-287ec3c17eb5.sock
+VSCODE_IPC_HOOK_EXTHOST = /var/folders/7m/b3h099s90tgbh61my4m6x9c80000gn/T/vscode-ipc-bfab4610-3631-4e12-80fa-1a715775ff66.sock
 # environment
 VSCODE_CWD = /
 # environment
@@ -503,6 +503,6 @@ install:
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Wed Jun 29 11:02:11 2022
+# Finished Make data base on Wed Jun 29 13:06:03 2022
 
  
