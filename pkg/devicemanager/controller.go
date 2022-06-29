@@ -391,7 +391,9 @@ func (c *Controller) syncHandler(key string) error {
 				continue
 			}
 			isGPUPod = true
+			klog.Infof("This pod is GPU? %s", isGPUPod)
 		}
+
 		// GPU Pod needs to be filled with request, limit, memory, and GPUID, or none of them.
 		// If something weird, reject it (record the reason to user then return nil)
 		if isGPUPod {
@@ -437,12 +439,12 @@ func (c *Controller) syncHandler(key string) error {
 
 			patchData := []patchValue{
 				{
-					Op:    "replace",
+					Op:    "add",
 					Path:  "/spec/containers",
 					Value: newpod.Spec.Containers,
 				},
 				{
-					Op:    "replace",
+					Op:    "add",
 					Path:  "/spec/volumes",
 					Value: newpod.Spec.Volumes,
 				},
@@ -510,7 +512,7 @@ func (c *Controller) syncHandler(key string) error {
 		}
 	*/
 
-	//c.recorder.Event(sharepod, corev1.EventTypeNormal, SuccessSynced, MessageResourceSynced)
+	//kubec.recorder.Event(sharepod, corev1.EventTypeNormal, SuccessSynced, MessageResourceSynced)
 	return nil
 }
 
