@@ -345,7 +345,8 @@ func (c *Controller) syncHandler(key string) error {
 		}
 
 		//check is pod already have gpuid
-		if pod.Annotations[kubesharev1.KubeShareResourceGPUID] != "" {
+		if pod.Annotations[kubesharev1.KubeShareResourceGPURequest] == "" || pod.Annotations[kubesharev1.KubeShareResourceGPUID] == "" {
+			klog.Info("Not a GPU pod for sure, skipping ...")
 			continue
 		}
 
@@ -426,7 +427,9 @@ func (c *Controller) syncHandler(key string) error {
 			//sharepod.Status.BoundDeviceID = physicalGPUuuid
 		}
 
+		//for now simply this
 		if len(pod.Spec.Volumes) > 1 {
+			klog.Infof("pod %s is a GPU pod, but already patched based on the volume length, skipping ...")
 			continue
 		}
 		//var newpod *corev1.Pod
