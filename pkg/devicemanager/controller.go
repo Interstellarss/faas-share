@@ -337,6 +337,8 @@ func (c *Controller) syncHandler(key string) error {
 
 	for _, pod := range pods {
 
+		oldPod := pod.DeepCopy()
+
 		if pod.Spec.NodeName == "" {
 			utilruntime.HandleError(fmt.Errorf(""))
 			return nil
@@ -468,7 +470,12 @@ func (c *Controller) syncHandler(key string) error {
 				}
 			*/
 
-			newpod, err := c.kubeclientset.CoreV1().Pods(namespace).Update(context.TODO(), newPod(pod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid), metav1.UpdateOptions{})
+			err := c.kubeclientset.CoreV1().Pods(namespace).Delete(context.TODO(), pod.Name, metav1.DeleteOptions{})
+			if err != nil {
+				utilruntime.HandleError(err)
+			}
+
+			newpod, err := c.kubeclientset.CoreV1().Pods(namespace).Create(context.TODO(), newPod(oldPod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid), metav1.CreateOptions{})
 
 			if err != nil {
 				utilruntime.HandleError(err)
