@@ -121,7 +121,7 @@ func newDeployment(
 							Image: "alpine:latest",
 						},
 					},
-					RestartPolicy: corev1.RestartPolicyNever,
+					//RestartPolicy: corev1.RestartPolicyNever,
 				},
 			},
 		},
