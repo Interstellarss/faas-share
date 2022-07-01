@@ -114,7 +114,15 @@ func newDeployment(
 					Labels:      labels,
 					Annotations: annotations,
 				},
-				Spec: corev1.PodSpec{},
+				Spec: corev1.PodSpec{
+					Containers: []corev1.Container{
+						corev1.Container{
+							Name:  "sleepforever",
+							Image: "alpine:latest",
+						},
+					},
+					RestartPolicy: corev1.RestartPolicyNever,
+				},
 			},
 		},
 	}

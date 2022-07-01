@@ -8,7 +8,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This program built for i386-apple-darwin11.3.0
  
 
-# Make data base, printed on Wed Jun 29 15:46:28 2022
+# Make data base, printed on Fri Jul  1 11:58:49 2022
 
 # Variables
 
@@ -41,19 +41,19 @@ _ = /usr/bin/make
 # environment
 TIGRESS_HOME = /Users/puxuan/downloads/tigress/3.1
 # makefile (from `Makefile', line 27)
-GIT_COMMIT := d7e254143d18de20d5a21a2cfe73c706f6038452
+GIT_COMMIT := ea1511ae1d622f5a4a84c5db4d0725bd4645dfbb
 # makefile (from `Makefile', line 1)
 MAKEFILE_LIST :=  Makefile
 # environment
 VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
 # makefile (from `Makefile', line 26)
-VERSION := v0.1.20-7-gd7e2541-dirty
+VERSION := v0.1.20-dirty
 # environment
 VSCODE_VERBOSE_LOGGING = true
 # environment
 __CFBundleIdentifier = com.microsoft.VSCode
 # environment
-VSCODE_IPC_HOOK_EXTHOST = /var/folders/7m/b3h099s90tgbh61my4m6x9c80000gn/T/vscode-ipc-e91395c2-7d91-4acb-a5a5-197252960844.sock
+VSCODE_IPC_HOOK_EXTHOST = /var/folders/7m/b3h099s90tgbh61my4m6x9c80000gn/T/vscode-ipc-1930554b-251b-4168-8a86-bc6623e72b9e.sock
 # environment
 VSCODE_CWD = /
 # environment
@@ -172,6 +172,7 @@ MAKEFILES :=
 <F = $(notdir $<)
 # makefile (from `Makefile', line 4)
 BIN_DIR = bin/
+ 
 # environment
 LC_ALL = C
 # environment
@@ -193,7 +194,7 @@ MAKELEVEL := 0
 # environment
 CONDA_PREFIX = /Users/puxuan/opt/anaconda3
 # environment
-VSCODE_PID = 1098
+VSCODE_PID = 64473
 # environment
 _CE_CONDA = 
 # environment
@@ -285,7 +286,6 @@ stop-kind:
 push:
 #  Phony target (prerequisite of .PHONY).
 #  Implicit rule search has not been done.
- 
 #  File does not exist.
 #  File has not been updated.
 #  commands to execute (from `Makefile', line 84):
@@ -439,6 +439,7 @@ build-buildx:
 	--push \
 	--platform linux/amd64 \
 	--build-arg GIT_COMMIT=$(GIT_COMMIT) \
+ 
 	--build-arg VERSION=$(VERSION) \
 	--tag $(SERVER)/$(OWNER)/$(IMG_NAME):$(TAG) \
 	.
@@ -503,6 +504,6 @@ install:
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Wed Jun 29 15:46:28 2022
+# Finished Make data base on Fri Jul  1 11:58:49 2022
 
  
