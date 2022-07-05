@@ -366,6 +366,12 @@ func syncNodeResources(nodeList []*corev1.Node) (nodeResources NodeResources) {
 			GpuFreeCount: gpuNum,
 			GpuFree:      make(map[string]*GPUInfo, gpuNum),
 		}
+
+		//tmp := nodeResources[node.ObjectMeta.Name]
+		//this.PrintMe()
+		nodeResources.PrintMe()
+		//klog.Info(PrintMe(tmp))
+		//klog.Infof(nodeResources[node.ObjectMeta.Name].PrintMe())
 		nodeResourcesMux.Unlock()
 		wait.Done()
 	}
