@@ -346,7 +346,7 @@ func (c *Controller) bindSharePodToNode(gpupod *corev1.Pod, schedNode, schedGPUI
 
 		gpupodCopy2 := newPod.DeepCopy()
 	*/
-	klog.Infof("Checking patched pod %s, with GPUID %s, and schedNode %s", newCopy.Name, newCopy.Annotations[kubesharev1.KubeShareResourceGPUID], gpupodCopy2.Spec.NodeName)
+	klog.Infof("Checking patched pod %s, with GPUID %s, and schedNode %s", newCopy.Name, newCopy.Annotations[kubesharev1.KubeShareResourceGPUID], newCopy.Spec.NodeName)
 
 	return err
 }
