@@ -98,7 +98,7 @@ func newDeployment(
 				},
 			},
 
-			RevisionHistoryLimit: int32p(0),
+			RevisionHistoryLimit: int32p(2),
 			Template: corev1.PodTemplateSpec{
 				ObjectMeta: metav1.ObjectMeta{
 					/*
