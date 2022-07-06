@@ -312,10 +312,15 @@ func (c *Controller) bindSharePodToNode(gpupod *corev1.Pod, schedNode, schedGPUI
 
 	klog.Infof("Successfully deleted old pod %s of SharePod", gpupodCopy.Name)
 
+	//gpupodCopy.ObjectMeta.
 	gpupodCopy.Name += schedGPUID
 	newPod, err := c.kubeclientset.CoreV1().Pods(gpupodCopy.Namespace).Create(context.TODO(), &corev1.Pod{
 		ObjectMeta: gpupodCopy.ObjectMeta,
-		Spec:       gpupodCopy.Spec,
+		Spec: corev1.PodSpec{
+			Containers:     gpupodCopy.Spec.Containers,
+			NodeName:       gpupodCopy.Spec.NodeName,
+			InitContainers: gpupodCopy.Spec.InitContainers,
+		},
 	}, metav1.CreateOptions{})
 
 	if err != nil {
