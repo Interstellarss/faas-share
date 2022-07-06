@@ -276,7 +276,7 @@ func (c *Controller) syncHandler(key string) error {
 	//update pod
 	now := time.Now()
 	klog.Infof("Starting scheduling Sharepod %s at %s", name, now.String())
-	klog.Infof("SharePod '%s' had been scheduled to node '%s' GPUID '%s'.", key, schedNode, schedGPUID)
+	klog.Infof("Pod of SharePod '%s' had been scheduled to node '%s' GPUID '%s'.", key, schedNode, schedGPUID)
 
 	if err := c.bindSharePodToNode(gpupod, schedNode, schedGPUID); err != nil {
 		return err
@@ -310,6 +310,8 @@ func (c *Controller) bindSharePodToNode(gpupod *corev1.Pod, schedNode, schedGPUI
 		utilruntime.HandleError(err)
 	}
 
+	klog.Infof("Successfully deleted old pod %s of SharePod", gpupodCopy.Name)
+
 	gpupodCopy.Name += schedGPUID
 	newPod, err := c.kubeclientset.CoreV1().Pods(gpupodCopy.Namespace).Create(context.TODO(), &corev1.Pod{
 		ObjectMeta: gpupodCopy.ObjectMeta,
@@ -319,6 +321,8 @@ func (c *Controller) bindSharePodToNode(gpupod *corev1.Pod, schedNode, schedGPUI
 	if err != nil {
 		utilruntime.HandleError(err)
 	}
+
+	klog.Infof("Creating new pod %sfor SharePod...", newPod.Name)
 
 	//_, err := c.kubeshareclientset.KubeshareV1().SharePods(gpupodCopy.Namespace).Update(context.TODO(), gpupodCopy, metav1.UpdateOptions{})
 	//may also update sharepod status?
