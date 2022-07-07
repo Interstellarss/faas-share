@@ -401,14 +401,6 @@ func (c *Controller) syncHandler(key string) error {
 			klog.Infof("pod %s is a GPU pod, but already patched based on the volume length, skipping ...")
 			continue
 		}
-
-		klog.Warningf("deleting this pod %s before creating a new one ...", pod.Name)
-		var gracetime int64
-		gracetime = 0
-		err := c.kubeclientset.CoreV1().Pods(namespace).Delete(context.TODO(), pod.Name, metav1.DeleteOptions{GracePeriodSeconds: &gracetime})
-		if err != nil {
-			utilruntime.HandleError(err)
-		}
 		// GPU Pod needs to be filled with request, limit, memory, and GPUID, or none of them.
 		// If something weird, reject it (record the reason to user then return nil)
 		if isGPUPod {
@@ -426,16 +418,18 @@ func (c *Controller) syncHandler(key string) error {
 				err := fmt.Errorf("Resource exceed!")
 				utilruntime.HandleError(err)
 				c.recorder.Event(oldPod, corev1.EventTypeWarning, ErrValueError, "Resource exceed")
-				return err
+				//return err
+				continue
 			case 3:
 				err := fmt.Errorf("Pod manager port pool is full!")
 				utilruntime.HandleError(err)
-				return err
+				//return err
+				continue
 			default:
 				utilruntime.HandleError(fmt.Errorf("Unknown Error"))
 				c.recorder.Event(oldPod, corev1.EventTypeWarning, ErrValueError, "Unknown Error")
 				//return nil
-				//continue
+				continue
 			}
 			klog.Infof("Pod %s in namespace %s should have GPUuuid %s", oldPod.Name, oldPod.Namespace, physicalGPUuuid)
 			//sharepod.Status.BoundDeviceID = physicalGPUuuid
@@ -478,6 +472,14 @@ func (c *Controller) syncHandler(key string) error {
 					utilruntime.HandleError(err)
 				}
 			*/
+
+			klog.Warningf("deleting this pod %s before creating a new one ...", pod.Name)
+			var gracetime int64
+			gracetime = 0
+			err := c.kubeclientset.CoreV1().Pods(namespace).Delete(context.TODO(), pod.Name, metav1.DeleteOptions{GracePeriodSeconds: &gracetime})
+			if err != nil {
+				utilruntime.HandleError(err)
+			}
 
 			newpod, err := c.kubeclientset.CoreV1().Pods(namespace).Create(context.TODO(), newPod(oldPod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid, dep.Name), metav1.CreateOptions{})
 
@@ -637,13 +639,14 @@ func (c *Controller) handleObject(obj interface{}) {
 			return
 		}
 
-		foo, err := c.sharepodsLister.SharePods(object.GetNamespace()).Get(ownerRef.Name)
+		foo, err := c.kubeclientset.AppsV1().Deployments(object.GetNamespace()).Get(context.TODO(), ownerRef.Name, metav1.GetOptions{})
+		//foo, err := c.sharepodsLister.SharePods(object.GetNamespace()).Get(ownerRef.Name)
 		if err != nil {
 			klog.V(4).Infof("ignoring orphaned object '%s' of SharePod '%s'", object.GetSelfLink(), ownerRef.Name)
 			return
 		}
 
-		c.enqueueSharePod(foo)
+		c.enqueueDeployment(foo)
 		return
 	}
 }
