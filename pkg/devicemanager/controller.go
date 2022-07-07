@@ -481,7 +481,14 @@ func (c *Controller) syncHandler(key string) error {
 				utilruntime.HandleError(err)
 			}
 
-			newpod, err := c.kubeclientset.CoreV1().Pods(namespace).Create(context.TODO(), newPod(oldPod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid, dep.Name), metav1.CreateOptions{})
+			shr, err := c.kubeshareclientset.KubeshareV1().SharePods(namespace).Get(context.TODO(), dep.Name, metav1.GetOptions{})
+			if err != nil {
+				utilruntime.HandleError(err)
+			}
+
+			shrCopy := shr.DeepCopy()
+
+			newpod, err := c.kubeclientset.CoreV1().Pods(namespace).Create(context.TODO(), newPod(oldPod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid, shrCopy), metav1.CreateOptions{})
 
 			if err != nil {
 				utilruntime.HandleError(err)
@@ -654,15 +661,11 @@ func (c *Controller) handleObject(obj interface{}) {
 // newDeployment creates a new Deployment for a SharePod resource. It also sets
 // the appropriate OwnerReferences on the resource so handleObject can discover
 // the SharePod resource that 'owns' it.
-func (c *Controller) newPod(oldpod *corev1.Pod, isGPUPod bool, podManagerIP string, podManagerPort int, boundDeviceId string, depName string) *corev1.Pod {
+func newPod(oldpod *corev1.Pod, isGPUPod bool, podManagerIP string, podManagerPort int, boundDeviceId string, shr *kubesharev1.SharePod) *corev1.Pod {
 	podCopy := oldpod.DeepCopy()
 	labelCopy := make(map[string]string, len(oldpod.ObjectMeta.Labels))
 
-	shr, err := c.kubeshareclientset.KubeshareV1().SharePods(podCopy.Namespace).Get(context.TODO(), depName, metav1.GetOptions{})
-
-	if err != nil {
-		utilruntime.HandleError(err)
-	}
+	//shr, err := c.kubeshareclientset.KubeshareV1().SharePods(podCopy.Namespace).Get(context.TODO(), depName, metav1.GetOptions{})
 
 	podCopy.Spec.Containers = shr.Spec.Containers
 	//podCopy.Spec.Ini
@@ -735,7 +738,7 @@ func (c *Controller) newPod(oldpod *corev1.Pod, isGPUPod bool, podManagerIP stri
 
 	//ownerRef.
 
-	newName := depName + "-" + annotationCopy[kubesharev1.KubeShareResourceGPUID]
+	newName := shr.Name + "-" + annotationCopy[kubesharev1.KubeShareResourceGPUID]
 
 	return &corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
