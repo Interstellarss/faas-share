@@ -725,7 +725,7 @@ func newPod(oldpod *corev1.Pod, isGPUPod bool, podManagerIP string, podManagerPo
 
 	//ownerRef.
 
-	newName := depName + boundDeviceId
+	newName := depName + annotationCopy[kubesharev1.KubeShareResourceGPUID]
 
 	return &corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
