@@ -654,9 +654,19 @@ func (c *Controller) handleObject(obj interface{}) {
 // newDeployment creates a new Deployment for a SharePod resource. It also sets
 // the appropriate OwnerReferences on the resource so handleObject can discover
 // the SharePod resource that 'owns' it.
-func newPod(oldpod *corev1.Pod, isGPUPod bool, podManagerIP string, podManagerPort int, boundDeviceId string, depName string) *corev1.Pod {
-	specCopy := oldpod.Spec.DeepCopy()
+func (c *Controller) newPod(oldpod *corev1.Pod, isGPUPod bool, podManagerIP string, podManagerPort int, boundDeviceId string, depName string) *corev1.Pod {
+	podCopy := oldpod.DeepCopy()
 	labelCopy := make(map[string]string, len(oldpod.ObjectMeta.Labels))
+
+	shr, err := c.kubeshareclientset.KubeshareV1().SharePods(podCopy.Namespace).Get(context.TODO(), depName, metav1.GetOptions{})
+
+	if err != nil {
+		utilruntime.HandleError(err)
+	}
+
+	podCopy.Spec.Containers = shr.Spec.Containers
+	//podCopy.Spec.Ini
+
 	for key, val := range oldpod.ObjectMeta.Labels {
 		labelCopy[key] = val
 	}
@@ -670,8 +680,8 @@ func newPod(oldpod *corev1.Pod, isGPUPod bool, podManagerIP string, podManagerPo
 		// 	Image:   "ncy9371/debian:stretch-slim-wget",
 		// 	Command: []string{"sh", "-c", "wget -qO /pod_manager 140.114.78.229/web/pod_manager && chmod +x /pod_manager && SCHEDULER_IP=$(cat " + SchedulerIpPath + ") /pod_manager"},
 		// })
-		for i := range specCopy.Containers {
-			c := &specCopy.Containers[i]
+		for i := range podCopy.Spec.Containers {
+			c := &podCopy.Spec.Containers[i]
 			c.Env = append(c.Env,
 				corev1.EnvVar{
 					Name:  "NVIDIA_VISIBLE_DEVICES",
@@ -705,7 +715,7 @@ func newPod(oldpod *corev1.Pod, isGPUPod bool, podManagerIP string, podManagerPo
 				},
 			)
 		}
-		specCopy.Volumes = append(specCopy.Volumes,
+		podCopy.Spec.Volumes = append(podCopy.Spec.Volumes,
 			corev1.Volume{
 				Name: "kubeshare-lib",
 				VolumeSource: corev1.VolumeSource{
@@ -725,7 +735,7 @@ func newPod(oldpod *corev1.Pod, isGPUPod bool, podManagerIP string, podManagerPo
 
 	//ownerRef.
 
-	newName := depName + annotationCopy[kubesharev1.KubeShareResourceGPUID]
+	newName := depName + "-" + annotationCopy[kubesharev1.KubeShareResourceGPUID]
 
 	return &corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
@@ -735,7 +745,7 @@ func newPod(oldpod *corev1.Pod, isGPUPod bool, podManagerIP string, podManagerPo
 			Annotations:     annotationCopy,
 			Labels:          labelCopy,
 		},
-		Spec: *specCopy,
+		Spec: *&podCopy.Spec,
 	}
 }
 
