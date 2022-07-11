@@ -283,7 +283,6 @@ func (c *Controller) syncHandler(key string) error {
 	}
 
 	klog.Infof("TESTING: Done scheduling pod %s ", gpupod.Name)
-
 	c.recorder.Event(gpupod, corev1.EventTypeNormal, SuccessSynced, MessageResourceSynced)
 	return nil
 }
