@@ -321,21 +321,24 @@ func (c *Controller) bindSharePodToNode(gpupod *corev1.Pod, schedNode, schedGPUI
 
 	//gpupodCopy.ObjectMeta.
 	gpupodCopy.Name += "-x"
+	klog.Infof("Creating new pod %sfor SharePod...", gpupodCopy.Name)
 	newPod, err := c.kubeclientset.CoreV1().Pods(gpupodCopy.Namespace).Create(context.TODO(), &corev1.Pod{
 		ObjectMeta: gpupodCopy.ObjectMeta,
 		Spec: corev1.PodSpec{
-			Containers:     gpupodCopy.Spec.Containers,
-			NodeName:       gpupodCopy.Spec.NodeName,
-			InitContainers: gpupodCopy.Spec.InitContainers,
+			Containers: []corev1.Container{
+				corev1.Container{
+					Name:  "sleepforever",
+					Image: "alpine:latest",
+				},
+			},
+			NodeName: gpupodCopy.Spec.NodeName,
+			//InitContainers: gpupodCopy.Spec.InitContainers,
 		},
 	}, metav1.CreateOptions{})
 
 	if err != nil {
 		utilruntime.HandleError(err)
 	}
-
-	klog.Infof("Creating new pod %sfor SharePod...", newPod.Name)
-
 	//_, err := c.kubeshareclientset.KubeshareV1().SharePods(gpupodCopy.Namespace).Update(context.TODO(), gpupodCopy, metav1.UpdateOptions{})
 	//may also update sharepod status?
 	//
@@ -361,6 +364,7 @@ func (c *Controller) bindSharePodToNode(gpupod *corev1.Pod, schedNode, schedGPUI
 		//_, err := c.kubeclientset.CoreV1().Pods(gpupodCopy.Namespace).Update(context.TODO(), gpupodCopy, metav1.UpdateOptions{})
 		newPod, err := c.kubeclientset.CoreV1().Pods(gpupodCopy.Namespace).Patch(context.TODO(), gpupodCopy.Name, types.JSONPatchType, patchBytes, metav1.PatchOptions{})
 	*/
+
 	newCopy := newPod.DeepCopy()
 
 	klog.Infof("Checking patched pod %s, with GPUID %s, and schedNode %s", newCopy.Name, newCopy.Annotations[kubesharev1.KubeShareResourceGPUID], newCopy.Spec.NodeName)
