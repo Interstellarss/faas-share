@@ -3,13 +3,18 @@ package scheduler
 import (
 	"math"
 	"sync"
+	"time"
 
 	kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/klog"
 )
 
 func scheduleSharePod(isGPUPod bool, gpu_request float64, gpu_mem int64, gpupod *corev1.Pod, nodeList []*corev1.Node, podList []*corev1.Pod, sharePodList []*kubesharev1.SharePod) (string, string) {
 
+	//update pod
+	now := time.Now()
+	klog.Infof("TESTING: Starting scheduling Sharepod %s at %s", gpupod.Name, now.String())
 	// Implement custom scheduling algorithm and replace the function assignment
 	// Prototype: FUNC(bool, string, *kubesharev1.SharePod, NodeResources) (string, string, error)
 	ap := ScheduleAlgorithmBestFit

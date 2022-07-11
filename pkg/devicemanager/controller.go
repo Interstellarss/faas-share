@@ -473,7 +473,7 @@ func (c *Controller) syncHandler(key string) error {
 				}
 			*/
 
-			klog.Warningf("deleting this pod %s before creating a new one ...", pod.Name)
+			klog.Warningf("TEST: deleting this pod %s before creating a new one ...", pod.Name)
 			var gracetime int64
 			gracetime = 0
 			err := c.kubeclientset.CoreV1().Pods(namespace).Delete(context.TODO(), pod.Name, metav1.DeleteOptions{GracePeriodSeconds: &gracetime})
@@ -493,8 +493,7 @@ func (c *Controller) syncHandler(key string) error {
 			if err != nil {
 				utilruntime.HandleError(err)
 			}
-
-			klog.Infof("Checking patched pod %s, with Volumes %s, and Container %s", newpod.Name, &newpod.Spec.Volumes[0], &newpod.Spec.Containers[0])
+			klog.Infof("TEST: Checking patched pod %s, with Volumes %s, and Container %s", newpod.Name, &newpod.Spec.Volumes[0], &newpod.Spec.Containers[0])
 			c.recorder.Event(newpod, corev1.EventTypeNormal, SuccessSynced, MessageResourceSynced)
 
 			//klog.Warningf("patched pod %s with Env %s", newpod.Name, &newpod.Spec.Containers[0].Env[0])

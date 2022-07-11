@@ -265,6 +265,7 @@ func (c *Controller) syncHandler(key string) error {
 	if err != nil {
 		return err
 	}
+
 	schedNode, schedGPUID := scheduleSharePod(isGPUPod, gpu_request, gpu_mem, gpupod, nodeList, podList, sharePodList)
 	if schedNode == "" {
 		klog.Infof("No enough resources for Pod of a SharePod: %s/%s", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name)
@@ -275,14 +276,13 @@ func (c *Controller) syncHandler(key string) error {
 		return nil
 	}
 
-	//update pod
-	now := time.Now()
-	klog.Infof("Starting scheduling Sharepod %s at %s", name, now.String())
 	klog.Infof("Pod of SharePod '%s' had been scheduled to node '%s' GPUID '%s'.", key, schedNode, schedGPUID)
 
 	if err := c.bindSharePodToNode(gpupod, schedNode, schedGPUID); err != nil {
 		return err
 	}
+
+	klog.Infof("TESTING: Done scheduling pod %s ", gpupod.Name)
 
 	c.recorder.Event(gpupod, corev1.EventTypeNormal, SuccessSynced, MessageResourceSynced)
 	return nil
