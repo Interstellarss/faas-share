@@ -325,7 +325,13 @@ func (c *Controller) bindSharePodToNode(gpupod *corev1.Pod, schedNode, schedGPUI
 	gpupodCopy.Name += "-x"
 	klog.Infof("Creating new pod %sfor SharePod...", gpupodCopy.Name)
 	newPod, err := c.kubeclientset.CoreV1().Pods(gpupodCopy.Namespace).Create(context.TODO(), &corev1.Pod{
-		ObjectMeta: gpupodCopy.ObjectMeta,
+		ObjectMeta: metav1.ObjectMeta{
+			Name:            gpupodCopy.Name,
+			Namespace:       gpupodCopy.ObjectMeta.Namespace,
+			OwnerReferences: gpupodCopy.OwnerReferences,
+			Annotations:     gpupodCopy.Annotations,
+			Labels:          gpupodCopy.Labels,
+		},
 		Spec: corev1.PodSpec{
 			Containers: []corev1.Container{
 				corev1.Container{
