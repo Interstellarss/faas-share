@@ -277,7 +277,9 @@ func (c *Controller) syncHandler(key string) error {
 	klog.Infof("Pod of SharePod '%s' had been scheduled to node '%s' GPUID '%s'.", key, schedNode, schedGPUID)
 
 	gpupodCopy := gpupod.DeepCopy()
-	Err := c.kubeclientset.CoreV1().Pods(namespace).Delete(context.TODO(), name, metav1.DeleteOptions{})
+	var gracetime int64
+	gracetime = 0
+	Err := c.kubeclientset.CoreV1().Pods(namespace).Delete(context.TODO(), name, metav1.DeleteOptions{GracePeriodSeconds: &gracetime})
 
 	if Err != nil {
 		return Err
