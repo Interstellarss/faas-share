@@ -676,6 +676,8 @@ func newPod(oldpod *corev1.Pod, isGPUPod bool, podManagerIP string, podManagerPo
 	for key, val := range oldpod.ObjectMeta.Annotations {
 		annotationCopy[key] = val
 	}
+
+	newName := shr.Name + "-" + annotationCopy[kubesharev1.KubeShareResourceGPUID]
 	if isGPUPod {
 		// specCopy.Containers = append(specCopy.Containers, corev1.Container{
 		// 	Name:    "podmanager",
@@ -707,7 +709,7 @@ func newPod(oldpod *corev1.Pod, isGPUPod bool, podManagerIP string, podManagerPo
 				},
 				corev1.EnvVar{
 					Name:  "POD_NAME",
-					Value: fmt.Sprintf("%s/%s", oldpod.ObjectMeta.Namespace, oldpod.ObjectMeta.Name),
+					Value: fmt.Sprintf("%s/%s", oldpod.ObjectMeta.Namespace, newName),
 				},
 			)
 			c.VolumeMounts = append(c.VolumeMounts,
@@ -736,8 +738,6 @@ func newPod(oldpod *corev1.Pod, isGPUPod bool, podManagerIP string, podManagerPo
 	ownerRef := oldpod.ObjectMeta.DeepCopy().OwnerReferences
 
 	//ownerRef.
-
-	newName := shr.Name + "-" + annotationCopy[kubesharev1.KubeShareResourceGPUID]
 
 	return &corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
