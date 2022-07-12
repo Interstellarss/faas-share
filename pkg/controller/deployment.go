@@ -117,8 +117,9 @@ func newDeployment(
 				Spec: corev1.PodSpec{
 					Containers: []corev1.Container{
 						corev1.Container{
-							Name:  "sleepforever",
-							Image: "alpine:latest",
+							Name:            "alpine",
+							Image:           "alpine:latest",
+							ImagePullPolicy: corev1.PullIfNotPresent,
 						},
 					},
 					//RestartPolicy: corev1.RestartPolicyNever,
