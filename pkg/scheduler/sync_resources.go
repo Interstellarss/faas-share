@@ -24,6 +24,15 @@ func syncPodResources(nodeRes NodeResources, podList []*corev1.Pod, sharePodList
 		// 2. If Pod's name contains "sharepod-dummypod" is managed by SharePod,
 		//    resource usage will be calcuated later.
 		if nodeName == "" || strings.Contains(pod.Name, kubesharev1.KubeShareDummyPodName) {
+
+			gpufree := nodeRes[nodeName].GpuFree
+			gpuId := pod.Annotations[kubesharev1.KubeShareResourceGPUID]
+			//nodeRes[nodeName].GpuFree = append(nodeRes[nodeName].GpuFree)
+			_, exists := gpufree[gpuId]
+			if !exists {
+				//nodeRes[nodeName].GpuFree[gpuId] = append(nodeRes[nodeName].GpuFree[gpuId], &GPUInfo{})
+
+			}
 			continue
 		}
 
@@ -45,9 +54,13 @@ func syncPodResources(nodeRes NodeResources, podList []*corev1.Pod, sharePodList
 				break
 			}
 		}
+
 		if ownedBySharePod || pod.Annotations[kubesharev1.KubeShareResourceGPURequest] != "" {
 
 			//continue
+			//testing info
+			klog.Infof("Test info: with syncronizing GPU pod %s", pod.Name)
+
 			for _, container := range pod.Spec.Containers {
 				nodeRes[nodeName].CpuFree -= container.Resources.Requests.Cpu().MilliValue()
 				nodeRes[nodeName].MemFree -= container.Resources.Requests.Memory().MilliValue()
@@ -101,6 +114,10 @@ func syncPodResources(nodeRes NodeResources, podList []*corev1.Pod, sharePodList
 							GPUFreeReq: 1000 - int64(math.Ceil(gpu_request*(float64)(1000.0))),
 							GPUFreeMem: nodeRes[nodeName].GpuMemTotal - gpu_mem,
 						}
+
+						//printing out new GPUFree
+						klog.Info(nodeRes[nodeName].GpuFree)
+
 					} else {
 						klog.Errorf("==================================")
 						klog.Errorf("Bug! The rest number of free GPU is not enough for SharePod! GPUID: %s", GPUID)
@@ -125,6 +142,7 @@ func syncPodResources(nodeRes NodeResources, podList []*corev1.Pod, sharePodList
 							break
 						}
 					}
+					klog.Infof("isFound %d", isFound)
 					if !isFound {
 						nodeRes[nodeName].GpuFree[GPUID].GPUAffinityTags = append(nodeRes[nodeName].GpuFree[GPUID].GPUAffinityTags, affinityTag)
 					}
