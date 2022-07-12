@@ -3,6 +3,7 @@ package scheduler
 import (
 	"container/list"
 	"context"
+	"encoding/json"
 	"fmt"
 	"strconv"
 	"sync"
@@ -11,6 +12,7 @@ import (
 	//appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/apimachinery/pkg/types"
 
 	// metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -277,14 +279,10 @@ func (c *Controller) syncHandler(key string) error {
 	klog.Infof("Pod of SharePod '%s' had been scheduled to node '%s' GPUID '%s'.", key, schedNode, schedGPUID)
 
 	gpupodCopy := gpupod.DeepCopy()
-	var gracetime int64
-	gracetime = 0
-	Err := c.kubeclientset.CoreV1().Pods(namespace).Delete(context.TODO(), name, metav1.DeleteOptions{GracePeriodSeconds: &gracetime})
-
-	if Err != nil {
-		return Err
-	}
-	klog.Infof("Successfully deleted old pod %s of SharePod", gpupodCopy.Name)
+	//var gracetime int64
+	//gracetime = 0
+	//Err := c.kubeclientset.CoreV1().Pods(namespace).Delete(context.TODO(), name, metav1.DeleteOptions{GracePeriodSeconds: &gracetime})
+	//klog.Infof("Successfully deleted old pod %s of SharePod", gpupodCopy.Name)
 	if err := c.bindSharePodToNode(gpupodCopy, schedNode, schedGPUID); err != nil {
 		return err
 	}
@@ -321,57 +319,57 @@ func (c *Controller) bindSharePodToNode(gpupod *corev1.Pod, schedNode, schedGPUI
 
 	//klog.Infof("Successfully deleted old pod %s of SharePod", gpupodCopy.Name)
 
-	//gpupodCopy.ObjectMeta.
-	gpupodCopy.Name += "-x"
-	klog.Infof("Creating new pod %sfor SharePod...", gpupodCopy.Name)
-	newPod, err := c.kubeclientset.CoreV1().Pods(gpupodCopy.Namespace).Create(context.TODO(), &corev1.Pod{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:            gpupodCopy.Name,
-			Namespace:       gpupodCopy.ObjectMeta.Namespace,
-			OwnerReferences: gpupodCopy.OwnerReferences,
-			Annotations:     gpupodCopy.Annotations,
-			Labels:          gpupodCopy.Labels,
-		},
-		Spec: corev1.PodSpec{
-			Containers: []corev1.Container{
-				corev1.Container{
-					Name:  "sleepforever",
-					Image: "alpine:latest",
-				},
-			},
-			NodeName: gpupodCopy.Spec.NodeName,
-			//InitContainers: gpupodCopy.Spec.InitContainers,
-		},
-	}, metav1.CreateOptions{})
+	/*
+		gpupodCopy.Name += "-x"
 
-	if err != nil {
-		utilruntime.HandleError(err)
-	}
+		klog.Infof("Creating new pod %sfor SharePod...", gpupodCopy.Name)
+		newPod, err := c.kubeclientset.CoreV1().Pods(gpupodCopy.Namespace).Create(context.TODO(), &corev1.Pod{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:            gpupodCopy.Name,
+				Namespace:       gpupodCopy.ObjectMeta.Namespace,
+				OwnerReferences: gpupodCopy.OwnerReferences,
+				Annotations:     gpupodCopy.Annotations,
+				Labels:          gpupodCopy.Labels,
+			},
+			Spec: corev1.PodSpec{
+				Containers: []corev1.Container{
+					corev1.Container{
+						Name:  "sleepforever",
+						Image: "alpine:latest",
+					},
+				},
+				NodeName: gpupodCopy.Spec.NodeName,
+				//InitContainers: gpupodCopy.Spec.InitContainers,
+			},
+		}, metav1.CreateOptions{})
+
+		if err != nil {
+			utilruntime.HandleError(err)
+		}
+	*/
 	//_, err := c.kubeshareclientset.KubeshareV1().SharePods(gpupodCopy.Namespace).Update(context.TODO(), gpupodCopy, metav1.UpdateOptions{})
 	//may also update sharepod status?
-	//
-	/*
-		patchData := []patchValue{
-			{
-				Op:    "replace",
-				Path:  "/metadata/annotations",
-				Value: gpupodCopy.ObjectMeta.Annotations,
-			},
-			{
-				Op:    "replace",
-				Path:  "/spec/nodeName",
-				Value: schedNode,
-			},
-		}
 
-		patchBytes, error := json.Marshal(patchData)
-		if error != nil {
-			utilruntime.HandleError(error)
-		}
-		//force := true
-		//_, err := c.kubeclientset.CoreV1().Pods(gpupodCopy.Namespace).Update(context.TODO(), gpupodCopy, metav1.UpdateOptions{})
-		newPod, err := c.kubeclientset.CoreV1().Pods(gpupodCopy.Namespace).Patch(context.TODO(), gpupodCopy.Name, types.JSONPatchType, patchBytes, metav1.PatchOptions{})
-	*/
+	patchData := []patchValue{
+		{
+			Op:    "replace",
+			Path:  "/metadata/annotations",
+			Value: gpupodCopy.ObjectMeta.Annotations,
+		},
+		{
+			Op:    "replace",
+			Path:  "/spec/nodeName",
+			Value: schedNode,
+		},
+	}
+
+	patchBytes, error := json.Marshal(patchData)
+	if error != nil {
+		utilruntime.HandleError(error)
+	}
+	//force := true
+	//_, err := c.kubeclientset.CoreV1().Pods(gpupodCopy.Namespace).Update(context.TODO(), gpupodCopy, metav1.UpdateOptions{})
+	newPod, err := c.kubeclientset.CoreV1().Pods(gpupodCopy.Namespace).Patch(context.TODO(), gpupodCopy.Name, types.JSONPatchType, patchBytes, metav1.PatchOptions{})
 
 	newCopy := newPod.DeepCopy()
 
