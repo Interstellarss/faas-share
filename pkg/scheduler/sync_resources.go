@@ -46,6 +46,10 @@ func syncPodResources(nodeRes NodeResources, podList []*corev1.Pod, sharePodList
 			}
 		}
 
+		if pod.Namespace == "faas-share-fn" {
+			klog.Infof("Debug: pod %s is being synced...", pod.Name)
+		}
+
 		if ownedBySharePod || pod.Annotations[kubesharev1.KubeShareResourceGPURequest] != "" {
 
 			//continue
