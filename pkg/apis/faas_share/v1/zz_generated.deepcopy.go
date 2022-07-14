@@ -133,11 +133,6 @@ func (in *SharePodStatus) DeepCopyInto(out *SharePodStatus) {
 			(*out)[key] = outVal
 		}
 	}
-	if in.PodStatus != nil {
-		in, out := &in.PodStatus, &out.PodStatus
-		*out = new(corev1.PodStatus)
-		(*in).DeepCopyInto(*out)
-	}
 	if in.BoundDeviceIDs != nil {
 		in, out := &in.BoundDeviceIDs, &out.BoundDeviceIDs
 		*out = new(map[string]string)
@@ -153,6 +148,17 @@ func (in *SharePodStatus) DeepCopyInto(out *SharePodStatus) {
 		in, out := &in.Usage, &out.Usage
 		*out = new(SharepodUsage)
 		**out = **in
+	}
+	if in.Pod2Node != nil {
+		in, out := &in.Pod2Node, &out.Pod2Node
+		*out = new(map[string]string)
+		if **in != nil {
+			in, out := *in, *out
+			*out = make(map[string]string, len(*in))
+			for key, val := range *in {
+				(*out)[key] = val
+			}
+		}
 	}
 	return
 }

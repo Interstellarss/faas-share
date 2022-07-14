@@ -1,7 +1,6 @@
-package scheduler
+package devicemanager
 
 import (
-	"github.com/Interstellarss/faas-share/pkg/lib/bitmap"
 	"k8s.io/klog"
 )
 
@@ -53,19 +52,11 @@ type NodeResource struct {
 	GpuFreeCount int
 	// GPUs available usage (1.0 - SharePod usage)
 	// GPUID to integer index mapping
-	GpuFree map[string]*GPUInfo
-
-	GPUID2GPU map[string]*GPUInfo
-	// UUID -> Port (string)
-	UUID2Port map[string]string
-
-	// port in use
-	PodManagerPortBitmap *bitmap.RRBitmap
-	PodIP                string
+	GpuFree map[string]*GPUResource
 }
 
 func (this *NodeResource) DeepCopy() *NodeResource {
-	gpuFreeCopy := make(map[string]*GPUInfo, len(this.GpuFree))
+	gpuFreeCopy := make(map[string]*GPUResource, len(this.GpuFree))
 	for k, v := range this.GpuFree {
 		gpuFreeCopy[k] = v.DeepCopy()
 	}
@@ -85,18 +76,18 @@ func (this *NodeResource) DeepCopy() *NodeResource {
 
 /* ------------------- struct GPUInfo start ------------------- */
 
-type GPUInfo struct {
+type GPUResource struct {
 	GPUFreeReq int64
 	// GPUFreeMem in bytes
 	GPUFreeMem int64
 
-	GPUAffinityTags []string
+	GPUAffinityTags     []string
 	GPUAntiAffinityTags []string
 	// len(GPUExclusionTags) should be only one
 	GPUExclusionTags []string
 }
 
-func (this *GPUInfo) DeepCopy() *GPUInfo {
+func (this *GPUResource) DeepCopy() *GPUResource {
 	var tmpGPUAffinityTags []string
 	var tmpGPUAntiAffinityTags []string
 	var tmpGPUExclusionTags []string
@@ -109,12 +100,12 @@ func (this *GPUInfo) DeepCopy() *GPUInfo {
 	for _, v := range this.GPUExclusionTags {
 		tmpGPUExclusionTags = append(tmpGPUExclusionTags, v)
 	}
-	return &GPUInfo{
+	return &GPUResource{
 		GPUFreeReq:          this.GPUFreeReq,
 		GPUFreeMem:          this.GPUFreeMem,
-		GPUAffinityTags: tmpGPUAffinityTags,
+		GPUAffinityTags:     tmpGPUAffinityTags,
 		GPUAntiAffinityTags: tmpGPUAntiAffinityTags,
-		GPUExclusionTags: tmpGPUExclusionTags,
+		GPUExclusionTags:    tmpGPUExclusionTags,
 	}
 }
 

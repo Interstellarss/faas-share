@@ -3,15 +3,17 @@ package devicemanager
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
 
-	appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/utils/integer"
 
 	// "k8s.io/apimachinery/pkg/labels"
@@ -41,6 +43,7 @@ import (
 	listers "github.com/Interstellarss/faas-share/pkg/client/listers/faas_share/v1"
 
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	"k8s.io/kubernetes/pkg/controller"
 	k8scontroller "k8s.io/kubernetes/pkg/controller"
 )
 
@@ -65,6 +68,12 @@ const (
 	KubeShareLibraryPath = "/kubeshare/library"
 	SchedulerIpPath      = KubeShareLibraryPath + "/schedulerIP.txt"
 	PodManagerPortStart  = 50050
+
+	KubeShareScheduleAffinity     = "kubeshare/sched_affinity"
+	KubeShareScheduleAntiAffinity = "kubeshare/sched_anti-affinity"
+	KubeShareScheduleExclusion    = "kubeshare/sched_exclusion"
+
+	faasKind = "Sharepod"
 )
 
 var (
@@ -84,6 +93,9 @@ type Controller struct {
 
 	sharepodsLister listers.SharePodLister
 	sharepodsSynced cache.InformerSynced
+
+	nodesLister corelisters.NodeLister
+	nodeSynced  cache.InformerSynced
 
 	expectations *k8scontroller.UIDTrackingControllerExpectations
 
@@ -107,6 +119,7 @@ type Controller struct {
 func NewController(
 	kubeclient kubernetes.Interface,
 	kubeshareclient clientset.Interface,
+	nodeInformer coreinformers.NodeInformer,
 	podInformer coreinformers.PodInformer,
 	deploymentInformer appsinformers.DeploymentInformer,
 	kubeshareInformer informers.SharePodInformer) *Controller {
@@ -133,6 +146,9 @@ func NewController(
 		podsSynced:      podInformer.Informer().HasSynced,
 		sharepodsLister: kubeshareInformer.Lister(),
 		sharepodsSynced: kubeshareInformer.Informer().HasSynced,
+
+		nodesLister: nodeInformer.Lister(),
+		nodeSynced:  nodeInformer.Informer().HasSynced,
 		//deploymentLister:  deploymentInformer.Lister(),
 		//depploymentSynced: deploymentInformer.Informer().HasSynced,
 		expectations: k8scontroller.NewUIDTrackingControllerExpectations(k8scontroller.NewControllerExpectations()),
@@ -181,7 +197,7 @@ func NewController(
 // as syncing informer caches and starting workers. It will block until stopCh
 // is closed, at which point it will shutdown the workqueue and wait for
 // workers to finish processing their current work items.
-func (c *Controller) Run(threadiness int, stopCh <-chan struct{}) error {
+func (c *Controller) Run(ctx context.Context, threadiness int, stopCh <-chan struct{}) error {
 	defer utilruntime.HandleCrash()
 	defer c.workqueue.ShutDown()
 
@@ -205,7 +221,7 @@ func (c *Controller) Run(threadiness int, stopCh <-chan struct{}) error {
 	klog.Info("Starting workers")
 	// Launch two workers to process SharePod resources
 	for i := 0; i < threadiness; i++ {
-		go wait.Until(c.runWorker, time.Second, stopCh)
+		go wait.UntilWithContext(ctx, c.runWorker, time.Second)
 	}
 
 	klog.Info("Started workers")
@@ -218,10 +234,17 @@ func (c *Controller) Run(threadiness int, stopCh <-chan struct{}) error {
 // runWorker is a long-running function that will continually call the
 // processNextWorkItem function in order to read and process a message on the
 // workqueue.
-func (c *Controller) runWorker() {
-	for c.processNextWorkItem() {
+func (c *Controller) runWorker(ctx context.Context) {
+	for c.processNextWorkItem(ctx) {
 	}
 }
+
+//TODO
+/*
+func (c *Controller) getSharePods(pod *corev1.Pod) []*faasv1.SharePod {
+	shrpods, err := c.sharepodsLister.List()
+}
+*/
 
 //TODO: get sharepod to this pod
 /*
@@ -232,7 +255,7 @@ func (c *Controller) getPodSharePod(pod *v1.Pod) []*faasv1.SharePod {
 
 // processNextWorkItem will read a single work item off the workqueue and
 // attempt to process it, by calling the syncHandler.
-func (c *Controller) processNextWorkItem() bool {
+func (c *Controller) processNextWorkItem(ctx context.Context) bool {
 	obj, shutdown := c.workqueue.Get()
 
 	if shutdown {
@@ -265,7 +288,7 @@ func (c *Controller) processNextWorkItem() bool {
 		}
 		// Run the syncHandler, passing it the namespace/name string of the
 		// SharePod resource to be synced.
-		if err := c.syncHandler(key); err != nil {
+		if err := c.syncHandler(ctx, key); err != nil {
 			// Put the item back on the workqueue to handle any transient errors.
 			c.workqueue.AddRateLimited(key)
 			return fmt.Errorf("error syncing '%s': %s, requeuing", key, err.Error())
@@ -283,12 +306,6 @@ func (c *Controller) processNextWorkItem() bool {
 	}
 
 	return true
-}
-
-type patchValue struct {
-	Op    string      `json:"op"`
-	Path  string      `json:"path"`
-	Value interface{} `json:"value"`
 }
 
 // syncHandler returns error when we want to re-process the key, otherwise returns nil
@@ -310,58 +327,61 @@ func (c *Controller) syncHandler(ctx context.Context, key string) error {
 	if err != nil {
 		if errors.IsNotFound(err) {
 			utilruntime.HandleError(fmt.Errorf("SharePod '%s' in work queue no longer exists", key))
+			c.expectations.DeleteExpectations(key)
 			return nil
 		}
 		return err
+	}
+
+	shrCopy := shr.DeepCopy()
+
+	shrNeedsSync := c.expectations.SatisfiedExpectations(key)
+
+	selector, err := metav1.LabelSelectorAsSelector(shrCopy.Spec.Selector)
+
+	if err != nil {
+		utilruntime.HandleError(fmt.Errorf("error converting pod selector to selector for shr %v/%v: %v", namespace, name, err))
 	}
 
 	//sharepod, err := c.sharepodsLister.SharePods(namespace).Get(name)
 
-	if err != nil {
-		if errors.IsNotFound(err) {
-			utilruntime.HandleError(fmt.Errorf("SharePod '%s' in not found", key))
-			return nil
-		}
-		return err
-	}
+	allPods, err := c.podsLister.Pods(namespace).List(selector)
 
-	selector, err := metav1.LabelSelectorAsSelector(dep.Spec.Selector)
 	if err != nil {
 		return err
 	}
 
-	//c.recorder.Event(pods, corev1.EventTypeNormal, SuccessSynced, MessageResourceSynced)
+	//Ignore inavtive pods
+	filteredPods := FilterActivePods(allPods)
 
-	// sharepod.Print()
-	/*
-			pod, err := c.podsLister.Pods(sharepod.ObjectMeta.Namespace).Get(sharepod.ObjectMeta.Name)
+	//filterPodss
 
-			// If the resource doesn't exist, we'll create it, but don't create when we knew that Pod will not restart forever
-			if errors.IsNotFound(err) && (sharepod.Status.PodStatus == nil ||
-				sharepod.Spec.RestartPolicy == corev1.RestartPolicyAlways ||
-				(sharepod.Spec.RestartPolicy == corev1.RestartPolicyOnFailure && sharepod.Status.PodStatus.Phase != corev1.PodSucceeded) ||
-				(sharepod.Spec.RestartPolicy == corev1.RestartPolicyNever && (sharepod.Status.PodStatus.Phase != corev1.PodSucceeded && sharepod.Status.PodStatus.Phase != corev1.PodFailed))) {
-				if n, ok := nodesInfo[sharepod.Spec.NodeName]; ok {
-					pod, err = c.kubeclientset.CoreV1().Pods(sharepod.ObjectMeta.Namespace).Create(context.TODO(), newPod(sharepod, isGPUPod, n.PodIP, physicalGPUport), metav1.CreateOptions{})
-				}
-			}
+	var manageReplicasErr error
+	if shrNeedsSync && shr.DeletionTimestamp == nil {
+		manageReplicasErr = c.manageReplicas(ctx, filteredPods, shrCopy, key)
+	}
 
-			if err != nil {
-				return err
-			}
+	//shrCopy = shrCopy.DeepCopy()
+	newStatus := calculateStatus(shrCopy, filteredPods, manageReplicasErr)
 
+	shrCopy.Status.AvailableReplicas = newStatus.AvailableReplicas
+	shrCopy.Status.ReadyReplicas = newStatus.ReadyReplicas
+	shrCopy.Status.Replicas = newStatus.Replicas
 
-		if !metav1.IsControlledBy(pod, sharepod) {
-			msg := fmt.Sprintf(MessageResourceExists, pod.Name)
-			c.recorder.Event(sharepod, corev1.EventTypeWarning, ErrResourceExists, msg)
-			return fmt.Errorf(msg)
-		}
+	//erro := c.updateSharePodStatus(shrCopy, )
 
-		err = c.updateSharePodStatus(sharepod, pod, physicalGPUport)
-		if err != nil {
-			return err
-		}
-	*/
+	//TODO: new update methodology?
+	updatedSHR, err := c.faasclient.KubeshareV1().SharePods(shrCopy.Namespace).Update(context.TODO(), shrCopy, metav1.UpdateOptions{})
+	if err != nil {
+		return err
+	}
+
+	//mini ready seconds also need set?
+	// Resync the ReplicaSet after MinReadySeconds as a last line of defense to guard against clock-skew.
+	if manageReplicasErr != nil && updatedSHR.Status.ReadyReplicas == *(updatedSHR.Spec.Replicas) &&
+		updatedSHR.Status.AvailableReplicas != *(updatedSHR.Spec.Replicas) {
+		c.enqueueSHRAfter(updatedSHR, time.Duration(500)*time.Millisecond)
+	}
 
 	//c.recorder.Event(sharepod, corev1.EventTypeNormal, SuccessSynced, MessageResourceSynced)
 	return nil
@@ -370,7 +390,7 @@ func (c *Controller) syncHandler(ctx context.Context, key string) error {
 //Need to configure here
 func (c *Controller) updateSharePodStatus(sharepod *kubesharev1.SharePod, pod *corev1.Pod, port int) error {
 	sharepodCopy := sharepod.DeepCopy()
-	sharepodCopy.Status.PodStatus = pod.Status.DeepCopy()
+	//sharepodCopy.Status.PodStatus = pod.Status.DeepCopy()
 	//sharepodCopy.Status.PodObjectMeta = pod.ObjectMeta.DeepCopy()
 	if port != 0 {
 		sharepodCopy.Status.PodManagerPort = port
@@ -401,12 +421,13 @@ func (c *Controller) enqueueSHRAfter(shr *faasv1.SharePod, duration time.Duratio
 }
 
 func (c *Controller) handleDeletedSharePod(obj interface{}) {
-	sharepodDep, ok := obj.(*appsv1.Deployment)
+	sharepod, ok := obj.(*faasv1.SharePod)
 	if !ok {
-		utilruntime.HandleError(fmt.Errorf("handleDeletedSharePodDep: cannot parse object"))
+		utilruntime.HandleError(fmt.Errorf("handleDeletedSharePod: cannot parse object"))
 		return
 	}
-	go c.removeSharePodFromList(sharepodDep)
+	//TODO: delete sharepod
+	go c.removeSharePodFromList(sharepod)
 }
 
 func (c *Controller) handleObject(obj interface{}) {
@@ -478,15 +499,15 @@ func (c *Controller) handleObject(obj interface{}) {
 	}
 }
 
-func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.Pod, shr *faasv1.SharePod) error {
-	diff := len(filteredPods) - int(*(shr.Spec.Replicas))
+func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.Pod, gpupod *faasv1.SharePod, key string) error {
+	diff := len(filteredPods) - int(*(gpupod.Spec.Replicas))
 
-	shrKey, err := KeyFunc(shr)
+	shrKey, err := KeyFunc(gpupod)
 
-	shrCopy := shr.DeepCopy()
+	shrCopy := gpupod.DeepCopy()
 
 	if err != nil {
-		utilruntime.HandleError(fmt.Errorf("couldn't get key for %v %#v: %v", shr.Kind, shr, err))
+		utilruntime.HandleError(fmt.Errorf("couldn't get key for %v %#v: %v", gpupod.Kind, gpupod, err))
 		return nil
 	}
 
@@ -507,23 +528,89 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 		// prevented from spamming the API service with the pod create requests
 		// after one of its pods fails.  Conveniently, this also prevents the
 		// event spam that those failures would generate.
-		successfulCreations, err := slowStartbatch(diff, k8scontroller.SlowStartInitialBatchSize, func() (corev1.Pod, error) {
-			newPod, err := c.kubeclient.CoreV1().Pods(shrCopy.Namespace).Create(context.TODO(), newPod(shr, true), metav1.CreateOptions{})
+		successfulCreations, err := slowStartbatch(diff, k8scontroller.SlowStartInitialBatchSize, func() (*corev1.Pod, error) {
+			isGPUPod := false
+			gpu_request := 0.0
+			gpu_limit := 0.0
+			gpu_mem := int64(0)
 
-			//
-			if err != nil {
-				if apierrors.HasStatusCause(err, v1.NamespaceTerminatingCause) {
-					return *newPod, nil
+			physicalGPUuuid := ""
+			physicalGPUport := 0
+
+			if gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPURequest] != "" ||
+				gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPULimit] != "" ||
+				gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUMemory] != "" {
+				var err error
+				gpu_limit, err = strconv.ParseFloat(gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPULimit], 64)
+				if err != nil || gpu_limit > 1.0 || gpu_limit < 0.0 {
+					utilruntime.HandleError(fmt.Errorf("Pod of SharePod %s/%s value error: %s", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name, kubesharev1.KubeShareResourceGPULimit))
+					return nil, err
 				}
+				gpu_request, err = strconv.ParseFloat(gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPURequest], 64)
+				if err != nil || gpu_request > gpu_limit || gpu_request < 0.0 {
+					utilruntime.HandleError(fmt.Errorf("Pod of SharePod %s/%s value error: %s", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name, kubesharev1.KubeShareResourceGPURequest))
+
+				}
+				gpu_mem, err = strconv.ParseInt(gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUMemory], 10, 64)
+				if err != nil || gpu_mem < 0 {
+					utilruntime.HandleError(fmt.Errorf("Pod of SharePod %s/%s value error: %s", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name, kubesharev1.KubeShareResourceGPUMemory))
+
+				}
+				isGPUPod = true
 			}
-			return *newPod, err
+
+			scheNode, scheGPUID := c.schedule(gpupod, gpu_request, gpu_limit, gpu_mem, isGPUPod)
+
+			//boundDeviceId :=
+			if isGPUPod {
+				var errCode int
+				physicalGPUuuid, errCode = c.getPhysicalGPUuuid(scheNode, scheGPUID, gpu_request, gpu_limit, gpu_mem, key, &physicalGPUport)
+				switch errCode {
+				case 0:
+					klog.Infof("SharePod %s is bound to GPU uuid: %s", key, physicalGPUuuid)
+				case 1:
+					klog.Infof("SharePod %s/%s is waiting for dummy Pod", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name)
+
+				case 2:
+					err := fmt.Errorf("Resource exceed!")
+					utilruntime.HandleError(err)
+					c.recorder.Event(gpupod, corev1.EventTypeWarning, ErrValueError, "Resource exceed")
+					return nil, err
+				case 3:
+					err := fmt.Errorf("Pod manager port pool is full!")
+					utilruntime.HandleError(err)
+					return nil, err
+				default:
+					utilruntime.HandleError(fmt.Errorf("Unknown Error"))
+					c.recorder.Event(gpupod, corev1.EventTypeWarning, ErrValueError, "Unknown Error")
+					return nil, nil
+				}
+				//gpupod.Status.BoundDeviceID = physicalGPUuuid
+			}
+
+			if n, ok := nodesInfo[scheNode]; ok {
+				newPod, err := c.kubeclient.CoreV1().Pods(shrCopy.Namespace).Create(context.TODO(), newPod(gpupod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid, scheNode, scheGPUID), metav1.CreateOptions{})
+				if err != nil {
+					if apierrors.HasStatusCause(err, v1.NamespaceTerminatingCause) {
+						return nil, nil
+					}
+				}
+
+				(*gpupod.Status.Pod2Node)[newPod.Name] = scheNode
+
+				//should be mapping from pod to physical devciceID, use vGPU id for simplicity
+				(*gpupod.Status.BoundDeviceIDs)[newPod.Name] = scheGPUID
+
+				return newPod, err
+			}
+			return nil, nil
 		})
 
 		// Any skipped pods that we never attempted to start shouldn't be expected.
 		// The skipped pods will be retried later. The next controller resync will
 		// retry the slow start process.
 		if skippedPods := diff - successfulCreations; skippedPods > 0 {
-			klog.V(2).Infof("Slow-start failure. Skipping creation of %d pods, decrementing expectations for %v %v/%v", skippedPods, shr.Kind, shr.Namespace, shr.Name)
+			klog.V(2).Infof("Slow-start failure. Skipping creation of %d pods, decrementing expectations for %v %v/%v", skippedPods, gpupod.Kind, gpupod.Namespace, gpupod.Name)
 			for i := 0; i < skippedPods; i++ {
 
 				//Decrement the expected number of creates because the informer won't observe this pod
@@ -533,12 +620,46 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 		return err
 
 	} else if diff > 0 {
-		klog.V(2).InfoS("Too many replicas", "SharePod", klog.KObj(shr), "need", *(&shr.Spec.Replicas), "deleting", diff)
+		klog.V(2).InfoS("Too many replicas", "SharePod", klog.KObj(gpupod), "need", *(&gpupod.Spec.Replicas), "deleting", diff)
 
 		//indirect pods are in our case simply dummy pod that we can ignore
 		//relatedPods, err := getIndirectly
-	}
 
+		podsToDelete := getPodsToDelete(filteredPods, diff)
+
+		c.expectations.ExpectDeletions(key, getPodKeys(podsToDelete))
+
+		errCh := make(chan error, diff)
+
+		var wg sync.WaitGroup
+		for _, pod := range podsToDelete {
+			go func(targetPod *v1.Pod) {
+				defer wg.Done()
+				if err := c.podControl.DeletePod(ctx, shrCopy.Namespace, targetPod.Name, gpupod); err != nil {
+					// Decrement the expected number of deletes because the informer won't observe this deletion
+					podKey := controller.PodKey(targetPod)
+					c.expectations.DeletionObserved(key, podKey)
+					if !apierrors.IsNotFound(err) {
+						klog.V(2).Infof("Failed to delete %v, decremented expectations for %v %s/%s", podKey, shrCopy.Kind, shrCopy.Namespace, shrCopy.Name)
+						errCh <- err
+					}
+
+				}
+			}(pod)
+		}
+		wg.Wait()
+
+		select {
+		case err := <-errCh:
+			// all errors have been reported before and they're likely to be the same, so we'll only return the first one we hit.
+			if err != nil {
+				return err
+			}
+		default:
+		}
+
+	}
+	return nil
 }
 
 // slowStartBatch tries to call the provided function a total of 'count' times,
@@ -552,7 +673,7 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 // after waiting for the current batch to complete.
 //
 // It returns the number of successful calls to the function.
-func slowStartbatch(count int, initailBatchSize int, fn func() (corev1.Pod, error)) (int, error) {
+func slowStartbatch(count int, initailBatchSize int, fn func() (*corev1.Pod, error)) (int, error) {
 	remaining := count
 	successes := 0
 	for batchSize := integer.IntMin(remaining, initailBatchSize); batchSize > 0; batchSize = integer.IntMin(2*batchSize, remaining) {
@@ -583,14 +704,19 @@ func slowStartbatch(count int, initailBatchSize int, fn func() (corev1.Pod, erro
 // newDeployment creates a new Deployment for a SharePod resource. It also sets
 // the appropriate OwnerReferences on the resource so handleObject can discover
 // the SharePod resource that 'owns' it.
-func newPod(oldpod *corev1.Pod, isGPUPod bool, podManagerIP string, podManagerPort int, boundDeviceId string) *corev1.Pod {
-	specCopy := oldpod.Spec.DeepCopy()
-	labelCopy := make(map[string]string, len(oldpod.ObjectMeta.Labels))
-	for key, val := range oldpod.ObjectMeta.Labels {
+func newPod(shrpod *faasv1.SharePod, isGPUPod bool, podManagerIP string, podManagerPort int, boundDeviceId string, scheNode string, scheGPUID string) *corev1.Pod {
+	specCopy := shrpod.Spec.PodSpec.DeepCopy()
+
+	//scheNode, scheGPUID := c.schedule(shrpod)
+
+	specCopy.NodeName = scheNode
+
+	labelCopy := make(map[string]string, len(shrpod.ObjectMeta.Labels))
+	for key, val := range shrpod.ObjectMeta.Labels {
 		labelCopy[key] = val
 	}
-	annotationCopy := make(map[string]string, len(oldpod.ObjectMeta.Annotations)+4)
-	for key, val := range oldpod.ObjectMeta.Annotations {
+	annotationCopy := make(map[string]string, len(shrpod.ObjectMeta.Annotations)+4)
+	for key, val := range shrpod.ObjectMeta.Annotations {
 		annotationCopy[key] = val
 	}
 	if isGPUPod {
@@ -624,7 +750,7 @@ func newPod(oldpod *corev1.Pod, isGPUPod bool, podManagerIP string, podManagerPo
 				},
 				corev1.EnvVar{
 					Name:  "POD_NAME",
-					Value: fmt.Sprintf("%s/%s", oldpod.ObjectMeta.Namespace, oldpod.ObjectMeta.Name),
+					Value: fmt.Sprintf("%s/%s", shrpod.ObjectMeta.Namespace, shrpod.ObjectMeta.Name),
 				},
 			)
 			c.VolumeMounts = append(c.VolumeMounts,
@@ -644,79 +770,64 @@ func newPod(oldpod *corev1.Pod, isGPUPod bool, podManagerIP string, podManagerPo
 				},
 			},
 		)
-		annotationCopy[faasv1.KubeShareResourceGPURequest] = oldpod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPURequest]
-		annotationCopy[faasv1.KubeShareResourceGPULimit] = oldpod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPULimit]
-		annotationCopy[faasv1.KubeShareResourceGPUMemory] = oldpod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPUMemory]
-		annotationCopy[faasv1.KubeShareResourceGPUID] = oldpod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPUID]
+		annotationCopy[faasv1.KubeShareResourceGPURequest] = shrpod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPURequest]
+		annotationCopy[faasv1.KubeShareResourceGPULimit] = shrpod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPULimit]
+		annotationCopy[faasv1.KubeShareResourceGPUMemory] = shrpod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPUMemory]
+		annotationCopy[faasv1.KubeShareResourceGPUID] = scheGPUID
 	}
 
-	ownerRef := oldpod.ObjectMeta.DeepCopy().OwnerReferences
+	//ownerRef := shrpod.ObjectMeta.DeepCopy().OwnerReferences
 
 	return &corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:            oldpod.ObjectMeta.Name,
-			Namespace:       oldpod.ObjectMeta.Namespace,
-			OwnerReferences: ownerRef,
-			Annotations:     annotationCopy,
-			Labels:          labelCopy,
+			//TODO: here
+			GenerateName: shrpod.Name + "-",
+			Namespace:    shrpod.ObjectMeta.Namespace,
+			OwnerReferences: []metav1.OwnerReference{
+				*metav1.NewControllerRef(shrpod, schema.GroupVersionKind{
+					Group:   faasv1.SchemeGroupVersion.Group,
+					Version: faasv1.SchemeGroupVersion.Version,
+					Kind:    faasKind,
+				}),
+			},
+			Annotations: annotationCopy,
+			Labels:      labelCopy,
 		},
 		Spec: *specCopy,
 	}
 }
 
-func patchSharepod(oldpod *corev1.Pod, isGPUPod bool, podManagerIP string, podManagerPort int, boundDeviceId string) map[string]interface{} {
-	specCopy := oldpod.Spec.DeepCopy()
-	//labelCopy := make(map[string]string, len(oldpod.ObjectMeta.Labels))
-	cData := map[string]interface{}{}
-	newEnvVar := []corev1.EnvVar{}
+func (c *Controller) schedule(gpupod *faasv1.SharePod, gpu_request float64, gpu_limit float64, gpu_mem int64, isGPUPod bool) (string, string) {
 
-	newEnvVar = append(newEnvVar,
-		corev1.EnvVar{
-			Name:  "NVIDIA_VISIBLE_DEVICES",
-			Value: boundDeviceId,
-		},
-		corev1.EnvVar{
-			Name:  "NVIDIA_DRIVER_CAPABILITIES",
-			Value: "compute,utility",
-		},
-		corev1.EnvVar{
-			Name:  "LD_PRELOAD",
-			Value: KubeShareLibraryPath + "/libgemhook.so.1",
-		},
-		corev1.EnvVar{
-			Name:  "POD_MANAGER_IP",
-			Value: podManagerIP,
-		},
-		corev1.EnvVar{
-			Name:  "POD_MANAGER_PORT",
-			Value: fmt.Sprintf("%d", podManagerPort),
-		},
-		corev1.EnvVar{
-			Name:  "POD_NAME",
-			Value: fmt.Sprintf("%s/%s", oldpod.ObjectMeta.Namespace, oldpod.ObjectMeta.Name),
-		})
-
-	for _, c := range specCopy.Containers {
-		cData[c.Name] = map[string]interface{}{
-			"env": newEnvVar,
-			"volumeMounts": corev1.VolumeMount{
-				Name:      "kubeshare-lib",
-				MountPath: KubeShareLibraryPath,
-			},
-		}
+	nodeList, err := c.nodesLister.List(labels.Everything())
+	if err != nil {
+		utilruntime.HandleError(fmt.Errorf(""))
+	}
+	podList, err := c.podsLister.List(labels.Everything())
+	if err != nil {
+		utilruntime.HandleError(fmt.Errorf(""))
+	}
+	sharePodList, err := c.sharepodsLister.List(labels.Everything())
+	if err != nil {
+		utilruntime.HandleError(fmt.Errorf(""))
+	}
+	schedNode, schedGPUID := scheduleSharePod(isGPUPod, gpu_request, gpu_mem, gpupod, nodeList, podList, sharePodList)
+	if schedNode == "" {
+		klog.Infof("No enough resources for Pod of a SharePod: %s/%s", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name)
+		// return fmt.Errorf("No enough resources for SharePod: %s/%s")
+		//c.pendingListMux.Lock()
+		//c.pendingList.PushBack(key)
+		//c.pendingListMux.Unlock()
+		return "", ""
 	}
 
-	patchData := map[string]interface{}{
-		"containers": cData,
-		"volumes": corev1.Volume{
-			Name: "kubeshare-lib",
-			VolumeSource: corev1.VolumeSource{
-				HostPath: &corev1.HostPathVolumeSource{
-					Path: KubeShareLibraryPath,
-				},
-			},
-		},
-	}
+	return schedNode, schedGPUID
+}
 
-	return patchData
+func getPodKeys(pods []*v1.Pod) []string {
+	podKeys := make([]string, 0, len(pods))
+	for _, pod := range pods {
+		podKeys = append(podKeys, PodKey(pod))
+	}
+	return podKeys
 }
