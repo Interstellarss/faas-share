@@ -6,7 +6,8 @@ kubectl apply -f deploy/crd.yaml
 
 kubectl apply -f https://raw.githubusercontent.com/Interstellarss/faas-share/master/namespaces.yml
 
-helm repo add faas-share  https://interstellarss.github.io/faas-share/
+helm repo add faas-share  https://interstellarss.github.io/faas-share/ (not for now as currently private)
+helm repo add faas-share  https://interstellarss.github.io/faas-share-charts/
 
 helm repo update \
  && helm upgrade faas-share --debug --install faas-share/faas-share \
