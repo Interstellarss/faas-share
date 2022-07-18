@@ -19,6 +19,9 @@ import (
 	utilfeature "k8s.io/apiserver/pkg/util/feature"
 
 	"k8s.io/utils/integer"
+
+	clientset "k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/tools/record"
 )
 
 const (
@@ -347,4 +350,9 @@ func calculateStatus(shr *faasv1.SharePod, filteredPods []*v1.Pod, manageReplica
 	newStatus.ReadyReplicas = int32(readyReplicasCount)
 
 	return newStatus
+}
+
+type RealPodControl struct {
+	KubeClient clientset.Interface
+	Recorder   record.EventRecorder
 }

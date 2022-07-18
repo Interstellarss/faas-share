@@ -30,8 +30,6 @@ import (
 	"k8s.io/client-go/util/workqueue"
 	"k8s.io/klog/v2"
 
-	appsinformers "k8s.io/client-go/informers/apps/v1"
-
 	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
 	kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
 
@@ -84,7 +82,8 @@ type Controller struct {
 	kubeclient kubernetes.Interface
 	faasclient clientset.Interface
 
-	podControl k8scontroller.PodControlInterface
+	//TODO: make new api into a new control interface as kubenetes did in controller
+	//podControl k8scontroller.PodControlInterface
 
 	podsLister corelisters.PodLister
 	podsSynced cache.InformerSynced
@@ -121,7 +120,6 @@ func NewController(
 	kubeshareclient clientset.Interface,
 	nodeInformer coreinformers.NodeInformer,
 	podInformer coreinformers.PodInformer,
-	deploymentInformer appsinformers.DeploymentInformer,
 	kubeshareInformer informers.SharePodInformer) *Controller {
 
 	// Create event broadcaster
@@ -134,14 +132,16 @@ func NewController(
 	eventBroadcaster.StartRecordingToSink(&typedcorev1.EventSinkImpl{Interface: kubeclient.CoreV1().Events("")})
 	recorder := eventBroadcaster.NewRecorder(scheme.Scheme, corev1.EventSource{Component: controllerAgentName})
 
-	podcontrol := k8scontroller.RealPodControl{
-		KubeClient: kubeclient,
-		Recorder:   eventBroadcaster.NewRecorder(scheme.Scheme, v1.EventSource{Component: "faas-share-controller"}),
-	}
+	//podcontrol := k8scontroller.RealPodControl{
+	//	KubeClient: kubeclient,
+	//	Recorder:   eventBroadcaster.NewRecorder(scheme.Scheme, v1.EventSource{Component: "faas-share-controller"}),
+	//}
 
 	controller := &Controller{
-		kubeclient:      kubeclient,
-		faasclient:      kubeshareclient,
+		faasclient: kubeshareclient,
+		kubeclient: kubeclient,
+
+		podInformer:     podInformer,
 		podsLister:      podInformer.Lister(),
 		podsSynced:      podInformer.Informer().HasSynced,
 		sharepodsLister: kubeshareInformer.Lister(),
@@ -152,9 +152,9 @@ func NewController(
 		//deploymentLister:  deploymentInformer.Lister(),
 		//depploymentSynced: deploymentInformer.Informer().HasSynced,
 		expectations: k8scontroller.NewUIDTrackingControllerExpectations(k8scontroller.NewControllerExpectations()),
-		podControl:   podcontrol,
-		workqueue:    workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "SharePods"),
-		recorder:     recorder,
+		//podControl:   podcontrol,
+		workqueue: workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "SharePods"),
+		recorder:  recorder,
 	}
 
 	klog.Info("Setting up event handlers")
@@ -197,7 +197,9 @@ func NewController(
 // as syncing informer caches and starting workers. It will block until stopCh
 // is closed, at which point it will shutdown the workqueue and wait for
 // workers to finish processing their current work items.
-func (c *Controller) Run(ctx context.Context, threadiness int, stopCh <-chan struct{}) error {
+
+//Try out without stopCh, rather with context
+func (c *Controller) Run(threadiness int, stopCh <-chan struct{}) error {
 	defer utilruntime.HandleCrash()
 	defer c.workqueue.ShutDown()
 
@@ -221,7 +223,9 @@ func (c *Controller) Run(ctx context.Context, threadiness int, stopCh <-chan str
 	klog.Info("Starting workers")
 	// Launch two workers to process SharePod resources
 	for i := 0; i < threadiness; i++ {
-		go wait.UntilWithContext(ctx, c.runWorker, time.Second)
+		//
+		//go wait.UntilWithContext(ctx, c.runWorker, time.Second)
+		go wait.Until(c.runWorker, time.Second, stopCh)
 	}
 
 	klog.Info("Started workers")
@@ -234,8 +238,8 @@ func (c *Controller) Run(ctx context.Context, threadiness int, stopCh <-chan str
 // runWorker is a long-running function that will continually call the
 // processNextWorkItem function in order to read and process a message on the
 // workqueue.
-func (c *Controller) runWorker(ctx context.Context) {
-	for c.processNextWorkItem(ctx) {
+func (c *Controller) runWorker() {
+	for c.processNextWorkItem() {
 	}
 }
 
@@ -255,7 +259,7 @@ func (c *Controller) getPodSharePod(pod *v1.Pod) []*faasv1.SharePod {
 
 // processNextWorkItem will read a single work item off the workqueue and
 // attempt to process it, by calling the syncHandler.
-func (c *Controller) processNextWorkItem(ctx context.Context) bool {
+func (c *Controller) processNextWorkItem() bool {
 	obj, shutdown := c.workqueue.Get()
 
 	if shutdown {
@@ -288,7 +292,7 @@ func (c *Controller) processNextWorkItem(ctx context.Context) bool {
 		}
 		// Run the syncHandler, passing it the namespace/name string of the
 		// SharePod resource to be synced.
-		if err := c.syncHandler(ctx, key); err != nil {
+		if err := c.syncHandler(key); err != nil {
 			// Put the item back on the workqueue to handle any transient errors.
 			c.workqueue.AddRateLimited(key)
 			return fmt.Errorf("error syncing '%s': %s, requeuing", key, err.Error())
@@ -309,7 +313,7 @@ func (c *Controller) processNextWorkItem(ctx context.Context) bool {
 }
 
 // syncHandler returns error when we want to re-process the key, otherwise returns nil
-func (c *Controller) syncHandler(ctx context.Context, key string) error {
+func (c *Controller) syncHandler(key string) error {
 
 	startTime := time.Now()
 	defer func() {
@@ -358,7 +362,7 @@ func (c *Controller) syncHandler(ctx context.Context, key string) error {
 
 	var manageReplicasErr error
 	if shrNeedsSync && shr.DeletionTimestamp == nil {
-		manageReplicasErr = c.manageReplicas(ctx, filteredPods, shrCopy, key)
+		manageReplicasErr = c.manageReplicas(context.TODO(), filteredPods, shrCopy, key)
 	}
 
 	//shrCopy = shrCopy.DeepCopy()
@@ -620,7 +624,7 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 		return err
 
 	} else if diff > 0 {
-		klog.V(2).InfoS("Too many replicas", "SharePod", klog.KObj(gpupod), "need", *(&gpupod.Spec.Replicas), "deleting", diff)
+		klog.V(2).InfoS("Too many replicas", "SharePod", klog.KObj(gpupod), "need", gpupod.Spec.Replicas, "deleting", diff)
 
 		//indirect pods are in our case simply dummy pod that we can ignore
 		//relatedPods, err := getIndirectly
@@ -634,8 +638,11 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 		var wg sync.WaitGroup
 		for _, pod := range podsToDelete {
 			go func(targetPod *v1.Pod) {
+				//c.kubeclient.CoreV1().Pods(pod.Namespace).de
+
 				defer wg.Done()
-				if err := c.podControl.DeletePod(ctx, shrCopy.Namespace, targetPod.Name, gpupod); err != nil {
+				//c.clientset
+				if err := c.kubeclient.CoreV1().Pods(targetPod.Namespace).Delete(ctx, targetPod.Name, metav1.DeleteOptions{}); err != nil {
 					// Decrement the expected number of deletes because the informer won't observe this deletion
 					podKey := controller.PodKey(targetPod)
 					c.expectations.DeletionObserved(key, podKey)

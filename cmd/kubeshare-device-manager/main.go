@@ -77,8 +77,8 @@ func main() {
 	kubeshareInformerFactory := informers.NewSharedInformerFactory(kubeshareClient, time.Second*30)
 
 	controller := kubesharecontroller.NewController(kubeClient, kubeshareClient,
+		kubeInformerFactory.Core().V1().Nodes(),
 		kubeInformerFactory.Core().V1().Pods(),
-		kubeInformerFactory.Apps().V1().Deployments(),
 		kubeshareInformerFactory.Kubeshare().V1().SharePods())
 
 	// notice that there is no need to run Start methods in a separate goroutine. (i.e. go kubeInformerFactory.Start(stopCh)
