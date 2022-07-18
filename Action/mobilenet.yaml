@@ -12,7 +12,16 @@ metadata:
     "kubeshare/gpu_mem": "3145728000"
 spec:
   terminationGracePeriodSeconds: 1
+  initContainers:
+  - name: mobilenet-init
+    image: leslie233/mobilenet-init:test
+    volumeMounts:
+    - name: "mobilenet-model"
+      mountPath: /model/mobilenet
   containers:
   - name: mobilenet-test
-    image: leslie233/mobilenet-2:index
+    # image: leslie233/mobilenet-2:index
+    image: leslie233/mobilnet-test:shared
     command: ["sh", "-c", "fwatchdog"]
+    #volumeMounts:
+    #- name: 
