@@ -157,7 +157,7 @@ faasshare:
 # replaces faas-netes with openfaas-operator
 
 operator:
-  image: ghcr.io/interstellarss/faas-share:v0.1.20
+  image: ghcr.io/interstellarss/faas-share:v0.1.21
   create: true
   # set this to false when creating multiple releases in the same cluster
   # must be true for the first one only
