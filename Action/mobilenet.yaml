@@ -23,5 +23,13 @@ spec:
     # image: leslie233/mobilenet-2:index
     image: leslie233/mobilnet-test:shared
     command: ["sh", "-c", "fwatchdog"]
+    volumeMounts: 
+    - mountPath: /model/mobilenet
+      name: mobilenet-model
+    volumes:
+    - names: mobilenet-model
+      hostPath: 
+        path: /model/mobilenet
+        type: 
     #volumeMounts:
     #- name: 
