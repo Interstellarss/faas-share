@@ -20,12 +20,9 @@ import (
 	"context"
 	"flag"
 	"os"
-	"time"
 
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	kubeinformers "k8s.io/client-go/informers"
-	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/klog"
 
@@ -33,9 +30,6 @@ import (
 	// _ "k8s.io/client-go/plugin/pkg/client/auth/gcp"
 
 	clientset "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned"
-	informers "github.com/Interstellarss/faas-share/pkg/client/informers/externalversions"
-	kubesharecontroller "github.com/Interstellarss/faas-share/pkg/scheduler"
-	"github.com/Interstellarss/faas-share/pkg/signals"
 )
 
 var (
@@ -48,17 +42,17 @@ func main() {
 	flag.Parse()
 
 	// set up signals so we handle the first shutdown signal gracefully
-	stopCh := signals.SetupSignalHandler()
+	//stopCh := signals.SetupSignalHandler()
 
 	cfg, err := clientcmd.BuildConfigFromFlags(masterURL, kubeconfig)
 	if err != nil {
 		klog.Fatalf("Error building kubeconfig: %s", err.Error())
 	}
 
-	kubeClient, err := kubernetes.NewForConfig(cfg)
-	if err != nil {
-		klog.Fatalf("Error building kubernetes clientset: %s", err.Error())
-	}
+	//kubeClient, err := kubernetes.NewForConfig(cfg)
+	//if err != nil {
+	//	klog.Fatalf("Error building kubernetes clientset: %s", err.Error())
+	//}
 
 	kubeshareClient, err := clientset.NewForConfig(cfg)
 	if err != nil {
@@ -70,22 +64,23 @@ func main() {
 		os.Exit(1)
 	}
 
-	kubeInformerFactory := kubeinformers.NewSharedInformerFactory(kubeClient, time.Second*30)
-	kubeshareInformerFactory := informers.NewSharedInformerFactory(kubeshareClient, time.Second*30)
+	//kubeInformerFactory := kubeinformers.NewSharedInformerFactory(kubeClient, time.Second*30)
+	//kubeshareInformerFactory := informers.NewSharedInformerFactory(kubeshareClient, time.Second*30)
+	/*
+		controller := kubesharecontroller.NewController(kubeClient, kubeshareClient,
+			kubeInformerFactory.Core().V1().Nodes(),
+			kubeInformerFactory.Core().V1().Pods(),
+			kubeshareInformerFactory.Kubeshare().V1().SharePods())
 
-	controller := kubesharecontroller.NewController(kubeClient, kubeshareClient,
-		kubeInformerFactory.Core().V1().Nodes(),
-		kubeInformerFactory.Core().V1().Pods(),
-		kubeshareInformerFactory.Kubeshare().V1().SharePods())
+		// notice that there is no need to run Start methods in a separate goroutine. (i.e. go kubeInformerFactory.Start(stopCh)
+		// Start method is non-blocking and runs all registered informers in a dedicated goroutine.
+		kubeInformerFactory.Start(stopCh)
+		kubeshareInformerFactory.Start(stopCh)
 
-	// notice that there is no need to run Start methods in a separate goroutine. (i.e. go kubeInformerFactory.Start(stopCh)
-	// Start method is non-blocking and runs all registered informers in a dedicated goroutine.
-	kubeInformerFactory.Start(stopCh)
-	kubeshareInformerFactory.Start(stopCh)
-
-	if err = controller.Run(1, stopCh); err != nil {
-		klog.Fatalf("Error running controller: %s", err.Error())
-	}
+		if err = controller.Run(1, stopCh); err != nil {
+			klog.Fatalf("Error running controller: %s", err.Error())
+		}
+	*/
 }
 
 func init() {

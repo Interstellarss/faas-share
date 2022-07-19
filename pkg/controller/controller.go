@@ -316,6 +316,27 @@ func (c *Controller) addSHR(obj interface{}) {
 		return
 	}
 	//c.enqueueSHR(shr)
+	namespace, name, err := cache.SplitMetaNamespaceKey(key)
+	if err != nil {
+		//handle error
+
+	}
+
+	shr, err := c.faasclientset.KubeshareV1().SharePods(namespace).Get(context.TODO(), name, metav1.GetOptions{})
+
+	if err != nil {
+
+	}
+	copy := shr.DeepCopy()
+
+	//job, err := c.kubeclient.BatchV1().Jobs(namespace).Create()
+
+	_, erro := c.kubeclient.CoreV1().Pods(namespace).Create(context.TODO(), newInitPod(copy), metav1.CreateOptions{})
+
+	if erro != nil {
+
+	}
+
 	c.workqueue.AddRateLimited(key)
 }
 
@@ -451,3 +472,39 @@ func getReplicas(sharepod *faasv1.SharePod) *int32 {
 
 	return minReplicas
 }
+
+func newInitPod(gpu *faasv1.SharePod) *corev1.Pod {
+	return &corev1.Pod{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      gpu.Name + "-init",
+			Namespace: gpu.Namespace,
+		},
+		Spec: corev1.PodSpec{
+			Containers: gpu.Spec.PodSpec.InitContainers,
+		},
+	}
+}
+
+/*
+func newInitJob(shr *faasv1.SharePod, name string) *batchv1.Job {
+	//completions := (int32)1
+	jobName := name + "-init"
+	return &batchv1.Job{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      jobName,
+			Namespace: shr.Namespace,
+			OwnerReferences: []metav1.OwnerReference{
+				*metav1.NewControllerRef(shr, schema.GroupVersionKind{
+					Group:   faasv1.SchemeGroupVersion.Group,
+					Version: faasv1.SchemeGroupVersion.Version,
+					Kind:    "SharePod",
+				}),
+			},
+		},
+		Spec: batchv1.JobSpec{
+			Completions: int32p(1),
+			Template:    corev1.PodTemplateSpec{},
+		},
+	}
+}
+*/

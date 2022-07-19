@@ -800,7 +800,10 @@ func newPod(shrpod *faasv1.SharePod, isGPUPod bool, podManagerIP string, podMana
 			Annotations: annotationCopy,
 			Labels:      labelCopy,
 		},
-		Spec: *specCopy,
+		Spec: corev1.PodSpec{
+			Containers: specCopy.Containers,
+			//InitContainers: []corev1.Container{},
+		},
 	}
 }
 
