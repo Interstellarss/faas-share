@@ -15,7 +15,7 @@ rules:
 - apiGroups: [""]
   resources: ["*"]
   verbs: ["*"]
-- apiGroups: ["faas_share.tum"]
+- apiGroups: ["faasshare.tum"]
   resources: ["*"]
   verbs: ["*"]
 
