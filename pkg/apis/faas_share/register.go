@@ -18,7 +18,7 @@ package kubeshare
 
 // GroupName is the group name used in this package
 const (
-	GroupName = "faasshare.tum"
+	GroupName = "faas_share.tum"
 )
 
 /*import (

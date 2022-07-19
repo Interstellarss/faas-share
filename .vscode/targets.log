@@ -8,7 +8,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This program built for i386-apple-darwin11.3.0
  
 
-# Make data base, printed on Tue Jul 19 14:39:08 2022
+# Make data base, printed on Tue Jul 19 16:59:54 2022
 
 # Variables
 
@@ -39,13 +39,13 @@ _ = /usr/bin/make
 # environment
 TIGRESS_HOME = /Users/puxuan/downloads/tigress/3.1
 # makefile (from `Makefile', line 27)
-GIT_COMMIT := ab11fcf1568e5c5b074dfb272b227b6893267e4d
+GIT_COMMIT := adf0e9eb40abba22a521f0e10ed6cfa1aa229966
 # makefile (from `Makefile', line 1)
 MAKEFILE_LIST :=  Makefile
 # environment
 VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
 # makefile (from `Makefile', line 26)
-VERSION := v0.1.18-47-gab11fcf-dirty
+VERSION := v0.1.21-2-gadf0e9e-dirty
 # environment
 __CFBundleIdentifier = com.microsoft.VSCode
 # environment
@@ -67,7 +67,7 @@ ELECTRON_RUN_AS_NODE = 1
 # default
 .FEATURES := target-specific order-only second-expansion else-if archives jobserver check-symlink
 # makefile (from `Makefile', line 12)
-TAG = v0.1.20
+TAG = v0.1.21
 # environment
 SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.QMPwzSqo2J/Listeners
 # automatic
@@ -199,9 +199,9 @@ LANG = C
 
 # Directories
 
-# . (device 16777221, inode 52289305): 39 files, no impossibilities.
+# . (device 16777221, inode 52289305): 38 files, no impossibilities.
 
-# 39 files, no impossibilities in 1 directories.
+# 38 files, no impossibilities in 1 directories.
 
 # Implicit Rules
 
@@ -277,7 +277,7 @@ push:
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-06-25 14:50:49
+#  Last modified 2022-07-19 16:58:52
 #  File has been updated.
 #  Successfully updated.
 # variable set hash-table stats:
@@ -375,7 +375,7 @@ charts:
 #  commands to execute (from `Makefile', line 87):
 	cd chart && helm package faas-share/ && helm package kafka-connector/ && helm package cron-connector/ && helm package nats-connector/ && helm package mqtt-connector/ && helm package pro-builder/  && helm package sqs-connector/
 	mv chart/*.tgz docs/
-	helm repo index docs --url https://interstellarss.github.io/faas-share --merge ./docs/index.yaml
+	helm repo index docs --url https://interstellarss.github.io/faas-share-charts --merge ./docs/index.yaml
 	./contrib/create-static-manifest.sh
 	
 
@@ -495,6 +495,6 @@ install:
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Tue Jul 19 14:39:08 2022
+# Finished Make data base on Tue Jul 19 16:59:54 2022
 
  
