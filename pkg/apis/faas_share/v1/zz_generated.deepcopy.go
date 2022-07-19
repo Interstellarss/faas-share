@@ -120,17 +120,37 @@ func (in *SharePodStatus) DeepCopyInto(out *SharePodStatus) {
 	*out = *in
 	if in.podlist != nil {
 		in, out := &in.podlist, &out.podlist
-		*out = make(map[string]*corev1.Pod, len(*in))
-		for key, val := range *in {
-			var outVal *corev1.Pod
-			if val == nil {
-				(*out)[key] = nil
-			} else {
-				in, out := &val, &outVal
+		*out = new(map[string]*corev1.Pod)
+		if **in != nil {
+			in, out := *in, *out
+			*out = make(map[string]*corev1.Pod, len(*in))
+			for key, val := range *in {
+				var outVal *corev1.Pod
+				if val == nil {
+					(*out)[key] = nil
+				} else {
+					in, out := &val, &outVal
+					*out = new(corev1.Pod)
+					(*in).DeepCopyInto(*out)
+				}
+				(*out)[key] = outVal
+			}
+		}
+	}
+	if in.PodStatus != nil {
+		in, out := &in.PodStatus, &out.PodStatus
+		*out = new(corev1.PodStatus)
+		(*in).DeepCopyInto(*out)
+	}
+	if in.PrewarmPool != nil {
+		in, out := &in.PrewarmPool, &out.PrewarmPool
+		*out = make([]*corev1.Pod, len(*in))
+		for i := range *in {
+			if (*in)[i] != nil {
+				in, out := &(*in)[i], &(*out)[i]
 				*out = new(corev1.Pod)
 				(*in).DeepCopyInto(*out)
 			}
-			(*out)[key] = outVal
 		}
 	}
 	if in.BoundDeviceIDs != nil {
@@ -144,10 +164,27 @@ func (in *SharePodStatus) DeepCopyInto(out *SharePodStatus) {
 			}
 		}
 	}
+	if in.PodManagerPort != nil {
+		in, out := &in.PodManagerPort, &out.PodManagerPort
+		*out = new(map[string]int)
+		if **in != nil {
+			in, out := *in, *out
+			*out = make(map[string]int, len(*in))
+			for key, val := range *in {
+				(*out)[key] = val
+			}
+		}
+	}
 	if in.Usage != nil {
 		in, out := &in.Usage, &out.Usage
-		*out = new(SharepodUsage)
-		**out = **in
+		*out = new(map[string]SharepodUsage)
+		if **in != nil {
+			in, out := *in, *out
+			*out = make(map[string]SharepodUsage, len(*in))
+			for key, val := range *in {
+				(*out)[key] = val
+			}
+		}
 	}
 	if in.Pod2Node != nil {
 		in, out := &in.Pod2Node, &out.Pod2Node

@@ -88,7 +88,12 @@ type SharePodStatus struct {
 	StartTime         *metav1.Time
 	ContainerStatuses []corev1.ContainerStatus*/
 	//TODO,: make bounddeviceids to store array of ids, and a map of replicateed pod to pod status
-	podlist map[string]*corev1.Pod `json:"podList, omitempty"`
+	podlist *map[string]*corev1.Pod `json:"podList,omitempty"`
+
+	PodStatus *corev1.PodStatus
+
+	// +optional
+	PrewarmPool []*corev1.Pod `json:"prewarmPool,omitempty"` //list[*corev1.Pod]
 
 	//PodObjectMeta *metav1.ObjectMeta
 
@@ -106,21 +111,19 @@ type SharePodStatus struct {
 
 	//maping from pod 2 boundDeviceID
 	// +optional
-	BoundDeviceIDs *map[string]string `json:"boundDeviceIDs, omitempty"`
+	BoundDeviceIDs *map[string]string `json:"boundDeviceIDs,omitempty"`
 
 	//BoundDeviceID     string
-	//this should also be a map?
-	PodManagerPort int `json:"podManagerPort, omitempty"`
+	PodManagerPort *map[string]int `json:"podManagerPort,omitempty"`
 
 	//TODOs: add replicas spec for faas
-
-	Usage *SharepodUsage `json:"usage, omitempty"`
+	// +optional
+	Usage *map[string]SharepodUsage `json:"usage,omitempty"`
 
 	// +optional
-	Pod2Node *map[string]string `json:"pod2node, omitempty"`
+	Pod2Node *map[string]string `json:"pod2node,omitempty"`
 
 	//TODO: adding contitions?
-
 }
 
 type SharepodUsage struct {
@@ -150,7 +153,10 @@ func (this SharePod) Print() {
 	buf.WriteString(this.ObjectMeta.Name)
 	buf.WriteString("\nannotation:\n\tkubeshare/gpu_request: ")
 	buf.WriteString(this.ObjectMeta.Annotations["kubeshare/gpu_request"])
-
+	if this.Status.PodStatus != nil {
+		buf.WriteString("\nstatus:\n\tPodStatus: ")
+		buf.WriteString(string(this.Status.PodStatus.Phase))
+	}
 	buf.WriteString("\n\tGPUID: ")
 	buf.WriteString(this.ObjectMeta.Annotations["kubeshare/GPUID"])
 	buf.WriteString("\n\tBoundDeviceIs: ")

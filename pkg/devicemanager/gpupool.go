@@ -181,14 +181,14 @@ func (c *Controller) initNodesInfo() error {
 			gpu.Usage += gpu_request
 			gpu.Mem += gpu_mem
 			gpu.PodList.PushBack(&PodRequest{
-				Key:            fmt.Sprintf("%s/%s", sharepod.ObjectMeta.Namespace, sharepod.ObjectMeta.Name),
+				Key:            fmt.Sprintf("%s/%s", pod.ObjectMeta.Namespace, pod.ObjectMeta.Name),
 				Request:        gpu_request,
 				Limit:          gpu_limit,
 				Memory:         gpu_mem,
-				PodManagerPort: sharepod.Status.PodManagerPort,
+				PodManagerPort: (*sharepod.Status.PodManagerPort)[pod.Name],
 			})
 
-			node.PodManagerPortBitmap.Mask(sharepod.Status.PodManagerPort - PodManagerPortStart)
+			node.PodManagerPortBitmap.Mask((*sharepod.Status.PodManagerPort)[pod.Name] - PodManagerPortStart)
 
 			//find bounddeviceID
 			var index int

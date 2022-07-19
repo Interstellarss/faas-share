@@ -19,7 +19,8 @@ import (
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/client-go/tools/record"
 	"k8s.io/client-go/util/workqueue"
-	"k8s.io/klog"
+
+	//"k8s.io/klog"
 	glog "k8s.io/klog"
 
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
@@ -410,7 +411,7 @@ func (c *Controller) handleDeletedSharePod(obj interface{}) {
 	name := sharepod.Name
 
 	//handle delete need?
-	klog.Infof("Sharepod %v/%v deleted...", namespace, name)
+	glog.Infof("Sharepod %v/%v deleted...", namespace, name)
 
 	//go c.removeSharepodFromList(sharepod)
 	//todo: keep these pod? or keep the vGPU
@@ -464,12 +465,6 @@ func getReplicas(sharepod *faasv1.SharePod) *int32 {
 			return sharepodReplicas
 		}
 	}
-	//minrep := *minReplicas
-
-	//minrep = minrep - 1
-
-	//minReplicas = &minrep
-
 	return minReplicas
 }
 

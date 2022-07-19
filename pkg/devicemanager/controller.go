@@ -397,7 +397,7 @@ func (c *Controller) updateSharePodStatus(sharepod *kubesharev1.SharePod, pod *c
 	//sharepodCopy.Status.PodStatus = pod.Status.DeepCopy()
 	//sharepodCopy.Status.PodObjectMeta = pod.ObjectMeta.DeepCopy()
 	if port != 0 {
-		sharepodCopy.Status.PodManagerPort = port
+		(*sharepodCopy.Status.PodManagerPort)[pod.Name] = port
 	}
 
 	_, err := c.faasclient.KubeshareV1().SharePods(sharepodCopy.Namespace).Update(context.TODO(), sharepodCopy, metav1.UpdateOptions{})
