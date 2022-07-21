@@ -8,7 +8,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This program built for i386-apple-darwin11.3.0
  
 
-# Make data base, printed on Tue Jul 19 16:59:54 2022
+# Make data base, printed on Thu Jul 21 13:37:30 2022
 
 # Variables
 
@@ -39,13 +39,13 @@ _ = /usr/bin/make
 # environment
 TIGRESS_HOME = /Users/puxuan/downloads/tigress/3.1
 # makefile (from `Makefile', line 27)
-GIT_COMMIT := adf0e9eb40abba22a521f0e10ed6cfa1aa229966
+GIT_COMMIT := abc8cc98960cd94a7c621e92d3ce32399bccac2f
 # makefile (from `Makefile', line 1)
 MAKEFILE_LIST :=  Makefile
 # environment
 VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
 # makefile (from `Makefile', line 26)
-VERSION := v0.1.21-2-gadf0e9e-dirty
+VERSION := v0.1.21-3-gabc8cc9-dirty
 # environment
 __CFBundleIdentifier = com.microsoft.VSCode
 # environment
@@ -91,7 +91,7 @@ HOME = /Users/puxuan
 # default
 MAKEFILEPATH := /Applications/Xcode.app/Contents/Developer/Makefiles
 # environment
-VSCODE_CODE_CACHE_PATH = /Users/puxuan/Library/Application Support/Code/CachedData/b06ae3b2d2dbfe28bca3134cc6be65935cdfea6a
+VSCODE_CODE_CACHE_PATH = /Users/puxuan/Library/Application Support/Code/CachedData/3b889b090b5ad5793f524b5d1d39fda662b96a2a
 # environment
 LOGNAME = puxuan
 # environment
@@ -135,7 +135,7 @@ TMPDIR = /var/folders/7m/b3h099s90tgbh61my4m6x9c80000gn/T/
 # automatic
 *F = $(notdir $*)
 # environment
-VSCODE_IPC_HOOK = /Users/puxuan/Library/Application Support/Code/1.69.1-main.sock
+VSCODE_IPC_HOOK = /Users/puxuan/Library/Application Support/Code/1.69.2-main.sock
 # environment
 MallocNanoZone = 0
 # makefile
@@ -145,7 +145,7 @@ MFLAGS = -Rrqp
 # automatic
 *D = $(patsubst %/,%,$(dir $*))
 # environment
-XPC_SERVICE_NAME = application.com.microsoft.VSCode.58789183.58789189
+XPC_SERVICE_NAME = application.com.microsoft.VSCode.59639425.59639431
 # automatic
 +D = $(patsubst %/,%,$(dir $+))
 # makefile (from `Makefile', line 24)
@@ -185,7 +185,7 @@ MAKELEVEL := 0
 # environment
 CONDA_PREFIX = /Users/puxuan/opt/anaconda3
 # environment
-VSCODE_PID = 4742
+VSCODE_PID = 55551
 # environment
 _CE_CONDA = 
 # environment
@@ -495,6 +495,6 @@ install:
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Tue Jul 19 16:59:54 2022
+# Finished Make data base on Thu Jul 21 13:37:30 2022
 
  

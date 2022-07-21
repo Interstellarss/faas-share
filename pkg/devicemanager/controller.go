@@ -9,8 +9,8 @@ import (
 	"time"
 
 	corev1 "k8s.io/api/core/v1"
-	v1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
+	//v1 "k8s.io/api/core/v1"
+	//"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/runtime/schema"
@@ -31,7 +31,7 @@ import (
 	"k8s.io/klog/v2"
 
 	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
-	kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
+	//kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
 
 	//faasv1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
 
@@ -41,7 +41,7 @@ import (
 	listers "github.com/Interstellarss/faas-share/pkg/client/listers/faas_share/v1"
 
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
-	"k8s.io/kubernetes/pkg/controller"
+	//"k8s.io/kubernetes/pkg/controller"
 	k8scontroller "k8s.io/kubernetes/pkg/controller"
 )
 
@@ -72,6 +72,8 @@ const (
 	KubeShareScheduleExclusion    = "kubeshare/sched_exclusion"
 
 	faasKind = "Sharepod"
+
+	FaasShareWarm = "faas-share/warmpool"
 )
 
 var (
@@ -329,7 +331,7 @@ func (c *Controller) syncHandler(key string) error {
 	shr, err := c.sharepodsLister.SharePods(namespace).Get(name)
 
 	if err != nil {
-		if errors.IsNotFound(err) {
+		if apierrors.IsNotFound(err) {
 			utilruntime.HandleError(fmt.Errorf("SharePod '%s' in work queue no longer exists", key))
 			c.expectations.DeleteExpectations(key)
 			return nil
@@ -392,7 +394,7 @@ func (c *Controller) syncHandler(key string) error {
 }
 
 //Need to configure here
-func (c *Controller) updateSharePodStatus(sharepod *kubesharev1.SharePod, pod *corev1.Pod, port int) error {
+func (c *Controller) updateSharePodStatus(sharepod *faasv1.SharePod, pod *corev1.Pod, port int) error {
 	sharepodCopy := sharepod.DeepCopy()
 	//sharepodCopy.Status.PodStatus = pod.Status.DeepCopy()
 	//sharepodCopy.Status.PodObjectMeta = pod.ObjectMeta.DeepCopy()
@@ -520,9 +522,56 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 
 		//may also set for burstresplicas?
 
+		warmSize := len(gpupod.Status.PrewarmPool)
+
+		podlist := gpupod.Status.PrewarmPool
+
+		//update in the delete way go func with
+		if diff <= warmSize {
+			//TODO: when tobe created is smaller or equal to the number of pods in the pre-warm pool
+
+			//podlist[0].Status.
+			for m := 0; m < diff; m++ {
+				pod := podlist[m]
+
+				pod.Annotations[FaasShareWarm] = "false"
+				//gpupod.Status.PrewarmPool[m] = nil
+
+				//delete(gpupod.Status.PrewarmPool, pod.Name)
+
+				//update new scheduled node and
+
+				_, err := c.kubeclient.CoreV1().Pods(pod.Namespace).Update(context.TODO(), pod, metav1.UpdateOptions{})
+
+				if err != nil {
+
+				}
+
+				//c
+				//patch or updates?
+			}
+			gpupod.Status.PrewarmPool = make([]*corev1.Pod, 3)
+
+			return err
+
+		} else {
+			for m, pod := range podlist {
+				pod.Annotations[FaasShareWarm] = "false"
+				gpupod.Status.PrewarmPool[m] = nil
+
+				_, err := c.kubeclient.CoreV1().Pods(pod.Namespace).Update(context.TODO(), pod, metav1.UpdateOptions{})
+
+				if err != nil {
+
+				}
+			}
+
+			diff -= warmSize
+		}
+
 		c.expectations.ExpectCreations(shrKey, diff)
 
-		klog.V(2).Infof("Too few replicas for this SharePod...\n need %d replicas, creating %d", *(&shrCopy.Spec.Replicas), diff)
+		klog.V(2).Infof("Too few replicas for this SharePod...\n need %d replicas, creating %d", shrCopy.Spec.Replicas, diff)
 
 		// Batch the pod creates. Batch sizes start at SlowStartInitialBatchSize
 		// and double with each successful iteration in a kind of "slow start".
@@ -533,6 +582,8 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 		// after one of its pods fails.  Conveniently, this also prevents the
 		// event spam that those failures would generate.
 		successfulCreations, err := slowStartbatch(diff, k8scontroller.SlowStartInitialBatchSize, func() (*corev1.Pod, error) {
+			//if gpupod.Status.PrewarmPool.
+
 			isGPUPod := false
 			gpu_request := 0.0
 			gpu_limit := 0.0
@@ -541,23 +592,23 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 			physicalGPUuuid := ""
 			physicalGPUport := 0
 
-			if gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPURequest] != "" ||
-				gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPULimit] != "" ||
-				gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUMemory] != "" {
+			if gpupod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPURequest] != "" ||
+				gpupod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPULimit] != "" ||
+				gpupod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPUMemory] != "" {
 				var err error
-				gpu_limit, err = strconv.ParseFloat(gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPULimit], 64)
+				gpu_limit, err = strconv.ParseFloat(gpupod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPULimit], 64)
 				if err != nil || gpu_limit > 1.0 || gpu_limit < 0.0 {
-					utilruntime.HandleError(fmt.Errorf("Pod of SharePod %s/%s value error: %s", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name, kubesharev1.KubeShareResourceGPULimit))
+					utilruntime.HandleError(fmt.Errorf("Pod of SharePod %s/%s value error: %s", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name, faasv1.KubeShareResourceGPULimit))
 					return nil, err
 				}
-				gpu_request, err = strconv.ParseFloat(gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPURequest], 64)
+				gpu_request, err = strconv.ParseFloat(gpupod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPURequest], 64)
 				if err != nil || gpu_request > gpu_limit || gpu_request < 0.0 {
-					utilruntime.HandleError(fmt.Errorf("Pod of SharePod %s/%s value error: %s", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name, kubesharev1.KubeShareResourceGPURequest))
+					utilruntime.HandleError(fmt.Errorf("Pod of SharePod %s/%s value error: %s", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name, faasv1.KubeShareResourceGPURequest))
 
 				}
-				gpu_mem, err = strconv.ParseInt(gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUMemory], 10, 64)
+				gpu_mem, err = strconv.ParseInt(gpupod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPUMemory], 10, 64)
 				if err != nil || gpu_mem < 0 {
-					utilruntime.HandleError(fmt.Errorf("Pod of SharePod %s/%s value error: %s", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name, kubesharev1.KubeShareResourceGPUMemory))
+					utilruntime.HandleError(fmt.Errorf("Pod of SharePod %s/%s value error: %s", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name, faasv1.KubeShareResourceGPUMemory))
 
 				}
 				isGPUPod = true
@@ -595,7 +646,7 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 			if n, ok := nodesInfo[scheNode]; ok {
 				newPod, err := c.kubeclient.CoreV1().Pods(shrCopy.Namespace).Create(context.TODO(), newPod(gpupod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid, scheNode, scheGPUID), metav1.CreateOptions{})
 				if err != nil {
-					if apierrors.HasStatusCause(err, v1.NamespaceTerminatingCause) {
+					if apierrors.HasStatusCause(err, corev1.NamespaceTerminatingCause) {
 						return nil, nil
 					}
 				}
@@ -604,6 +655,8 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 
 				//should be mapping from pod to physical devciceID, use vGPU id for simplicity
 				(*gpupod.Status.BoundDeviceIDs)[newPod.Name] = scheGPUID
+
+				(*gpupod.Status.Usage)[scheGPUID] = faasv1.SharepodUsage{GPU: gpu_request, TotalMemoryBytes: float64(gpu_mem) / 8}
 
 				return newPod, err
 			}
@@ -629,7 +682,22 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 		//indirect pods are in our case simply dummy pod that we can ignore
 		//relatedPods, err := getIndirectly
 
+		//TODO
 		podsToDelete := getPodsToDelete(filteredPods, diff)
+
+		//podsToDelete[i] = podsToDelete[diff - 1]
+
+		warmpod := podsToDelete[diff-1]
+
+		err := c.updateWarmpod(warmpod, "TRUE")
+
+		if err != nil {
+			return err
+		}
+
+		podsToDelete = podsToDelete[:diff-1]
+
+		diff--
 
 		c.expectations.ExpectDeletions(key, getPodKeys(podsToDelete))
 
@@ -637,14 +705,14 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 
 		var wg sync.WaitGroup
 		for _, pod := range podsToDelete {
-			go func(targetPod *v1.Pod) {
+			go func(targetPod *corev1.Pod) {
 				//c.kubeclient.CoreV1().Pods(pod.Namespace).de
 
 				defer wg.Done()
 				//c.clientset
 				if err := c.kubeclient.CoreV1().Pods(targetPod.Namespace).Delete(ctx, targetPod.Name, metav1.DeleteOptions{}); err != nil {
 					// Decrement the expected number of deletes because the informer won't observe this deletion
-					podKey := controller.PodKey(targetPod)
+					podKey := k8scontroller.PodKey(targetPod)
 					c.expectations.DeletionObserved(key, podKey)
 					if !apierrors.IsNotFound(err) {
 						klog.V(2).Infof("Failed to delete %v, decremented expectations for %v %s/%s", podKey, shrCopy.Kind, shrCopy.Namespace, shrCopy.Name)
@@ -834,10 +902,18 @@ func (c *Controller) schedule(gpupod *faasv1.SharePod, gpu_request float64, gpu_
 	return schedNode, schedGPUID
 }
 
-func getPodKeys(pods []*v1.Pod) []string {
+func getPodKeys(pods []*corev1.Pod) []string {
 	podKeys := make([]string, 0, len(pods))
 	for _, pod := range pods {
 		podKeys = append(podKeys, PodKey(pod))
 	}
 	return podKeys
+}
+
+func (c *Controller) updateWarmpod(pod *corev1.Pod, warm string) error {
+	pod.ObjectMeta.Annotations[FaasShareWarm] = warm
+	//TODO: change to patch?
+	_, err := c.kubeclient.CoreV1().Pods(pod.Namespace).Update(context.TODO(), pod, metav1.UpdateOptions{})
+
+	return err
 }
