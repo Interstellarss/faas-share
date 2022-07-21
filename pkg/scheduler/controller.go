@@ -5,17 +5,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strconv"
 	"sync"
 	"time"
 
 	//appsv1 "k8s.io/api/apps/v1"
 	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/types"
 
 	// metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/labels"
+
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
 	coreinformers "k8s.io/client-go/informers/core/v1"
@@ -111,16 +109,16 @@ func NewController(
 	kubeshareInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
 		//AddFunc:    controller.enqueueSharePod,
 		//TODO delete func accordingly
-		DeleteFunc: controller.resourceChanged,
+		//DeleteFunc: controller.resourceChanged,
 	})
 
 	podInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
-		AddFunc:    controller.enqueuenPod,
-		DeleteFunc: controller.resourceChanged,
+		//AddFunc:    controller.enqueuenPod,
+		//DeleteFunc: controller.resourceChanged,
 	})
 
 	nodeInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
-		DeleteFunc: controller.resourceChanged,
+		//DeleteFunc: controller.resourceChanged,
 	})
 
 	return controller
@@ -197,111 +195,114 @@ func (c *Controller) processNextWorkItem() bool {
 }
 
 func (c *Controller) syncHandler(key string) error {
-
-	namespace, name, err := cache.SplitMetaNamespaceKey(key)
-	if err != nil {
-		utilruntime.HandleError(fmt.Errorf("invalid resource key: %s", key))
-		return nil
-	}
-
-	gpupod, err := c.podsLister.Pods(namespace).Get(name)
-	if err != nil {
-		if errors.IsNotFound(err) {
-			utilruntime.HandleError(fmt.Errorf("Pod '%s' in work queue no longer exists", key))
-			return nil
-		}
-		return err
-	}
-
-	if ownerRef := metav1.GetControllerOf(gpupod); ownerRef != nil {
-		// If this object is not owned by a SharePod, we should not do anything more
-		// with it.
-		if ownerRef.Kind != "SharePod" {
-			return nil
-		}
-
-		//shr, err := c.sharepodsLister.SharePods(gpupod.GetNamespace()).Get(ownerRef.Name)
-		if err != nil {
-			klog.V(4).Infof("ignoring orphaned object '%s' of SharePod '%s'", gpupod.GetSelfLink(), ownerRef.Name)
-			return err
-		}
-
-		if gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPURequest] == "" {
-			return nil
-		}
-
-		if gpupod.Spec.NodeName != "" {
-			utilruntime.HandleError(fmt.Errorf("Pod of a SharePod '%s' NodeName had been scheduled.", key))
-			return nil
-		}
-
-		isGPUPod := false
-		gpu_request := 0.0
-		gpu_limit := 0.0
-		gpu_mem := int64(0)
-
-		if gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPURequest] != "" ||
-			gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPULimit] != "" ||
-			gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUMemory] != "" {
-			var err error
-			gpu_limit, err = strconv.ParseFloat(gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPULimit], 64)
-			if err != nil || gpu_limit > 1.0 || gpu_limit < 0.0 {
-				utilruntime.HandleError(fmt.Errorf("Pod of SharePod %s/%s value error: %s", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name, kubesharev1.KubeShareResourceGPULimit))
-				return nil
-			}
-			gpu_request, err = strconv.ParseFloat(gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPURequest], 64)
-			if err != nil || gpu_request > gpu_limit || gpu_request < 0.0 {
-				utilruntime.HandleError(fmt.Errorf("Pod of SharePod %s/%s value error: %s", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name, kubesharev1.KubeShareResourceGPURequest))
-				return nil
-			}
-			gpu_mem, err = strconv.ParseInt(gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUMemory], 10, 64)
-			if err != nil || gpu_mem < 0 {
-				utilruntime.HandleError(fmt.Errorf("Pod of SharePod %s/%s value error: %s", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name, kubesharev1.KubeShareResourceGPUMemory))
-				return nil
-			}
-			isGPUPod = true
-		}
-
-		if isGPUPod && gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUID] != "" {
-			utilruntime.HandleError(fmt.Errorf("Pod of SharePod '%s' GPUID had been scheduled.", key))
-			return nil
-		}
-
-		nodeList, err := c.nodesLister.List(labels.Everything())
-		if err != nil {
-			return err
-		}
-		podList, err := c.podsLister.List(labels.Everything())
-		if err != nil {
-			return err
-		}
-		sharePodList, err := c.sharepodsLister.List(labels.Everything())
-		if err != nil {
-			return err
-		}
-		schedNode, schedGPUID := scheduleSharePod(isGPUPod, gpu_request, gpu_mem, gpupod, nodeList, podList, sharePodList)
-		if schedNode == "" {
-			klog.Infof("No enough resources for Pod of a SharePod: %s/%s", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name)
-			// return fmt.Errorf("No enough resources for SharePod: %s/%s")
-			c.pendingListMux.Lock()
-			c.pendingList.PushBack(key)
-			c.pendingListMux.Unlock()
-			return nil
-		}
-
-		//update pod
-		now := time.Now()
-		klog.Infof("Starting scheduling Sharepod %s at %s", name, now.String())
-		klog.Infof("SharePod '%s' had been scheduled to node '%s' GPUID '%s'.", key, schedNode, schedGPUID)
-
-		if err := c.bindSharePodToNode(gpupod, schedNode, schedGPUID); err != nil {
-			return err
-		}
-
-		c.recorder.Event(gpupod, corev1.EventTypeNormal, SuccessSynced, MessageResourceSynced)
-		return nil
-	}
 	return nil
+	/*
+
+		namespace, name, err := cache.SplitMetaNamespaceKey(key)
+		if err != nil {
+			utilruntime.HandleError(fmt.Errorf("invalid resource key: %s", key))
+			return nil
+		}
+
+		gpupod, err := c.podsLister.Pods(namespace).Get(name)
+		if err != nil {
+			if errors.IsNotFound(err) {
+				utilruntime.HandleError(fmt.Errorf("Pod '%s' in work queue no longer exists", key))
+				return nil
+			}
+			return err
+		}
+
+		if ownerRef := metav1.GetControllerOf(gpupod); ownerRef != nil {
+			// If this object is not owned by a SharePod, we should not do anything more
+			// with it.
+			if ownerRef.Kind != "SharePod" {
+				return nil
+			}
+
+			//shr, err := c.sharepodsLister.SharePods(gpupod.GetNamespace()).Get(ownerRef.Name)
+			if err != nil {
+				klog.V(4).Infof("ignoring orphaned object '%s' of SharePod '%s'", gpupod.GetSelfLink(), ownerRef.Name)
+				return err
+			}
+
+			if gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPURequest] == "" {
+				return nil
+			}
+
+			if gpupod.Spec.NodeName != "" {
+				utilruntime.HandleError(fmt.Errorf("Pod of a SharePod '%s' NodeName had been scheduled.", key))
+				return nil
+			}
+
+			isGPUPod := false
+			gpu_request := 0.0
+			gpu_limit := 0.0
+			gpu_mem := int64(0)
+
+			if gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPURequest] != "" ||
+				gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPULimit] != "" ||
+				gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUMemory] != "" {
+				var err error
+				gpu_limit, err = strconv.ParseFloat(gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPULimit], 64)
+				if err != nil || gpu_limit > 1.0 || gpu_limit < 0.0 {
+					utilruntime.HandleError(fmt.Errorf("Pod of SharePod %s/%s value error: %s", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name, kubesharev1.KubeShareResourceGPULimit))
+					return nil
+				}
+				gpu_request, err = strconv.ParseFloat(gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPURequest], 64)
+				if err != nil || gpu_request > gpu_limit || gpu_request < 0.0 {
+					utilruntime.HandleError(fmt.Errorf("Pod of SharePod %s/%s value error: %s", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name, kubesharev1.KubeShareResourceGPURequest))
+					return nil
+				}
+				gpu_mem, err = strconv.ParseInt(gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUMemory], 10, 64)
+				if err != nil || gpu_mem < 0 {
+					utilruntime.HandleError(fmt.Errorf("Pod of SharePod %s/%s value error: %s", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name, kubesharev1.KubeShareResourceGPUMemory))
+					return nil
+				}
+				isGPUPod = true
+			}
+
+			if isGPUPod && gpupod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUID] != "" {
+				utilruntime.HandleError(fmt.Errorf("Pod of SharePod '%s' GPUID had been scheduled.", key))
+				return nil
+			}
+
+			nodeList, err := c.nodesLister.List(labels.Everything())
+			if err != nil {
+				return err
+			}
+			podList, err := c.podsLister.List(labels.Everything())
+			if err != nil {
+				return err
+			}
+			sharePodList, err := c.sharepodsLister.List(labels.Everything())
+			if err != nil {
+				return err
+			}
+			schedNode, schedGPUID := scheduleSharePod(isGPUPod, gpu_request, gpu_mem, gpupod, nodeList, podList, sharePodList)
+			if schedNode == "" {
+				klog.Infof("No enough resources for Pod of a SharePod: %s/%s", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name)
+				// return fmt.Errorf("No enough resources for SharePod: %s/%s")
+				c.pendingListMux.Lock()
+				c.pendingList.PushBack(key)
+				c.pendingListMux.Unlock()
+				return nil
+			}
+
+			//update pod
+			now := time.Now()
+			klog.Infof("Starting scheduling Sharepod %s at %s", name, now.String())
+			klog.Infof("SharePod '%s' had been scheduled to node '%s' GPUID '%s'.", key, schedNode, schedGPUID)
+
+			if err := c.bindSharePodToNode(gpupod, schedNode, schedGPUID); err != nil {
+				return err
+			}
+
+			c.recorder.Event(gpupod, corev1.EventTypeNormal, SuccessSynced, MessageResourceSynced)
+			return nil
+		}
+		return nil
+	*/
 }
 
 type patchValue struct {
