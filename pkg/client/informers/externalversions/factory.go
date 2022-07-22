@@ -24,7 +24,7 @@ import (
 	time "time"
 
 	versioned "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned"
-	faasshare "github.com/Interstellarss/faas-share/pkg/client/informers/externalversions/faas_share"
+	faasshare "github.com/Interstellarss/faas-share/pkg/client/informers/externalversions/faasshare"
 	internalinterfaces "github.com/Interstellarss/faas-share/pkg/client/informers/externalversions/internalinterfaces"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"

@@ -4,7 +4,7 @@ import (
 	"math"
 	"sync"
 
-	kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
+	kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/faasshare/v1"
 	corev1 "k8s.io/api/core/v1"
 )
 

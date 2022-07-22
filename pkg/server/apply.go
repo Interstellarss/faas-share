@@ -14,7 +14,7 @@ import (
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/klog"
 
-	faasshareV1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
+	faasshareV1 "github.com/Interstellarss/faas-share/pkg/apis/faasshare/v1"
 )
 
 func makeApplyHandler(defaultNamespace string, client clientset.Interface) http.HandlerFunc {

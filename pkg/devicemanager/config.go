@@ -18,7 +18,7 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/klog"
 
-	kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
+	kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/faasshare/v1"
 	"github.com/Interstellarss/faas-share/pkg/lib/bitmap"
 )
 

@@ -19,7 +19,7 @@ limitations under the License.
 package v1
 
 import (
-	v1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
+	v1 "github.com/Interstellarss/faas-share/pkg/apis/faasshare/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/client-go/tools/cache"

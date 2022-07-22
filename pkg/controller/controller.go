@@ -25,11 +25,11 @@ import (
 
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 
-	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
+	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/faasshare/v1"
 	clientset "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned"
 	faasscheme "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned/scheme"
 	informers "github.com/Interstellarss/faas-share/pkg/client/informers/externalversions"
-	listers "github.com/Interstellarss/faas-share/pkg/client/listers/faas_share/v1"
+	listers "github.com/Interstellarss/faas-share/pkg/client/listers/faasshare/v1"
 	//faasv1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
 )
 

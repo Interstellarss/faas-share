@@ -22,10 +22,10 @@ import (
 	"context"
 	time "time"
 
-	faassharev1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
+	faassharev1 "github.com/Interstellarss/faas-share/pkg/apis/faasshare/v1"
 	versioned "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned"
 	internalinterfaces "github.com/Interstellarss/faas-share/pkg/client/informers/externalversions/internalinterfaces"
-	v1 "github.com/Interstellarss/faas-share/pkg/client/listers/faas_share/v1"
+	v1 "github.com/Interstellarss/faas-share/pkg/client/listers/faasshare/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	watch "k8s.io/apimachinery/pkg/watch"

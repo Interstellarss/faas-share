@@ -3,7 +3,7 @@ package controller
 import (
 	"testing"
 
-	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
+	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/faasshare/v1"
 
 	corev1 "k8s.io/api/core/v1"
 

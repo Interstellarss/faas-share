@@ -21,7 +21,7 @@ package v1
 import (
 	"net/http"
 
-	v1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
+	v1 "github.com/Interstellarss/faas-share/pkg/apis/faasshare/v1"
 	"github.com/Interstellarss/faas-share/pkg/client/clientset/versioned/scheme"
 	rest "k8s.io/client-go/rest"
 )

@@ -21,7 +21,7 @@ package fake
 import (
 	"context"
 
-	faassharev1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
+	faassharev1 "github.com/Interstellarss/faas-share/pkg/apis/faasshare/v1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	labels "k8s.io/apimachinery/pkg/labels"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"

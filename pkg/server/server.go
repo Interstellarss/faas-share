@@ -28,7 +28,7 @@ import (
 
 	"k8s.io/klog"
 
-	lister "github.com/Interstellarss/faas-share/pkg/client/listers/faas_share/v1"
+	lister "github.com/Interstellarss/faas-share/pkg/client/listers/faasshare/v1"
 )
 
 //TODO: Move to config pattern used else-where across projects

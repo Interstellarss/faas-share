@@ -30,15 +30,15 @@ import (
 	"k8s.io/client-go/util/workqueue"
 	"k8s.io/klog/v2"
 
-	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
+	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/faasshare/v1"
 	//kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
 
 	//faasv1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
 
 	clientset "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned"
 	kubesharescheme "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned/scheme"
-	informers "github.com/Interstellarss/faas-share/pkg/client/informers/externalversions/faas_share/v1"
-	listers "github.com/Interstellarss/faas-share/pkg/client/listers/faas_share/v1"
+	informers "github.com/Interstellarss/faas-share/pkg/client/informers/externalversions/faasshare/v1"
+	listers "github.com/Interstellarss/faas-share/pkg/client/listers/faasshare/v1"
 
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	//"k8s.io/kubernetes/pkg/controller"

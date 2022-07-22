@@ -18,9 +18,9 @@ import (
 
 	sharepodtypes "github.com/Interstellarss/faas-share/pkg/sharepod"
 
-	ofv1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
+	ofv1 "github.com/Interstellarss/faas-share/pkg/apis/faasshare/v1"
 
-	lister "github.com/Interstellarss/faas-share/pkg/client/listers/faas_share/v1"
+	lister "github.com/Interstellarss/faas-share/pkg/client/listers/faasshare/v1"
 )
 
 func makeReplicaReader(defaultNamespace string, client clientset.Interface, lister lister.SharePodLister) http.HandlerFunc {

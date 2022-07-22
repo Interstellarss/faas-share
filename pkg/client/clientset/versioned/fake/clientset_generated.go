@@ -20,8 +20,8 @@ package fake
 
 import (
 	clientset "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned"
-	kubesharev1 "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned/typed/faas_share/v1"
-	fakekubesharev1 "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned/typed/faas_share/v1/fake"
+	kubesharev1 "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned/typed/faasshare/v1"
+	fakekubesharev1 "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned/typed/faasshare/v1/fake"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/discovery"

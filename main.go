@@ -11,7 +11,7 @@ import (
 	"k8s.io/client-go/tools/clientcmd"
 	"k8s.io/klog/v2"
 
-	v1 "github.com/Interstellarss/faas-share/pkg/client/informers/externalversions/faas_share/v1"
+	v1 "github.com/Interstellarss/faas-share/pkg/client/informers/externalversions/faasshare/v1"
 	"github.com/Interstellarss/faas-share/pkg/controller"
 	"github.com/Interstellarss/faas-share/pkg/server"
 	"github.com/Interstellarss/faas-share/pkg/signals"

@@ -19,7 +19,7 @@ limitations under the License.
 package fake
 
 import (
-	v1 "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned/typed/faas_share/v1"
+	v1 "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned/typed/faasshare/v1"
 	rest "k8s.io/client-go/rest"
 	testing "k8s.io/client-go/testing"
 )

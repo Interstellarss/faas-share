@@ -127,9 +127,9 @@ type SharePodStatus struct {
 }
 
 type SharepodUsage struct {
-	GPU float64 `json:"gpu,omitempty"`
+	GPU float64 `json:"gpu, omitempty"`
 
-	TotalMemoryBytes float64 `json:"totalMemoryBytes,omitempty"`
+	TotalMemoryBytes float64 `json:"totalMemoryBytes, omitempty"`
 }
 
 // +k8s:deepcopy-gen:interfaces=k8s.io/apimachinery/pkg/runtime.Object

@@ -9,11 +9,11 @@ import (
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	KubeshareV1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
+	KubeshareV1 "github.com/Interstellarss/faas-share/pkg/apis/faasshare/v1"
 
 	//appsv1 "k8s.io/client-go/listers/apps/v1"
 
-	lister "github.com/Interstellarss/faas-share/pkg/client/listers/faas_share/v1"
+	lister "github.com/Interstellarss/faas-share/pkg/client/listers/faasshare/v1"
 )
 
 func makeListHandler(defaultNamespace string,

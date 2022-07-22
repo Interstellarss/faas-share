@@ -4,7 +4,7 @@ import (
 
 	//faasv1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
 	//faasv1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
-	kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
+	kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/faasshare/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 
 	corev1 "k8s.io/api/core/v1"

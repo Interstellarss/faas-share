@@ -2,7 +2,7 @@ package devicemanager
 
 import (
 	//kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/kubeshare/v1"
-	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
+	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/faasshare/v1"
 )
 
 var filters = []func(NodeResources, *faasv1.SharePod){

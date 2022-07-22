@@ -17,8 +17,8 @@ import (
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/klog"
 
-	faasshareV1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
-	kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
+	faasshareV1 "github.com/Interstellarss/faas-share/pkg/apis/faasshare/v1"
+	//kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/faasshare/v1"
 	"github.com/Interstellarss/faas-share/pkg/lib/bitmap"
 )
 
@@ -471,7 +471,7 @@ func (c *Controller) removeSharePodFromList(sharepod *faasshareV1.SharePod) {
 
 	for _, pod := range pods {
 		nodeName := pod.Spec.NodeName
-		GPUID := pod.Annotations[kubesharev1.KubeShareResourceGPUID]
+		GPUID := pod.Annotations[faasshareV1.KubeShareResourceGPUID]
 		key := fmt.Sprintf("%s/%s", pod.ObjectMeta.Namespace, pod.ObjectMeta.Name)
 
 		nodesInfoMux.Lock()
@@ -514,7 +514,7 @@ func (c *Controller) removeSharePodFromList(sharepod *faasshareV1.SharePod) {
 }
 
 func (c *Controller) deleteDummyPod(nodeName, GPUID, uuid string) {
-	key := fmt.Sprintf("%s-%s-%s", kubesharev1.KubeShareDummyPodName, nodeName, GPUID)
+	key := fmt.Sprintf("%s-%s-%s", faasshareV1.KubeShareDummyPodName, nodeName, GPUID)
 	klog.Infof("Deleting dummy Pod: %s", key)
 	c.kubeclient.CoreV1().Pods("kube-system").Delete(context.TODO(), key, metav1.DeleteOptions{})
 	syncConfig(nodeName, uuid, nil)
