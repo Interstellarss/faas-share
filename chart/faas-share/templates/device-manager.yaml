@@ -18,6 +18,13 @@ rules:
 - apiGroups: ["faasshare.tum"]
   resources: ["*"]
   verbs: ["*"]
+- apiGroups: ["faasshare.tum"]
+  resources: ["sharepods"]
+  verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+- apiGroups: [""]
+  resources: ["pods", "pods/log", "namespaces", "endpoints"]
+  verbs: ["get", "list", "watch"]
+
 ---
 
 kind: ClusterRoleBinding
