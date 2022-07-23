@@ -10,6 +10,8 @@ import (
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	//"k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/wait"
 	kubeinformers "k8s.io/client-go/informers"
@@ -23,7 +25,7 @@ import (
 	//"k8s.io/klog"
 	glog "k8s.io/klog"
 
-	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
+	//utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 
 	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/faasshare/v1"
 	clientset "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned"
@@ -330,6 +332,16 @@ func (c *Controller) addSHR(obj interface{}) {
 	}
 	copy := shr.DeepCopy()
 
+	replica := getReplicas(copy)
+
+	copy.Spec.Replicas = replica
+
+	_, Err := c.faasclientset.KubeshareV1().SharePods(namespace).Update(context.TODO(), copy, metav1.UpdateOptions{})
+
+	if Err != nil {
+		runtime.HandleError(Err)
+	}
+
 	//job, err := c.kubeclient.BatchV1().Jobs(namespace).Create()
 
 	_, erro := c.kubeclient.CoreV1().Pods(namespace).Create(context.TODO(), newInitPod(copy), metav1.CreateOptions{})
@@ -402,7 +414,7 @@ func (c *Controller) handleDeletedSharePod(obj interface{}) {
 	sharepod, ok := obj.(*faasv1.SharePod)
 
 	if !ok {
-		utilruntime.HandleError(fmt.Errorf("handleDeletedSharePod: cannot parse object"))
+		runtime.HandleError(fmt.Errorf("handleDeletedSharePod: cannot parse object"))
 		return
 	}
 
