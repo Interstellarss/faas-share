@@ -356,3 +356,18 @@ type RealPodControl struct {
 	KubeClient clientset.Interface
 	Recorder   record.EventRecorder
 }
+
+func makeLabels(sharepod *faasv1.SharePod) map[string]string {
+	labels := map[string]string{
+		"faas_function": sharepod.Name,
+		"app":           sharepod.Name,
+		"controller":    sharepod.Name,
+	}
+	if sharepod.Labels != nil {
+		for k, v := range sharepod.Labels {
+			labels[k] = v
+		}
+	}
+
+	return labels
+}

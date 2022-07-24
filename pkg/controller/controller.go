@@ -258,6 +258,30 @@ func (c *Controller) syncHandler(key string) error {
 		return err
 	}
 
+	needUpdate := false
+	if sharepod.Spec.Selector == nil {
+		sharepod.Spec.Selector = &metav1.LabelSelector{
+			MatchLabels: map[string]string{
+				"app":        sharepod.Name,
+				"controller": sharepod.Name,
+			}}
+		needUpdate = true
+	}
+
+	//default have one replica
+	if sharepod.Spec.Replicas == nil {
+		sharepod.Spec.Replicas = getReplicas(sharepod)
+
+		needUpdate = true
+	}
+
+	if needUpdate {
+		_, err := c.faasclientset.KubeshareV1().SharePods(namespace).Update(context.TODO(), sharepod, metav1.UpdateOptions{})
+
+		if err != nil {
+			glog.Errorf("Error updating sharepods %v/%v replica and selector...", namespace, name)
+		}
+	}
 	// Get the deployment with the name specified in Function.spec
 	//deployment, err := c.deploymentsLister.Deployments(sharepod.GetNamespace()).Get(deploymentName)
 	// If the resource doesn't exist, we'll create it
@@ -319,12 +343,13 @@ func (c *Controller) addSHR(obj interface{}) {
 		return
 	}
 	//c.enqueueSHR(shr)
+
 	namespace, name, err := cache.SplitMetaNamespaceKey(key)
+
 	if err != nil {
 		//handle error
 
 	}
-
 	shr, err := c.faasclientset.KubeshareV1().SharePods(namespace).Get(context.TODO(), name, metav1.GetOptions{})
 
 	if err != nil {
@@ -332,22 +357,25 @@ func (c *Controller) addSHR(obj interface{}) {
 	}
 	copy := shr.DeepCopy()
 
-	replica := getReplicas(copy)
+	/*
+		replica := getReplicas(copy)
 
-	copy.Spec.Replicas = replica
+		copy.Spec.Replicas = replica
 
-	_, Err := c.faasclientset.KubeshareV1().SharePods(namespace).Update(context.TODO(), copy, metav1.UpdateOptions{})
+		_, Err := c.faasclientset.KubeshareV1().SharePods(namespace).Update(context.TODO(), copy, metav1.UpdateOptions{})
 
-	if Err != nil {
-		runtime.HandleError(Err)
-	}
+		if Err != nil {
+			runtime.HandleError(Err)
+		}
+	*/
 
 	//job, err := c.kubeclient.BatchV1().Jobs(namespace).Create()
+	if copy.Spec.PodSpec.InitContainers != nil {
+		_, err := c.kubeclient.CoreV1().Pods(namespace).Create(context.TODO(), newInitPod(copy), metav1.CreateOptions{})
 
-	_, erro := c.kubeclient.CoreV1().Pods(namespace).Create(context.TODO(), newInitPod(copy), metav1.CreateOptions{})
-
-	if erro != nil {
-
+		if err != nil {
+			glog.Errorf("Error starting init container for sharepod %v/%v", namespace, name)
+		}
 	}
 
 	c.workqueue.AddRateLimited(key)

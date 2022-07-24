@@ -339,6 +339,11 @@ func (c *Controller) syncHandler(key string) error {
 		return err
 	}
 
+	if shr.Spec.Replicas == nil {
+		klog.Infof("Waiting sharepod %v/%vreplicas to be updated...", namespace, name)
+		return nil
+	}
+
 	shrCopy := shr.DeepCopy()
 
 	shrNeedsSync := c.expectations.SatisfiedExpectations(key)
@@ -347,6 +352,11 @@ func (c *Controller) syncHandler(key string) error {
 
 	if err != nil {
 		utilruntime.HandleError(fmt.Errorf("error converting pod selector to selector for shr %v/%v: %v", namespace, name, err))
+	}
+
+	if selector == nil {
+		klog.Infof("selector is till nil...")
+		return nil
 	}
 
 	//sharepod, err := c.sharepodsLister.SharePods(namespace).Get(name)
@@ -786,10 +796,7 @@ func newPod(shrpod *faasv1.SharePod, isGPUPod bool, podManagerIP string, podMana
 
 	specCopy.NodeName = scheNode
 
-	labelCopy := make(map[string]string, len(shrpod.ObjectMeta.Labels))
-	for key, val := range shrpod.ObjectMeta.Labels {
-		labelCopy[key] = val
-	}
+	labelCopy := makeLabels(shrpod)
 	annotationCopy := make(map[string]string, len(shrpod.ObjectMeta.Annotations)+4)
 	for key, val := range shrpod.ObjectMeta.Annotations {
 		annotationCopy[key] = val
