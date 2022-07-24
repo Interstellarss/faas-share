@@ -1,7 +1,9 @@
 package devicemanager
 
 import (
+	"container/list"
 	"context"
+	"errors"
 	"fmt"
 	"strconv"
 	"strings"
@@ -100,6 +102,9 @@ type Controller struct {
 
 	expectations *k8scontroller.UIDTrackingControllerExpectations
 
+	pendingList    *list.List
+	pendingListMux *sync.Mutex
+
 	//syncHandler func(ctx context.Context, shrKey string) error
 
 	// workqueue is a rate limited work queue. This is used to queue work to be
@@ -154,6 +159,9 @@ func NewController(
 		//deploymentLister:  deploymentInformer.Lister(),
 		//depploymentSynced: deploymentInformer.Informer().HasSynced,
 		expectations: k8scontroller.NewUIDTrackingControllerExpectations(k8scontroller.NewControllerExpectations()),
+
+		pendingList:    list.New(),
+		pendingListMux: &sync.Mutex{},
 		//podControl:   podcontrol,
 		workqueue: workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "SharePods"),
 		recorder:  recorder,
@@ -192,6 +200,10 @@ func NewController(
 		DeleteFunc: controller.handleObject,
 	})
 
+	nodeInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
+		DeleteFunc: controller.resourceChanged,
+	})
+
 	return controller
 }
 
@@ -220,6 +232,11 @@ func (c *Controller) Run(threadiness int, stopCh <-chan struct{}) error {
 	c.cleanOrphanDummyPod()
 	// clientHandler in ConfigManager must have correct PodList of every SharePods,
 	// so call it after initNodeClient
+
+	pendingInsuranceTicker := time.NewTicker(5 * time.Second)
+	pendingInsuranceDone := make(chan bool)
+	go c.pendingInsurance(pendingInsuranceTicker, &pendingInsuranceDone)
+
 	go StartConfigManager(stopCh, c.kubeclient)
 
 	klog.Info("Starting workers")
@@ -233,6 +250,8 @@ func (c *Controller) Run(threadiness int, stopCh <-chan struct{}) error {
 	klog.Info("Started workers")
 	<-stopCh
 	klog.Info("Shutting down workers")
+	pendingInsuranceTicker.Stop()
+	pendingInsuranceDone <- true
 
 	return nil
 }
@@ -624,12 +643,25 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 				isGPUPod = true
 			}
 
-			scheNode, scheGPUID := c.schedule(gpupod, gpu_request, gpu_limit, gpu_mem, isGPUPod)
+			schedNode, schedGPUID := c.schedule(gpupod, gpu_request, gpu_limit, gpu_mem, isGPUPod)
+
+			if schedNode == "" {
+				klog.Infof("No enough resources for SharePod: %s/%s", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name)
+				// return fmt.Errorf("No enough resources for SharePod: %s/%s")
+				c.pendingListMux.Lock()
+				c.pendingList.PushBack(key)
+				c.pendingListMux.Unlock()
+				return nil, errors.New("NoSchedNode")
+			}
+
+			klog.Infof("SharePod '%s' had been scheduled to node '%s' GPUID '%s'.", key, schedNode, schedGPUID)
+
+			//error management check if node is nil
 
 			//boundDeviceId :=
 			if isGPUPod {
 				var errCode int
-				physicalGPUuuid, errCode = c.getPhysicalGPUuuid(scheNode, scheGPUID, gpu_request, gpu_limit, gpu_mem, key, &physicalGPUport)
+				physicalGPUuuid, errCode = c.getPhysicalGPUuuid(schedNode, schedGPUID, gpu_request, gpu_limit, gpu_mem, key, &physicalGPUport)
 				switch errCode {
 				case 0:
 					klog.Infof("SharePod %s is bound to GPU uuid: %s", key, physicalGPUuuid)
@@ -653,20 +685,20 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 				//gpupod.Status.BoundDeviceID = physicalGPUuuid
 			}
 
-			if n, ok := nodesInfo[scheNode]; ok {
-				newPod, err := c.kubeclient.CoreV1().Pods(shrCopy.Namespace).Create(context.TODO(), newPod(gpupod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid, scheNode, scheGPUID), metav1.CreateOptions{})
+			if n, ok := nodesInfo[schedNode]; ok {
+				newPod, err := c.kubeclient.CoreV1().Pods(shrCopy.Namespace).Create(context.TODO(), newPod(gpupod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid, schedNode, schedGPUID), metav1.CreateOptions{})
 				if err != nil {
 					if apierrors.HasStatusCause(err, corev1.NamespaceTerminatingCause) {
 						return nil, nil
 					}
 				}
 
-				(*gpupod.Status.Pod2Node)[newPod.Name] = scheNode
+				(*gpupod.Status.Pod2Node)[newPod.Name] = schedNode
 
 				//should be mapping from pod to physical devciceID, use vGPU id for simplicity
-				(*gpupod.Status.BoundDeviceIDs)[newPod.Name] = scheGPUID
+				(*gpupod.Status.BoundDeviceIDs)[newPod.Name] = schedGPUID
 
-				(*gpupod.Status.Usage)[scheGPUID] = faasv1.SharepodUsage{GPU: gpu_request, TotalMemoryBytes: float64(gpu_mem) / 8}
+				(*gpupod.Status.Usage)[schedGPUID] = faasv1.SharepodUsage{GPU: gpu_request, TotalMemoryBytes: float64(gpu_mem) / 8}
 
 				return newPod, err
 			}
@@ -923,4 +955,25 @@ func (c *Controller) updateWarmpod(pod *corev1.Pod, warm string) error {
 	_, err := c.kubeclient.CoreV1().Pods(pod.Namespace).Update(context.TODO(), pod, metav1.UpdateOptions{})
 
 	return err
+}
+
+func (c *Controller) pendingInsurance(ticker *time.Ticker, done *chan bool) {
+	for {
+		select {
+		case <-(*done):
+			return
+		case <-ticker.C:
+			c.resourceChanged(nil)
+		}
+	}
+}
+
+func (c *Controller) resourceChanged(obj interface{}) {
+	// push pending SharePods into workqueue
+	c.pendingListMux.Lock()
+	for p := c.pendingList.Front(); p != nil; p = p.Next() {
+		c.workqueue.Add(p.Value)
+	}
+	c.pendingList.Init()
+	c.pendingListMux.Unlock()
 }
