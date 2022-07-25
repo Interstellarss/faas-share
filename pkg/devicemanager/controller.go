@@ -580,6 +580,8 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 
 		podlist := gpupod.Status.PrewarmPool
 
+		klog.Infof("Prewwarm pool size %d... and podlist length %d ", warmSize, len(podlist))
+
 		if warmSize != 0 {
 			//update in the delete way go func with
 			if diff <= warmSize {
@@ -589,7 +591,10 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 				for m := 0; m < diff; m++ {
 					pod := podlist[m]
 
-					pod.Annotations[FaasShareWarm] = "false"
+					//pod.Annotations[FaasShareWarm] = "false"
+					if pod.Annotations[FaasShareWarm] != "" {
+						pod.Annotations[FaasShareWarm] = "false"
+					}
 					//gpupod.Status.PrewarmPool[m] = nil
 
 					//delete(gpupod.Status.PrewarmPool, pod.Name)
