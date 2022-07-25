@@ -8,7 +8,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This program built for i386-apple-darwin11.3.0
  
 
-# Make data base, printed on Sun Jul 24 20:34:12 2022
+# Make data base, printed on Mon Jul 25 10:29:15 2022
 
 # Variables
 
@@ -39,13 +39,13 @@ _ = /usr/bin/make
 # environment
 TIGRESS_HOME = /Users/puxuan/downloads/tigress/3.1
 # makefile (from `Makefile', line 27)
-GIT_COMMIT := 1c90bd8fd68bda99b8afb2faa6fdc4f0952064a5
+GIT_COMMIT := a4e2007e7fbe1b5785b73ee4366b60ed89ea2e88
 # makefile (from `Makefile', line 1)
 MAKEFILE_LIST :=  Makefile
 # environment
 VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
 # makefile (from `Makefile', line 26)
-VERSION := v0.1.21-dirty
+VERSION := v0.1.21-1-ga4e2007-dirty
 # environment
 __CFBundleIdentifier = com.microsoft.VSCode
 # environment
@@ -63,13 +63,15 @@ CODEGEN_VERSION := k8s.io/code-generator
 # makefile (from `Makefile', line 22)
 GOPATH := /Users/puxuan/go
 # environment
+LaunchInstanceID = 6B6D237B-75DD-4A03-9925-E8995BA9CC89
+# environment
 ELECTRON_RUN_AS_NODE = 1
 # default
 .FEATURES := target-specific order-only second-expansion else-if archives jobserver check-symlink
 # makefile (from `Makefile', line 12)
 TAG = v0.1.21
 # environment
-SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.QMPwzSqo2J/Listeners
+SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.OCWv46y7XY/Listeners
 # automatic
 %F = $(notdir $%)
 # environment
@@ -81,6 +83,7 @@ DOCKER_BUILDKIT = 1
 # environment
 PWD = /Users/puxuan/go/src/github.com/Interstellarss/faas-share
 # makefile (from `Makefile', line 20)
+ 
 TOOLS_DIR := .tools
 # environment
 ORIGINAL_XDG_CURRENT_DESKTOP = undefined
@@ -168,6 +171,8 @@ BIN_DIR = bin/
 LC_ALL = C
 # environment
 CONDA_PYTHON_EXE = /Users/puxuan/opt/anaconda3/bin/python
+# environment
+SECURITYSESSIONID = 186a6
 # automatic
 ^F = $(notdir $^)
 # default
@@ -185,13 +190,13 @@ MAKELEVEL := 0
 # environment
 CONDA_PREFIX = /Users/puxuan/opt/anaconda3
 # environment
-VSCODE_PID = 83794
+VSCODE_PID = 484
 # environment
 _CE_CONDA = 
 # environment
 LANG = C
 # variable set hash-table stats:
-# Load=89/1024=9%, Rehash=0, Collisions=6/143=4%
+# Load=91/1024=9%, Rehash=0, Collisions=6/145=4%
 
 # Pattern-specific Variable Values
 
@@ -226,6 +231,7 @@ all: build-docker kubeshare-scheduler kubeshare-device-manager kubeshare-config-
 
 publish-buildx-all:
 #  Phony target (prerequisite of .PHONY).
+ 
 #  Implicit rule search has not been done.
 #  File does not exist.
 #  File has not been updated.
@@ -288,7 +294,6 @@ render-charts:
 #  Implicit rule search has not been done.
 #  File does not exist.
 #  File has not been updated.
- 
 #  commands to execute (from `Makefile', line 93):
 	./contrib/create-static-manifest.sh
 	./contrib/create-static-manifest.sh ./chart/faas-share ./yaml_arm64 ./chart/faas-share/values-arm64.yaml
@@ -495,6 +500,6 @@ install:
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Sun Jul 24 20:34:12 2022
+# Finished Make data base on Mon Jul 25 10:29:15 2022
 
  

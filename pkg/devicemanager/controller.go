@@ -365,6 +365,31 @@ func (c *Controller) syncHandler(key string) error {
 
 	shrCopy := shr.DeepCopy()
 
+	if shrCopy.Status.BoundDeviceIDs == nil {
+		boundIds := make(map[string]string)
+		shrCopy.Status.BoundDeviceIDs = &boundIds
+	}
+
+	if shrCopy.Status.Pod2Node == nil {
+		pod2Node := make(map[string]string)
+		shrCopy.Status.Pod2Node = &pod2Node
+	}
+
+	if shrCopy.Status.PodManagerPort == nil {
+		podmanagerPort := make(map[string]int)
+		shrCopy.Status.PodManagerPort = &podmanagerPort
+	}
+
+	if shrCopy.Status.PrewarmPool == nil {
+		pool := make([]*corev1.Pod, *shrCopy.Spec.Replicas)
+		shrCopy.Status.PrewarmPool = pool
+	}
+
+	if shrCopy.Status.Usage == nil {
+		usages := make(map[string]faasv1.SharepodUsage)
+		shrCopy.Status.Usage = &usages
+	}
+
 	shrNeedsSync := c.expectations.SatisfiedExpectations(key)
 
 	selector, err := metav1.LabelSelectorAsSelector(shrCopy.Spec.Selector)
@@ -406,7 +431,7 @@ func (c *Controller) syncHandler(key string) error {
 	//erro := c.updateSharePodStatus(shrCopy, )
 
 	//TODO: new update methodology?
-	updatedSHR, err := c.faasclient.KubeshareV1().SharePods(shrCopy.Namespace).Update(context.TODO(), shrCopy, metav1.UpdateOptions{})
+	updatedSHR, err := c.faasclient.KubeshareV1().SharePods(shrCopy.Namespace).UpdateStatus(context.TODO(), shrCopy, metav1.UpdateOptions{})
 	if err != nil {
 		return err
 	}
