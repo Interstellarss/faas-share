@@ -335,6 +335,11 @@ func calculateStatus(shr *faasv1.SharePod, filteredPods []*v1.Pod, manageReplica
 			}
 		}
 	}
+	/*
+		if port != 0 {
+			(*sharepodCopy.Status.PodManagerPort)[pod.Name] = port
+		}
+	*/
 
 	//conditions missing?
 	if manageReplicasErr != nil {

@@ -683,14 +683,14 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 				isGPUPod = true
 			}
 
-			schedNode, schedGPUID := c.schedule(gpupod, gpu_request, gpu_limit, gpu_mem, isGPUPod)
+			schedNode, schedGPUID := c.schedule(gpupod, gpu_request, gpu_limit, gpu_mem, isGPUPod, key)
 
 			if schedNode == "" {
-				klog.Infof("No enough resources for SharePod: %s/%s", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name)
+				//klog.Infof("No enough resources for SharePod: %s/%s", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name)
 				// return fmt.Errorf("No enough resources for SharePod: %s/%s")
-				c.pendingListMux.Lock()
-				c.pendingList.PushBack(key)
-				c.pendingListMux.Unlock()
+				//c.pendingListMux.Lock()
+				//c.pendingList.PushBack(key)
+				//c.pendingListMux.Unlock()
 				return nil, errors.New("NoSchedNode")
 			}
 
@@ -707,6 +707,7 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 					klog.Infof("SharePod %s is bound to GPU uuid: %s", key, physicalGPUuuid)
 				case 1:
 					klog.Infof("SharePod %s/%s is waiting for dummy Pod", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name)
+					return nil, nil
 
 				case 2:
 					err := fmt.Errorf("Resource exceed!")
@@ -737,9 +738,9 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 
 				//should be mapping from pod to physical devciceID, use vGPU id for simplicity
 				(*gpupod.Status.BoundDeviceIDs)[newPod.Name] = schedGPUID
-
 				(*gpupod.Status.Usage)[schedGPUID] = faasv1.SharepodUsage{GPU: gpu_request, TotalMemoryBytes: float64(gpu_mem) / 8}
 
+				(*shrCopy.Status.PodManagerPort)[newPod.Name] = physicalGPUport
 				return newPod, err
 			}
 			return nil, nil
@@ -833,6 +834,7 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 func slowStartbatch(count int, initailBatchSize int, fn func() (*corev1.Pod, error)) (int, error) {
 	remaining := count
 	successes := 0
+	need2wait := 0
 	for batchSize := integer.IntMin(remaining, initailBatchSize); batchSize > 0; batchSize = integer.IntMin(2*batchSize, remaining) {
 		errCh := make(chan error, batchSize)
 		var wg sync.WaitGroup
@@ -840,14 +842,16 @@ func slowStartbatch(count int, initailBatchSize int, fn func() (*corev1.Pod, err
 		for i := 0; i < batchSize; i++ {
 			go func() {
 				defer wg.Done()
-				if _, err := fn(); err != nil {
+				if pod, err := fn(); err != nil {
 					errCh <- err
+				} else if pod == nil {
+					need2wait++
 				}
 			}()
 		}
 
 		wg.Wait()
-		curSuccesses := batchSize - len(errCh)
+		curSuccesses := batchSize - len(errCh) - need2wait
 		successes += curSuccesses
 		if len(errCh) > 0 {
 			return successes, <-errCh
@@ -869,7 +873,7 @@ func newPod(shrpod *faasv1.SharePod, isWarm bool, podManagerIP string, podManage
 	specCopy.NodeName = scheNode
 
 	labelCopy := makeLabels(shrpod)
-	annotationCopy := make(map[string]string, len(shrpod.ObjectMeta.Annotations)+4)
+	annotationCopy := make(map[string]string, len(shrpod.ObjectMeta.Annotations)+5)
 	for key, val := range shrpod.ObjectMeta.Annotations {
 		annotationCopy[key] = val
 	}
@@ -960,7 +964,7 @@ func newPod(shrpod *faasv1.SharePod, isWarm bool, podManagerIP string, podManage
 	}
 }
 
-func (c *Controller) schedule(gpupod *faasv1.SharePod, gpu_request float64, gpu_limit float64, gpu_mem int64, isGPUPod bool) (string, string) {
+func (c *Controller) schedule(gpupod *faasv1.SharePod, gpu_request float64, gpu_limit float64, gpu_mem int64, isGPUPod bool, key string) (string, string) {
 
 	nodeList, err := c.nodesLister.List(labels.Everything())
 	if err != nil {
@@ -978,9 +982,9 @@ func (c *Controller) schedule(gpupod *faasv1.SharePod, gpu_request float64, gpu_
 	if schedNode == "" {
 		klog.Infof("No enough resources for Pod of a SharePod: %s/%s", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name)
 		// return fmt.Errorf("No enough resources for SharePod: %s/%s")
-		//c.pendingListMux.Lock()
-		//c.pendingList.PushBack(key)
-		//c.pendingListMux.Unlock()
+		c.pendingListMux.Lock()
+		c.pendingList.PushBack(key)
+		c.pendingListMux.Unlock()
 		return "", ""
 	}
 

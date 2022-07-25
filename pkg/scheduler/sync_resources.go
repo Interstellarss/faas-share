@@ -32,11 +32,6 @@ func syncPodResources(nodeRes NodeResources, podList []*corev1.Pod, sharePodList
 		if _, ok := nodeRes[nodeName]; !ok {
 			continue
 		}
-
-		//if this pod is created because of a sharepod, calculating their resource usage later
-		if pod.Annotations[kubesharev1.KubeShareResourceGPURequest] != "" {
-			continue
-		}
 		// If a Pod is owned by a SharePod, calculating their resource usage later.
 		ownedBySharePod := false
 		for _, owneref := range pod.ObjectMeta.OwnerReferences {
