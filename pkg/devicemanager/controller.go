@@ -380,10 +380,12 @@ func (c *Controller) syncHandler(key string) error {
 		shrCopy.Status.PodManagerPort = &podmanagerPort
 	}
 
-	if shrCopy.Status.PrewarmPool == nil {
-		pool := make([]*corev1.Pod, *shrCopy.Spec.Replicas)
-		shrCopy.Status.PrewarmPool = pool
-	}
+	/*
+		if shrCopy.Status.PrewarmPool == nil {
+			pool := make([]*corev1.Pod, *shrCopy.Spec.Replicas)
+			shrCopy.Status.PrewarmPool = pool
+		}
+	*/
 
 	if shrCopy.Status.Usage == nil {
 		usages := make(map[string]faasv1.SharepodUsage)
@@ -576,57 +578,63 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 
 		//may also set for burstresplicas?
 
-		warmSize := len(gpupod.Status.PrewarmPool)
+		if gpupod.Status.PrewarmPool == nil {
+			pool := make([]*corev1.Pod, *shrCopy.Spec.Replicas)
+			gpupod.Status.PrewarmPool = pool
+		} else {
 
-		podlist := gpupod.Status.PrewarmPool
+			warmSize := len(gpupod.Status.PrewarmPool)
 
-		klog.Infof("Prewwarm pool size %d... and podlist length %d ", warmSize, len(podlist))
+			podlist := gpupod.Status.PrewarmPool
 
-		if warmSize != 0 {
-			//update in the delete way go func with
-			if diff <= warmSize {
-				//TODO: when tobe created is smaller or equal to the number of pods in the pre-warm pool
+			klog.Infof("Prewarm pool size %d...", warmSize)
 
-				//podlist[0].Status.
-				for m := 0; m < diff; m++ {
-					pod := podlist[m]
+			if warmSize != 1 || podlist[0] != nil {
+				//update in the delete way go func with
+				if diff <= warmSize {
+					//TODO: when tobe created is smaller or equal to the number of pods in the pre-warm pool
 
-					//pod.Annotations[FaasShareWarm] = "false"
-					if pod.Annotations[FaasShareWarm] != "" {
+					//podlist[0].Status.
+					for m := 0; m < diff; m++ {
+						pod := podlist[m]
+
+						//pod.Annotations[FaasShareWarm] = "false"
+						if pod.Annotations[FaasShareWarm] != "" {
+							pod.Annotations[FaasShareWarm] = "false"
+						}
+						//gpupod.Status.PrewarmPool[m] = nil
+
+						//delete(gpupod.Status.PrewarmPool, pod.Name)
+
+						//update new scheduled node and
+
+						_, err := c.kubeclient.CoreV1().Pods(pod.Namespace).Update(context.TODO(), pod, metav1.UpdateOptions{})
+
+						if err != nil {
+
+						}
+
+						//c
+						//patch or updates?
+					}
+					gpupod.Status.PrewarmPool = make([]*corev1.Pod, 3)
+
+					return err
+
+				} else {
+					for m, pod := range podlist {
 						pod.Annotations[FaasShareWarm] = "false"
-					}
-					//gpupod.Status.PrewarmPool[m] = nil
+						gpupod.Status.PrewarmPool[m] = nil
 
-					//delete(gpupod.Status.PrewarmPool, pod.Name)
+						_, err := c.kubeclient.CoreV1().Pods(pod.Namespace).Update(context.TODO(), pod, metav1.UpdateOptions{})
 
-					//update new scheduled node and
+						if err != nil {
 
-					_, err := c.kubeclient.CoreV1().Pods(pod.Namespace).Update(context.TODO(), pod, metav1.UpdateOptions{})
-
-					if err != nil {
-
+						}
 					}
 
-					//c
-					//patch or updates?
+					diff -= warmSize
 				}
-				gpupod.Status.PrewarmPool = make([]*corev1.Pod, 3)
-
-				return err
-
-			} else {
-				for m, pod := range podlist {
-					pod.Annotations[FaasShareWarm] = "false"
-					gpupod.Status.PrewarmPool[m] = nil
-
-					_, err := c.kubeclient.CoreV1().Pods(pod.Namespace).Update(context.TODO(), pod, metav1.UpdateOptions{})
-
-					if err != nil {
-
-					}
-				}
-
-				diff -= warmSize
 			}
 		}
 
@@ -718,7 +726,7 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 			}
 
 			if n, ok := nodesInfo[schedNode]; ok {
-				newPod, err := c.kubeclient.CoreV1().Pods(shrCopy.Namespace).Create(context.TODO(), newPod(gpupod, isGPUPod, n.PodIP, physicalGPUport, physicalGPUuuid, schedNode, schedGPUID), metav1.CreateOptions{})
+				newPod, err := c.kubeclient.CoreV1().Pods(shrCopy.Namespace).Create(context.TODO(), newPod(gpupod, false, n.PodIP, physicalGPUport, physicalGPUuuid, schedNode, schedGPUID), metav1.CreateOptions{})
 				if err != nil {
 					if apierrors.HasStatusCause(err, corev1.NamespaceTerminatingCause) {
 						return nil, nil
@@ -853,7 +861,7 @@ func slowStartbatch(count int, initailBatchSize int, fn func() (*corev1.Pod, err
 // newDeployment creates a new Deployment for a SharePod resource. It also sets
 // the appropriate OwnerReferences on the resource so handleObject can discover
 // the SharePod resource that 'owns' it.
-func newPod(shrpod *faasv1.SharePod, isGPUPod bool, podManagerIP string, podManagerPort int, boundDeviceId string, scheNode string, scheGPUID string) *corev1.Pod {
+func newPod(shrpod *faasv1.SharePod, isWarm bool, podManagerIP string, podManagerPort int, boundDeviceId string, scheNode string, scheGPUID string) *corev1.Pod {
 	specCopy := shrpod.Spec.PodSpec.DeepCopy()
 
 	//scheNode, scheGPUID := c.schedule(shrpod)
@@ -865,62 +873,68 @@ func newPod(shrpod *faasv1.SharePod, isGPUPod bool, podManagerIP string, podMana
 	for key, val := range shrpod.ObjectMeta.Annotations {
 		annotationCopy[key] = val
 	}
-	if isGPUPod {
-		// specCopy.Containers = append(specCopy.Containers, corev1.Container{
-		// 	Name:    "podmanager",
-		// 	Image:   "ncy9371/debian:stretch-slim-wget",
-		// 	Command: []string{"sh", "-c", "wget -qO /pod_manager 140.114.78.229/web/pod_manager && chmod +x /pod_manager && SCHEDULER_IP=$(cat " + SchedulerIpPath + ") /pod_manager"},
-		// })
-		for i := range specCopy.Containers {
-			c := &specCopy.Containers[i]
-			c.Env = append(c.Env,
-				corev1.EnvVar{
-					Name:  "NVIDIA_VISIBLE_DEVICES",
-					Value: boundDeviceId,
-				},
-				corev1.EnvVar{
-					Name:  "NVIDIA_DRIVER_CAPABILITIES",
-					Value: "compute,utility",
-				},
-				corev1.EnvVar{
-					Name:  "LD_PRELOAD",
-					Value: KubeShareLibraryPath + "/libgemhook.so.1",
-				},
-				corev1.EnvVar{
-					Name:  "POD_MANAGER_IP",
-					Value: podManagerIP,
-				},
-				corev1.EnvVar{
-					Name:  "POD_MANAGER_PORT",
-					Value: fmt.Sprintf("%d", podManagerPort),
-				},
-				corev1.EnvVar{
-					Name:  "POD_NAME",
-					Value: fmt.Sprintf("%s/%s", shrpod.ObjectMeta.Namespace, shrpod.ObjectMeta.Name),
-				},
-			)
-			c.VolumeMounts = append(c.VolumeMounts,
-				corev1.VolumeMount{
-					Name:      "kubeshare-lib",
-					MountPath: KubeShareLibraryPath,
-				},
-			)
-		}
-		specCopy.Volumes = append(specCopy.Volumes,
-			corev1.Volume{
-				Name: "kubeshare-lib",
-				VolumeSource: corev1.VolumeSource{
-					HostPath: &corev1.HostPathVolumeSource{
-						Path: KubeShareLibraryPath,
-					},
-				},
+
+	//annotationCopy = append(annotationCopy,)
+	if isWarm {
+		annotationCopy[FaasShareWarm] = "true"
+	} else {
+		annotationCopy[FaasShareWarm] = "false"
+	}
+
+	// specCopy.Containers = append(specCopy.Containers, corev1.Container{
+	// 	Name:    "podmanager",
+	// 	Image:   "ncy9371/debian:stretch-slim-wget",
+	// 	Command: []string{"sh", "-c", "wget -qO /pod_manager 140.114.78.229/web/pod_manager && chmod +x /pod_manager && SCHEDULER_IP=$(cat " + SchedulerIpPath + ") /pod_manager"},
+	// })
+	for i := range specCopy.Containers {
+		c := &specCopy.Containers[i]
+		c.Env = append(c.Env,
+			corev1.EnvVar{
+				Name:  "NVIDIA_VISIBLE_DEVICES",
+				Value: boundDeviceId,
+			},
+			corev1.EnvVar{
+				Name:  "NVIDIA_DRIVER_CAPABILITIES",
+				Value: "compute,utility",
+			},
+			corev1.EnvVar{
+				Name:  "LD_PRELOAD",
+				Value: KubeShareLibraryPath + "/libgemhook.so.1",
+			},
+			corev1.EnvVar{
+				Name:  "POD_MANAGER_IP",
+				Value: podManagerIP,
+			},
+			corev1.EnvVar{
+				Name:  "POD_MANAGER_PORT",
+				Value: fmt.Sprintf("%d", podManagerPort),
+			},
+			corev1.EnvVar{
+				Name:  "POD_NAME",
+				Value: fmt.Sprintf("%s/%s", shrpod.ObjectMeta.Namespace, shrpod.ObjectMeta.Name),
 			},
 		)
-		annotationCopy[faasv1.KubeShareResourceGPURequest] = shrpod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPURequest]
-		annotationCopy[faasv1.KubeShareResourceGPULimit] = shrpod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPULimit]
-		annotationCopy[faasv1.KubeShareResourceGPUMemory] = shrpod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPUMemory]
-		annotationCopy[faasv1.KubeShareResourceGPUID] = scheGPUID
+		c.VolumeMounts = append(c.VolumeMounts,
+			corev1.VolumeMount{
+				Name:      "kubeshare-lib",
+				MountPath: KubeShareLibraryPath,
+			},
+		)
 	}
+	specCopy.Volumes = append(specCopy.Volumes,
+		corev1.Volume{
+			Name: "kubeshare-lib",
+			VolumeSource: corev1.VolumeSource{
+				HostPath: &corev1.HostPathVolumeSource{
+					Path: KubeShareLibraryPath,
+				},
+			},
+		},
+	)
+	annotationCopy[faasv1.KubeShareResourceGPURequest] = shrpod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPURequest]
+	annotationCopy[faasv1.KubeShareResourceGPULimit] = shrpod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPULimit]
+	annotationCopy[faasv1.KubeShareResourceGPUMemory] = shrpod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPUMemory]
+	annotationCopy[faasv1.KubeShareResourceGPUID] = scheGPUID
 
 	//ownerRef := shrpod.ObjectMeta.DeepCopy().OwnerReferences
 

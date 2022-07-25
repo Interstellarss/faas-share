@@ -248,7 +248,7 @@ func int32p(i int32) *int32 {
 func FilterActivePods(pods []*v1.Pod) []*v1.Pod {
 	var result []*v1.Pod
 	for _, p := range pods {
-		if IsPodActive(p) {
+		if IsPodActive(p) && IsPodHot(p) {
 			result = append(result, p)
 		} else {
 			klog.V(4).Infof("Ignoring inactive pod %v/%v in state %v, deletion time %v", p.Namespace, p.Name, p.Status.Phase, p.DeletionTimestamp)
@@ -259,6 +259,10 @@ func FilterActivePods(pods []*v1.Pod) []*v1.Pod {
 
 func IsPodActive(p *v1.Pod) bool {
 	return v1.PodSucceeded != p.Status.Phase && v1.PodFailed != p.Status.Phase && p.DeletionTimestamp == nil
+}
+
+func IsPodHot(p *v1.Pod) bool {
+	return p.Annotations[FaasShareWarm] == "false"
 }
 
 //do we really need this?
