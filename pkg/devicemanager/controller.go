@@ -433,7 +433,7 @@ func (c *Controller) syncHandler(key string) error {
 	//erro := c.updateSharePodStatus(shrCopy, )
 
 	//TODO: new update methodology?
-	updatedSHR, err := c.faasclient.KubeshareV1().SharePods(shrCopy.Namespace).UpdateStatus(context.TODO(), shrCopy, metav1.UpdateOptions{})
+	updatedSHR, err := c.faasclient.KubeshareV1().SharePods(shrCopy.Namespace).Update(context.TODO(), shrCopy, metav1.UpdateOptions{})
 	if err != nil {
 		return err
 	}
