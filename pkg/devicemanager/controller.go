@@ -737,13 +737,16 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 			}
 
 			if n, ok := nodesInfo[schedNode]; ok {
+				klog.Infof("TESTING: Starting to create new pod of sharepod %v/%v in batch", gpupod.Namespace, gpupod.Name)
 				newPod, err := c.kubeclient.CoreV1().Pods(shrCopy.Namespace).Create(context.TODO(), newPod(gpupod, false, n.PodIP, physicalGPUport, physicalGPUuuid, schedNode, schedGPUID), metav1.CreateOptions{})
 				if err != nil {
+					klog.Errorf("error creating pod of Sharepod %v/%v", gpupod.Namespace, gpupod.Name)
 					if apierrors.HasStatusCause(err, corev1.NamespaceTerminatingCause) {
 						return nil, nil
 					}
 				}
-
+				//remove the last element
+				gpupod.Status.Node2Id = gpupod.Status.Node2Id[:len(gpupod.Status.Node2Id)-1]
 				(*gpupod.Status.Pod2Node)[newPod.Name] = schedNode
 
 				//should be mapping from pod to physical devciceID, use vGPU id for simplicity
