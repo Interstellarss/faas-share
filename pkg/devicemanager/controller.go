@@ -682,8 +682,15 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 				}
 				isGPUPod = true
 			}
+			var schedNode, schedGPUID string
 
-			schedNode, schedGPUID := c.schedule(gpupod, gpu_request, gpu_limit, gpu_mem, isGPUPod, key)
+			if len(gpupod.Status.Node2Id) == 0 {
+				schedNode, schedGPUID = c.schedule(gpupod, gpu_request, gpu_limit, gpu_mem, isGPUPod, key)
+			} else {
+				schedNode = gpupod.Status.Node2Id[len(gpupod.Status.Node2Id)-1].Node
+				schedGPUID = gpupod.Status.Node2Id[len(gpupod.Status.Node2Id)-1].GPU
+			}
+
 			//TODO:
 			//if gpupod.Status.
 
@@ -709,6 +716,7 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 					klog.Infof("SharePod %s is bound to GPU uuid: %s", key, physicalGPUuuid)
 				case 1:
 					klog.Infof("SharePod %s/%s is waiting for dummy Pod", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name)
+					gpupod.Status.Node2Id = append(gpupod.Status.Node2Id, faasv1.Scheded{Node: schedNode, GPU: schedGPUID})
 					return nil, nil
 
 				case 2:
@@ -886,6 +894,8 @@ func newPod(shrpod *faasv1.SharePod, isWarm bool, podManagerIP string, podManage
 	} else {
 		annotationCopy[FaasShareWarm] = "false"
 	}
+
+	//annotationCopy[faasv1.KubeShareResourceGPUID]
 
 	// specCopy.Containers = append(specCopy.Containers, corev1.Container{
 	// 	Name:    "podmanager",

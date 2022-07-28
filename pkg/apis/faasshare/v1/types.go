@@ -123,7 +123,15 @@ type SharePodStatus struct {
 	// +optional
 	Pod2Node *map[string]string `json:"pod2node,omitempty"`
 
+	// +optional
+	Node2Id []Scheded `json:"node2Id,omitempty"`
+
 	//TODO: adding contitions?
+}
+
+type Scheded struct {
+	Node string `json:"node,omitempty"`
+	GPU  string `json:"gpu,omitempty"`
 }
 
 type SharepodUsage struct {
