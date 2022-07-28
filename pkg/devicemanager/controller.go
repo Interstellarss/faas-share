@@ -684,6 +684,8 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 			}
 
 			schedNode, schedGPUID := c.schedule(gpupod, gpu_request, gpu_limit, gpu_mem, isGPUPod, key)
+			//TODO:
+			//if gpupod.Status.
 
 			if schedNode == "" {
 				//klog.Infof("No enough resources for SharePod: %s/%s", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name)
