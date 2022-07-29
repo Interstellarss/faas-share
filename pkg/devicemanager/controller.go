@@ -418,6 +418,8 @@ func (c *Controller) syncHandler(key string) error {
 
 	//filterPodss
 
+	klog.Infof("Pod of SharePod %v/%v with length %d", shrCopy.Namespace, shrCopy.Name, len(filteredPods))
+
 	var manageReplicasErr error
 	if shrNeedsSync && shr.DeletionTimestamp == nil {
 		manageReplicasErr = c.manageReplicas(context.TODO(), filteredPods, shrCopy, key)

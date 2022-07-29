@@ -1,4 +1,4 @@
-apiVersion: kubeshare.nthu/v1
+apiVersion: faasshare.tum/v1
 kind: SharePod
 metadata:
   name: shufflenet
