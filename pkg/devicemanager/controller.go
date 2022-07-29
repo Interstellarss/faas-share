@@ -579,67 +579,67 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 		diff *= -1
 
 		//may also set for burstresplicas?
+		/*
+			if gpupod.Status.PrewarmPool == nil {
+				pool := make([]*corev1.Pod, *shrCopy.Spec.Replicas)
+				gpupod.Status.PrewarmPool = pool
+			} else {
 
-		if gpupod.Status.PrewarmPool == nil {
-			pool := make([]*corev1.Pod, *shrCopy.Spec.Replicas)
-			gpupod.Status.PrewarmPool = pool
-		} else {
+				warmSize := len(gpupod.Status.PrewarmPool)
 
-			warmSize := len(gpupod.Status.PrewarmPool)
+				podlist := gpupod.Status.PrewarmPool
 
-			podlist := gpupod.Status.PrewarmPool
+				klog.Infof("Prewarm pool size %d...", warmSize)
+				if warmSize != 1 || podlist[0] != nil {
+					//update in the delete way go func with
+					if diff <= warmSize {
+						//TODO: when tobe created is smaller or equal to the number of pods in the pre-warm pool
 
-			klog.Infof("Prewarm pool size %d...", warmSize)
+						//podlist[0].Status.
+						for m := 0; m < diff; m++ {
+							pod := podlist[m]
 
-			if warmSize != 1 || podlist[0] != nil {
-				//update in the delete way go func with
-				if diff <= warmSize {
-					//TODO: when tobe created is smaller or equal to the number of pods in the pre-warm pool
+							//pod.Annotations[FaasShareWarm] = "false"
+							if pod.Annotations[FaasShareWarm] != "" {
+								pod.Annotations[FaasShareWarm] = "false"
+							}
+							//gpupod.Status.PrewarmPool[m] = nil
 
-					//podlist[0].Status.
-					for m := 0; m < diff; m++ {
-						pod := podlist[m]
+							//delete(gpupod.Status.PrewarmPool, pod.Name)
 
-						//pod.Annotations[FaasShareWarm] = "false"
-						if pod.Annotations[FaasShareWarm] != "" {
+							//update new scheduled node and
+
+							_, err := c.kubeclient.CoreV1().Pods(pod.Namespace).Update(context.TODO(), pod, metav1.UpdateOptions{})
+
+							if err != nil {
+
+							}
+
+							//c
+							//patch or updates?
+						}
+						gpupod.Status.PrewarmPool = make([]*corev1.Pod, 3)
+
+						return err
+
+					} else {
+						for m, pod := range podlist {
 							pod.Annotations[FaasShareWarm] = "false"
-						}
-						//gpupod.Status.PrewarmPool[m] = nil
+							gpupod.Status.PrewarmPool[m] = nil
 
-						//delete(gpupod.Status.PrewarmPool, pod.Name)
+							_, err := c.kubeclient.CoreV1().Pods(pod.Namespace).Update(context.TODO(), pod, metav1.UpdateOptions{})
 
-						//update new scheduled node and
+							if err != nil {
 
-						_, err := c.kubeclient.CoreV1().Pods(pod.Namespace).Update(context.TODO(), pod, metav1.UpdateOptions{})
-
-						if err != nil {
-
+							}
 						}
 
-						//c
-						//patch or updates?
+						diff -= warmSize
 					}
-					gpupod.Status.PrewarmPool = make([]*corev1.Pod, 3)
-
-					return err
-
-				} else {
-					for m, pod := range podlist {
-						pod.Annotations[FaasShareWarm] = "false"
-						gpupod.Status.PrewarmPool[m] = nil
-
-						_, err := c.kubeclient.CoreV1().Pods(pod.Namespace).Update(context.TODO(), pod, metav1.UpdateOptions{})
-
-						if err != nil {
-
-						}
-					}
-
-					diff -= warmSize
 				}
 			}
-		}
 
+		*/
 		c.expectations.ExpectCreations(shrKey, diff)
 
 		klog.V(2).Infof("Too few replicas for this SharePod...\n need %d replicas, creating %d", shrCopy.Spec.Replicas, diff)
