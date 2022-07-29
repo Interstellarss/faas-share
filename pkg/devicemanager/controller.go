@@ -718,7 +718,6 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 					klog.Infof("SharePod %s/%s is waiting for dummy Pod", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name)
 					gpupod.Status.Node2Id = append(gpupod.Status.Node2Id, faasv1.Scheded{Node: schedNode, GPU: schedGPUID})
 					return nil, nil
-
 				case 2:
 					err := fmt.Errorf("Resource exceed!")
 					utilruntime.HandleError(err)
@@ -767,7 +766,7 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 			for i := 0; i < skippedPods; i++ {
 
 				//Decrement the expected number of creates because the informer won't observe this pod
-				c.expectations.CreationObserved(shrKey)
+				//c.expectations.CreationObserved(shrKey)
 			}
 		}
 		return err
@@ -857,7 +856,7 @@ func slowStartbatch(count int, initailBatchSize int, fn func() (*corev1.Pod, err
 				defer wg.Done()
 				if pod, err := fn(); err != nil {
 					errCh <- err
-				} else if pod == nil {
+				} else if pod == nil && err == nil {
 					need2wait++
 				}
 			}()
