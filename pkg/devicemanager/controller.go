@@ -864,7 +864,7 @@ func slowStartbatch(count int, initailBatchSize int, fn func() (*corev1.Pod, err
 			go func() {
 				defer wg.Done()
 				if pod, err := fn(); err != nil {
-					if err.Error() != "Wait4Dmmy" {
+					if err.Error() != "Wait4Dummy" {
 						//continue
 						errCh <- err
 					}
