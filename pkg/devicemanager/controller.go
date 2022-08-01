@@ -315,7 +315,7 @@ func (c *Controller) processNextWorkItem() bool {
 		// SharePod resource to be synced.
 		if err := c.syncHandler(key); err != nil {
 			if err.Error() == "Waiting4Dummy" {
-				c.workqueue.AddRateLimited(key)
+				c.workqueue.Add(key)
 				return fmt.Errorf("TESTING: need to wait for dummy pod '#{key}', requeueing")
 			}
 
@@ -449,7 +449,8 @@ func (c *Controller) syncHandler(key string) error {
 	// Resync the ReplicaSet after MinReadySeconds as a last line of defense to guard against clock-skew.
 	if manageReplicasErr != nil && updatedSHR.Status.ReadyReplicas == *(updatedSHR.Spec.Replicas) &&
 		updatedSHR.Status.AvailableReplicas != *(updatedSHR.Spec.Replicas) {
-		c.enqueueSHRAfter(updatedSHR, time.Duration(500)*time.Millisecond)
+		//c.enqueueSHRAfter(updatedSHR, time.Duration(500)*time.Millisecond)
+		c.enqueueSharePod(updatedSHR)
 	}
 
 	//c.recorder.Event(sharepod, corev1.EventTypeNormal, SuccessSynced, MessageResourceSynced)
