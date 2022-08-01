@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: kubeshare-node-daemon
+  namespace: kube-system
+  labels:
+    lsalab: kubeshare-node-daemon
+spec:
+  selector:
+    matchLabels:
+      lsalab: kubeshare-node-daemon
+  template:
+    metadata:
+      labels:
+        lsalab: kubeshare-node-daemon
+    spec:
+      terminationGracePeriodSeconds: 0
+      restartPolicy: Always
+      tolerations:
+      - key: node-role.kubernetes.io/master
+        effect: NoSchedule
+      initContainers:
+      - name: gemini-hook-init
+        image: ncy9371/kubeshare-gemini-hook-init:20200429135835
+        volumeMounts:
+        - name: "kubeshare-library"
+          mountPath: /kubeshare/library
+      containers:
+      - name: config-client
+        image: ncy9371/kubeshare-config-client:20200429135835
+        command: ["kubeshare-config-client", "-alsologtostderr", "-server-ip=10.244.0.1:9797", "-v=4"]
+        env:
+        - name: KUBESHARE_SCHEDULER_IP
+          value: 10.244.0.1
+        volumeMounts:
+        - name: "kubeshare-scheduler"
+          mountPath: "/kubeshare/scheduler"
+        - name: "kubeshare-library"
+          mountPath: "/kubeshare/library"
+      - name: gemini-scheduler
+        image: ncy9371/kubeshare-gemini-scheduler:20200429135835
+        volumeMounts:
+        - name: "kubeshare-scheduler"
+          mountPath: "/kubeshare/scheduler"
+        - name: "kubeshare-library"
+          mountPath: "/kubeshare/library"
+        volumeMounts:
+        - name: "kubeshare-scheduler"
+          mountPath: "/kubeshare/scheduler"
+      volumes:
+      - name: "kubeshare-scheduler"
+        hostPath:
+          path: "/kubeshare/scheduler"
+      - name: "kubeshare-library"
+        hostPath:
+          path: "/kubeshare/library"
+
