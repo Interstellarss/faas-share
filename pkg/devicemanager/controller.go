@@ -314,6 +314,11 @@ func (c *Controller) processNextWorkItem() bool {
 		// Run the syncHandler, passing it the namespace/name string of the
 		// SharePod resource to be synced.
 		if err := c.syncHandler(key); err != nil {
+			if err.Error() == "Waiting4Dummy" {
+				c.workqueue.AddRateLimited(key)
+				return fmt.Errorf("TESTING: need to wait for dummy pod '#{key}', requeueing")
+			}
+
 			// Put the item back on the workqueue to handle any transient errors.
 			c.workqueue.AddRateLimited(key)
 			return fmt.Errorf("error syncing '%s': %s, requeuing", key, err.Error())
@@ -448,7 +453,7 @@ func (c *Controller) syncHandler(key string) error {
 	}
 
 	//c.recorder.Event(sharepod, corev1.EventTypeNormal, SuccessSynced, MessageResourceSynced)
-	return nil
+	return manageReplicasErr
 }
 
 //Need to configure here
@@ -719,7 +724,8 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 				case 1:
 					klog.Infof("SharePod %s/%s is waiting for dummy Pod", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name)
 					gpupod.Status.Node2Id = append(gpupod.Status.Node2Id, faasv1.Scheded{Node: schedNode, GPU: schedGPUID})
-					return nil, nil
+
+					return nil, errors.New("Wait4Dummy")
 				case 2:
 					err := fmt.Errorf("Resource exceed!")
 					utilruntime.HandleError(err)
@@ -857,9 +863,15 @@ func slowStartbatch(count int, initailBatchSize int, fn func() (*corev1.Pod, err
 			go func() {
 				defer wg.Done()
 				if pod, err := fn(); err != nil {
-					errCh <- err
-				} else if pod == nil && err == nil {
-					need2wait++
+					if err.Error() != "Wait4Dmmy" {
+						//continue
+						errCh <- err
+					}
+
+					if pod == nil && err.Error() == "Wait4Dummy" {
+						need2wait++
+					}
+
 				}
 			}()
 		}
@@ -873,6 +885,9 @@ func slowStartbatch(count int, initailBatchSize int, fn func() (*corev1.Pod, err
 		remaining -= batchSize
 	}
 
+	if need2wait > 0 {
+		return successes, errors.New("Wait4Dmmy")
+	}
 	return successes, nil
 }
 
