@@ -370,6 +370,14 @@ func (c *Controller) syncHandler(key string) error {
 
 	shrCopy := shr.DeepCopy()
 
+	if shrCopy.Spec.Selector == nil {
+		shrCopy.Spec.Selector = &metav1.LabelSelector{
+			MatchLabels: map[string]string{
+				"app":        shrCopy.Name,
+				"controller": shrCopy.Name,
+			}}
+	}
+
 	if shrCopy.Status.BoundDeviceIDs == nil {
 		boundIds := make(map[string]string)
 		shrCopy.Status.BoundDeviceIDs = &boundIds
@@ -725,7 +733,11 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 				case 1:
 					klog.Infof("SharePod %s/%s is waiting for dummy Pod", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name)
 					gpupod.Status.Node2Id = append(gpupod.Status.Node2Id, faasv1.Scheded{Node: schedNode, GPU: schedGPUID})
-
+					//_, err := c.faasclient.KubeshareV1().SharePods(gpupod.Namespace).Update(context.TODO(), gpupod, metav1.UpdateOptions{})
+					if err != nil {
+						utilruntime.HandleError(err)
+					}
+					return nil, errors.New("Wait4Dummy")
 					return nil, errors.New("Wait4Dummy")
 				case 2:
 					err := fmt.Errorf("Resource exceed!")

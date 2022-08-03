@@ -259,21 +259,24 @@ func (c *Controller) syncHandler(key string) error {
 	}
 
 	needUpdate := false
-	if sharepod.Spec.Selector == nil {
-		sharepod.Spec.Selector = &metav1.LabelSelector{
-			MatchLabels: map[string]string{
-				"app":        sharepod.Name,
-				"controller": sharepod.Name,
-			}}
-		needUpdate = true
-	}
+	/*
+		if sharepod.Spec.Selector == nil {
+			sharepod.Spec.Selector = &metav1.LabelSelector{
+				MatchLabels: map[string]string{
+					"app":        sharepod.Name,
+					"controller": sharepod.Name,
+				}}
+			needUpdate = true
+		}
 
-	//default have one replica
-	if sharepod.Spec.Replicas == nil {
-		sharepod.Spec.Replicas = getReplicas(sharepod)
+		//default have one replica
+		if sharepod.Spec.Replicas == nil {
+			sharepod.Spec.Replicas = getReplicas(sharepod)
 
-		needUpdate = true
-	}
+			needUpdate = true
+		}
+
+	*/
 
 	if needUpdate {
 		_, err := c.faasclientset.KubeshareV1().SharePods(namespace).Update(context.TODO(), sharepod, metav1.UpdateOptions{})
