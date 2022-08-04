@@ -447,7 +447,7 @@ func (c *Controller) syncHandler(key string) error {
 
 	//erro := c.updateSharePodStatus(shrCopy, )
 
-	//TODO: new update methodology?
+	//TODO: new update methodology?  //Will this trigger update callback?//maybe too often?
 	updatedSHR, err := c.faasclient.KubeshareV1().SharePods(shrCopy.Namespace).Update(context.TODO(), shrCopy, metav1.UpdateOptions{})
 	if err != nil {
 		return err
@@ -702,6 +702,7 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 
 			if len(gpupod.Status.Node2Id) == 0 {
 				schedNode, schedGPUID = c.schedule(gpupod, gpu_request, gpu_limit, gpu_mem, isGPUPod, key)
+				gpupod.Status.Node2Id = append(gpupod.Status.Node2Id, faasv1.Scheded{Node: schedNode, GPU: schedGPUID})
 			} else {
 				schedNode = gpupod.Status.Node2Id[len(gpupod.Status.Node2Id)-1].Node
 				schedGPUID = gpupod.Status.Node2Id[len(gpupod.Status.Node2Id)-1].GPU
@@ -732,12 +733,11 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 					klog.Infof("SharePod %s is bound to GPU uuid: %s", key, physicalGPUuuid)
 				case 1:
 					klog.Infof("SharePod %s/%s is waiting for dummy Pod", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name)
-					gpupod.Status.Node2Id = append(gpupod.Status.Node2Id, faasv1.Scheded{Node: schedNode, GPU: schedGPUID})
+					//
 					//_, err := c.faasclient.KubeshareV1().SharePods(gpupod.Namespace).Update(context.TODO(), gpupod, metav1.UpdateOptions{})
 					if err != nil {
 						utilruntime.HandleError(err)
 					}
-					return nil, errors.New("Wait4Dummy")
 					return nil, errors.New("Wait4Dummy")
 				case 2:
 					err := fmt.Errorf("Resource exceed!")
@@ -764,6 +764,7 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 					if apierrors.HasStatusCause(err, corev1.NamespaceTerminatingCause) {
 						return nil, nil
 					}
+					return nil, err //
 				}
 				//remove the last element
 				gpupod.Status.Node2Id = gpupod.Status.Node2Id[:len(gpupod.Status.Node2Id)-1]
@@ -1003,6 +1004,7 @@ func newPod(shrpod *faasv1.SharePod, isWarm bool, podManagerIP string, podManage
 		},
 		Spec: corev1.PodSpec{
 			Containers: specCopy.Containers,
+			Volumes:    specCopy.Volumes,
 			//InitContainers: []corev1.Container{},
 		},
 	}
