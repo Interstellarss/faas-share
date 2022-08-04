@@ -787,7 +787,7 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 			for i := 0; i < skippedPods; i++ {
 
 				//Decrement the expected number of creates because the informer won't observe this pod
-				//c.expectations.CreationObserved(shrKey)
+				c.expectations.CreationObserved(shrKey)
 			}
 		}
 		return err

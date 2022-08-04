@@ -65,7 +65,7 @@ type SharePod struct {
 type SharePodSpec struct {
 
 	// +optional
-	PodSpec corev1.PodSpec `json:"spec,omitempty"`
+	PodSpec corev1.PodSpec `json:"podSpec,omitempty"`
 
 	// Replicas is the number of desired replicas.
 	// This is a pointer to distinguish between explicit zero and unspecified.
