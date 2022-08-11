@@ -1,4 +1,3 @@
-{{- if .Values.createCRDs }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -147,5 +146,4 @@ spec:
         - name: "kubeshare-library"
           hostPath:
             path: "/kubeshare/library"
-  {{- end }}
 
