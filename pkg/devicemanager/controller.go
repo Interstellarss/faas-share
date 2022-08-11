@@ -728,6 +728,7 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 			if isGPUPod {
 				var errCode int
 				physicalGPUuuid, errCode = c.getPhysicalGPUuuid(schedNode, schedGPUID, gpu_request, gpu_limit, gpu_mem, key, &physicalGPUport)
+				klog.Infof("Pod of Sharepod %v/%v with vGPU port: %d", shrCopy.Namespace, shrCopy.Name, physicalGPUport)
 				switch errCode {
 				case 0:
 					klog.Infof("SharePod %s is bound to GPU uuid: %s", key, physicalGPUuuid)

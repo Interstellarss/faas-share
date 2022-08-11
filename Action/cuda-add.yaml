@@ -1,7 +1,7 @@
 apiVersion: kubeshare.nthu/v1
 kind: SharePod
 metadata:
-  name: squeezenet
+  name: cuda-vector-add
   namespace: faas-share-fn
   labels:
     #"com.openfaas.scale.min": "1"
@@ -15,6 +15,5 @@ spec:
     podSpec:
       terminationGracePeriodSeconds: 1
       containers:
-        - name: squeezenet
-          image: leslie233/squeezenet:index
-          command: [ "sh", "-c", "fwatchdog" ]
+        - name: cuda-vector-add
+          image: "k8s.gcr.io/cuda-vector-add:v0.1"

@@ -9,7 +9,7 @@ metadata:
   annotations:
     "kubeshare/gpu_request": "0.1"
     "kubeshare/gpu_limit": "0.2"
-    "kubeshare/gpu_mem": "3145728000"
+    "kubeshare/gpu_mem": "7480000000"
     #934 MiB of memory needed, need to change
 spec:
   replicas: 1
