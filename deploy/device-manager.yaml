@@ -1,3 +1,4 @@
+{{- if .Values.createCRDs }}
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -11,12 +12,18 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: kubeshare-device-manager
 rules:
-- apiGroups: [""]
-  resources: ["*"]
-  verbs: ["*"]
-- apiGroups: ["kubeshare.nthu"]
-  resources: ["*"]
-  verbs: ["*"]
+  - apiGroups: [""]
+    resources: ["*"]
+    verbs: ["*"]
+  - apiGroups: ["faasshare.tum"]
+    resources: ["*"]
+    verbs: ["*"]
+  - apiGroups: ["faasshare.tum"]
+    resources: ["sharepods"]
+    verbs: ["get", "list", "watch", "create", "update", "patch", "delete"]
+  - apiGroups: [""]
+    resources: ["pods", "pods/log", "namespaces", "endpoints"]
+    verbs: ["get", "list", "watch"]
 
 ---
 
@@ -25,9 +32,9 @@ apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: kubeshare-device-manager
 subjects:
-- kind: ServiceAccount
-  name: kubeshare-device-manager
-  namespace: kube-system
+  - kind: ServiceAccount
+    name: kubeshare-device-manager
+    namespace: kube-system
 roleRef:
   kind: ClusterRole
   name: kubeshare-device-manager
@@ -45,9 +52,9 @@ spec:
   selector:
     app: kubeshare-device-manager
   ports:
-  - name: controller
-    port: 9797
-    targetPort: 9797
+    - name: controller
+      port: 9797
+      targetPort: 9797
 
 ---
 
@@ -64,23 +71,23 @@ spec:
   serviceAccountName: kubeshare-device-manager
   priorityClassName: system-node-critical
   tolerations:
-  - key: "CriticalAddonsOnly"
-    operator: "Exists"
-  - key: "node-role.kubernetes.io/master"
-    operator: "Exists"
-    effect: "NoSchedule"
+    - key: "CriticalAddonsOnly"
+      operator: "Exists"
+    - key: "node-role.kubernetes.io/master"
+      operator: "Exists"
+      effect: "NoSchedule"
   affinity:
     nodeAffinity:
       requiredDuringSchedulingIgnoredDuringExecution:
         nodeSelectorTerms:
-        - matchExpressions:
-          - key: "node-role.kubernetes.io/master"
-            operator: "Exists"
+          - matchExpressions:
+              - key: "node-role.kubernetes.io/master"
+                operator: "Exists"
   restartPolicy: Always
   containers:
-  - name: kubeshare-device-manager
-    image: ncy9371/kubeshare-device-manager:20200429135835
-
+    - name: kubeshare-device-manager
+      #image: ncy9371/kubeshare-device-manager:20200429135835
+      image: leslie233/kubeshare-device-manager:latest
 ---
 
 apiVersion: apps/v1
@@ -102,42 +109,43 @@ spec:
       terminationGracePeriodSeconds: 0
       restartPolicy: Always
       tolerations:
-      - key: node-role.kubernetes.io/master
-        effect: NoSchedule
+        - key: node-role.kubernetes.io/master
+          effect: NoSchedule
       initContainers:
-      - name: gemini-hook-init
-        image: ncy9371/kubeshare-gemini-hook-init:20200429135835
-        volumeMounts:
-        - name: "kubeshare-library"
-          mountPath: /kubeshare/library
+        - name: gemini-hook-init
+          image: ncy9371/kubeshare-gemini-hook-init:20200429135835
+          volumeMounts:
+            - name: "kubeshare-library"
+              mountPath: /kubeshare/library
       containers:
-      - name: config-client
-        image: ncy9371/kubeshare-config-client:20200429135835
-        env:
-        - name: KUBESHARE_SCHEDULER_IP
-          valueFrom:
-            fieldRef:
-              fieldPath: status.podIP
-        volumeMounts:
-        - name: "kubeshare-scheduler"
-          mountPath: "/kubeshare/scheduler"
-        - name: "kubeshare-library"
-          mountPath: "/kubeshare/library"
-      - name: gemini-scheduler
-        image: ncy9371/kubeshare-gemini-scheduler:20200429135835
-        volumeMounts:
-        - name: "kubeshare-scheduler"
-          mountPath: "/kubeshare/scheduler"
-        - name: "kubeshare-library"
-          mountPath: "/kubeshare/library"
-        volumeMounts:
-        - name: "kubeshare-scheduler"
-          mountPath: "/kubeshare/scheduler"
+        - name: config-client
+          image: ncy9371/kubeshare-config-client:20200429135835
+          env:
+            - name: KUBESHARE_SCHEDULER_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+          volumeMounts:
+            - name: "kubeshare-scheduler"
+              mountPath: "/kubeshare/scheduler"
+            - name: "kubeshare-library"
+              mountPath: "/kubeshare/library"
+        - name: gemini-scheduler
+          image: yukiozhu/kubeshare-gemini-scheduler:debug
+          volumeMounts:
+            - name: "kubeshare-scheduler"
+              mountPath: "/kubeshare/scheduler"
+            - name: "kubeshare-library"
+              mountPath: "/kubeshare/library"
+          volumeMounts:
+            - name: "kubeshare-scheduler"
+              mountPath: "/kubeshare/scheduler"
       volumes:
-      - name: "kubeshare-scheduler"
-        hostPath:
-          path: "/kubeshare/scheduler"
-      - name: "kubeshare-library"
-        hostPath:
-          path: "/kubeshare/library"
+        - name: "kubeshare-scheduler"
+          hostPath:
+            path: "/kubeshare/scheduler"
+        - name: "kubeshare-library"
+          hostPath:
+            path: "/kubeshare/library"
+  {{- end }}
 
