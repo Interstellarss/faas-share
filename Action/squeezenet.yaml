@@ -12,9 +12,9 @@ metadata:
     "kubeshare/gpu_mem": "3145728000"
 spec:
   replicas: 1
-    podSpec:
-      terminationGracePeriodSeconds: 1
-      containers:
-        - name: squeezenet
-          image: leslie233/squeezenet:index
-          command: [ "sh", "-c", "fwatchdog" ]
+  podSpec:
+    terminationGracePeriodSeconds: 1
+    containers:
+      - name: squeezenet
+        image: leslie233/squeezenet:index
+        command: [ "sh", "-c", "fwatchdog" ]

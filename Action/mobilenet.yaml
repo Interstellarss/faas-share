@@ -12,28 +12,28 @@ metadata:
     "kubeshare/gpu_mem": "3145728000"
 spec:
   replicas: 1
-    podSpec:
-      terminationGracePeriodSeconds: 1
-      initContainers:
-        - name: mobilenet-init
-          image: leslie233/mobilenet-init:test
-          volumeMounts:
-            - name: "mobilenet-model"
-              mountPath: /model/mobilenet
-      containers:
-        - name: mobilenet-test
-          # image: leslie233/mobilenet-2:index
-          image: leslie233/mobilnet-test:shared
-          command: [ "sh", "-c", "fwatchdog" ]
-          volumeMounts:
-            - mountPath: /model/mobilenet
-              name: mobilenet-model
-          volumes:
-            - names: mobilenet-model
-              hostPath:
-                path: /model/mobilenet
-                type:
-          #volumeMounts:
-          #- name:
+  podSpec:
+    terminationGracePeriodSeconds: 1
+    initContainers:
+      - name: mobilenet-init
+        image: leslie233/mobilenet-init:test
+        volumeMounts:
+          - name: "mobilenet-model"
+            mountPath: /model/mobilenet
+    containers:
+      - name: mobilenet-test
+        # image: leslie233/mobilenet-2:index
+        image: leslie233/mobilnet-test:shared
+        command: [ "sh", "-c", "fwatchdog" ]
+        volumeMounts:
+          - mountPath: /model/mobilenet
+            name: mobilenet-model
+        volumes:
+          - names: mobilenet-model
+            hostPath:
+              path: /model/mobilenet
+              type:
+        #volumeMounts:
+        #- name:
 
 

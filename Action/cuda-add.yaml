@@ -12,8 +12,8 @@ metadata:
     "kubeshare/gpu_mem": "3145728000"
 spec:
   replicas: 1
-    podSpec:
-      terminationGracePeriodSeconds: 1
-      containers:
-        - name: cuda-vector-add
-          image: "k8s.gcr.io/cuda-vector-add:v0.1"
+  podSpec:
+    terminationGracePeriodSeconds: 1
+    containers:
+      - name: cuda-vector-add
+        image: "k8s.gcr.io/cuda-vector-add:v0.1"
