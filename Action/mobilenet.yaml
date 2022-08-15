@@ -19,19 +19,19 @@ spec:
         image: leslie233/mobilenet-init:test
         volumeMounts:
           - name: "mobilenet-model"
-            mountPath: /model/mobilenet
+            mountPath: "/model/mobilenet"
     containers:
       - name: mobilenet-test
         # image: leslie233/mobilenet-2:index
-        image: leslie233/mobilnet-test:shared
+        image: leslie233/mobilenet-test:shared
         command: [ "sh", "-c", "fwatchdog" ]
         volumeMounts:
-          - mountPath: /model/mobilenet
-            name: mobilenet-model
+          - name: "mobilenet-model"
+            mountPath: "/model/mobilenet"
     volumes:
-      - names: mobilenet-model
+      - names: "mobilenet-model"
         hostPath:
-          path: /model/mobilenet
+          path: "/model/mobilenet"
               #type:
         #volumeMounts:
         #- name:
