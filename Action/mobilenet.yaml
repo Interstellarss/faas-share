@@ -31,7 +31,7 @@ spec:
     volumes:
       - names: mobilenet-model
         hostPath:
-        path: /model/mobilenet
+          path: /model/mobilenet
               #type:
         #volumeMounts:
         #- name:

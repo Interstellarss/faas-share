@@ -351,11 +351,12 @@ func (c *Controller) addSHR(obj interface{}) {
 
 	if err != nil {
 		//handle error
-
+		runtime.HandleError(err)
 	}
 	shr, err := c.faasclientset.KubeshareV1().SharePods(namespace).Get(context.TODO(), name, metav1.GetOptions{})
 
 	if err != nil {
+		glog.Errorf("Error getting shr %v", name)
 
 	}
 	copy := shr.DeepCopy()
@@ -377,7 +378,8 @@ func (c *Controller) addSHR(obj interface{}) {
 		_, err := c.kubeclient.CoreV1().Pods(namespace).Create(context.TODO(), newInitPod(copy), metav1.CreateOptions{})
 
 		if err != nil {
-			glog.Errorf("Error starting init container for sharepod %v/%v", namespace, name)
+			glog.Errorf("Error %v starting init container for sharepod %v/%v", err, namespace, name)
+			runtime.HandleError(err)
 		}
 	}
 
