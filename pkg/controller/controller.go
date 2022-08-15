@@ -519,6 +519,7 @@ func newInitPod(gpu *faasv1.SharePod) *corev1.Pod {
 		},
 		Spec: corev1.PodSpec{
 			Containers: gpu.Spec.PodSpec.InitContainers,
+			Volumes:    gpu.Spec.PodSpec.Volumes,
 		},
 	}
 }
