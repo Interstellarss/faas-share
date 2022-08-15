@@ -28,11 +28,11 @@ spec:
         volumeMounts:
           - mountPath: /model/mobilenet
             name: mobilenet-model
-        volumes:
-          - names: mobilenet-model
-            hostPath:
-              path: /model/mobilenet
-              type:
+    volumes:
+      - names: mobilenet-model
+        hostPath:
+        path: /model/mobilenet
+              #type:
         #volumeMounts:
         #- name:
 
