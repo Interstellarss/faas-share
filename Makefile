@@ -84,7 +84,7 @@ push:
 	docker push $(SERVER)/$(OWNER)/$(IMG_NAME):$(TAG)
 
 charts: ## helm repo index docs --url https://interstellarss.github.io/faas-share --merge ./docs/index.yaml
-	cd chart && helm package faas-share/ && helm package kafka-connector/ && helm package cron-connector/ && helm package nats-connector/ && helm package mqtt-connector/ && helm package pro-builder/  && helm package sqs-connector/
+	cd chart && helm package faas-share/ 
 	mv chart/*.tgz docs/
 	helm repo index docs --url https://interstellarss.github.io/faas-share-charts --merge ./docs/index.yaml
 	./contrib/create-static-manifest.sh

@@ -16,7 +16,7 @@ spec:
     terminationGracePeriodSeconds: 1
     initContainers:
       - name: mobilenet-init
-        image: leslie233/mobilenet-init:test
+        image: leslie233/mobilenet-init:model
         volumeMounts:
           - name: "mobilenet-model"
             mountPath: "/model/mobilenet"
@@ -29,7 +29,7 @@ spec:
           - name: "mobilenet-model"
             mountPath: "/model/mobilenet"
     volumes:
-      - names: "mobilenet-model"
+      - name: "mobilenet-model"
         hostPath:
           path: "/model/mobilenet"
               #type:

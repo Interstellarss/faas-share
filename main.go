@@ -147,9 +147,9 @@ func startInformers(setup serverSetup, stopCh <-chan struct{}) customInformers {
 	kubeInformerFactory := setup.kubeInformerFactory
 	faasInformerFactory := setup.faasInformerFactory
 
-	var sharepods v1.SharePodInformer
+	//var sharepods v1.SharePodInformer
 
-	sharepods = faasInformerFactory.Kubeshare().V1().SharePods()
+	sharepods := faasInformerFactory.Kubeshare().V1().SharePods()
 	go sharepods.Informer().Run(stopCh)
 	if ok := cache.WaitForNamedCacheSync("faas-share:sharepods", stopCh, sharepods.Informer().HasSynced); !ok {
 		log.Fatalf("failed to wait for cache to sync")
@@ -157,11 +157,11 @@ func startInformers(setup serverSetup, stopCh <-chan struct{}) customInformers {
 
 	//go kubeInformerFactory.Start(stopCh)
 
-	deployments := kubeInformerFactory.Apps().V1().Deployments()
-	go deployments.Informer().Run(stopCh)
-	if ok := cache.WaitForNamedCacheSync("faas-share:deployments", stopCh, deployments.Informer().HasSynced); !ok {
-		log.Fatalf("failed to wait for cache to sync")
-	}
+	//deployments := kubeInformerFactory.Apps().V1().Deployments()
+	//go deployments.Informer().Run(stopCh)
+	//if ok := cache.WaitForNamedCacheSync("faas-share:deployments", stopCh, deployments.Informer().HasSynced); !ok {
+	//	log.Fatalf("failed to wait for cache to sync")
+	//}
 
 	endpoints := kubeInformerFactory.Core().V1().Endpoints()
 	go endpoints.Informer().Run(stopCh)
@@ -206,7 +206,7 @@ func runOperator(setup serverSetup, cfg config.BootstrapConfig) {
 		faasInformerfactory,
 		facory,
 	)
-	listers.SharepodsInformer.Lister()
+	//listers.SharepodsInformer.Lister()
 	srv := server.New(shareClient, kubeClient, listers.EndpointsInformer, listers.SharepodsInformer.Lister(), cfg.ClusterRole, cfg)
 
 	//TODO here

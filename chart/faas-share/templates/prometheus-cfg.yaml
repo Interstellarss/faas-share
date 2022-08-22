@@ -26,7 +26,6 @@ data:
 {{- if .Values.openfaasPro }}
         - 'prometheus-rules.yml'
 {{- end }}
-
     alerting:
       alertmanagers:
       - static_configs:

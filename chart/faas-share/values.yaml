@@ -111,7 +111,7 @@ gateway:
   nodePort: 31112
   maxIdleConns: 1024
   maxIdleConnsPerHost: 1024
-  directFunctions: true
+  directFunctions: false
   # Custom logs provider url. For example openfaas-loki would be
   # "http://ofloki-openfaas-loki.openfaas:9191/"
   logsProviderURL: ""
@@ -198,7 +198,7 @@ queueWorker:
 # monitoring and auto-scaling components
 # both components
 prometheus:
-  image: prom/prometheus:v2.11.0
+  image: prom/prometheus:v2.37.0
   create: true
   resources:
     requests:
@@ -206,7 +206,7 @@ prometheus:
   annotations: {}
 
 alertmanager:
-  image: prom/alertmanager:v0.18.0
+  image: prom/alertmanager:v0.24.0
   create: true
   resources:
     requests:
