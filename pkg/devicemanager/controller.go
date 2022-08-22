@@ -530,11 +530,11 @@ func (c *Controller) handleObject(obj interface{}) {
 	// get UUID here to prevent request throttling
 	if pod, ok := obj.(*corev1.Pod); ok {
 
-		klog.Infof("A pod %s is being proceed...", pod.Name)
-
 		if pod.ObjectMeta.Namespace == "kube-system" && strings.Contains(pod.ObjectMeta.Name, faasv1.KubeShareDummyPodName) && (pod.Status.Phase == corev1.PodRunning || pod.Status.Phase == corev1.PodFailed) {
 			// TODO: change the method of getting GPUID from label to more reliable source
 			// e.g. Pod name (kubeshare-dummypod-{NodeName}-{GPUID})
+
+			klog.Infof("A Dummy pod %s is being proceed...", pod.Name)
 			if pod.Spec.NodeName != "" {
 				if gpuid, ok := pod.ObjectMeta.Labels[faasv1.KubeShareResourceGPUID]; ok {
 					needSetUUID := false
@@ -571,6 +571,8 @@ func (c *Controller) handleObject(obj interface{}) {
 			klog.V(4).Infof("ignoring orphaned object '%s' of SharePod '%s'", object.GetSelfLink(), ownerRef.Name)
 			return
 		}
+
+		klog.Infof("A pod %s is being proceed...", foo.Name)
 
 		c.enqueueSharePod(foo)
 		return
