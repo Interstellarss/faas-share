@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/Interstellarss/faas-share/pkg/devicemanager"
 	"github.com/Interstellarss/faas-share/pkg/k8s"
+	"k8s.io/apimachinery/pkg/watch"
 	"strconv"
 	"strings"
 	"time"
@@ -161,17 +162,22 @@ func NewController(
 	// Enable this with -v=3
 	kubeInformerFactory.Core().V1().Events().Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: func(obj interface{}) {
+
 			key, err := cache.MetaNamespaceKeyFunc(obj)
 			if err == nil {
 				event := obj.(*corev1.Event)
+				//glog.Infof() event.FirstTimestamp
 				since := time.Since(event.LastTimestamp.Time)
 				// log abnormal events occurred in the last minute
 				if since.Seconds() < 61 && strings.Contains(event.Type, "Warning") {
 					glog.V(3).Infof("Abnormal event detected on %s %s: %s", event.LastTimestamp, key, event.Message)
 				}
 			}
+			//controller.updateRunningPod()
 		},
 	})
+
+	//kube
 
 	return controller
 }
@@ -376,6 +382,9 @@ func (c *Controller) addSHR(obj interface{}) {
 	}
 	copy := shr.DeepCopy()
 
+	//create the map for this sharepod/function
+	c.resolver.AddFunc(copy.Name)
+
 	/*
 		replica := getReplicas(copy)
 
@@ -558,6 +567,46 @@ func newInitPod(gpu *faasv1.SharePod) *corev1.Pod {
 			Volumes:    gpu.Spec.PodSpec.Volumes,
 		},
 	}
+}
+
+func (c *Controller) updateRunningPod(pod *corev1.Pod) {
+	if len(pod.Status.PodIP) > 0 {
+		if ownerRef := metav1.GetControllerOf(pod); ownerRef != nil {
+			if ownerRef.Kind != faasKind {
+				return
+			}
+			if pod.Status.Phase == corev1.PodRunning || *pod.Status.ContainerStatuses[0].Started {
+				c.resolver.Insert(ownerRef.Name, pod.Name, pod.Status.PodIP)
+			}
+		}
+	}
+}
+
+func (c *Controller) podWatch() error {
+	podsWatcher, err := c.kubeclient.CoreV1().Pods("faas-share-fn").Watch(context.Background(), metav1.ListOptions{Watch: true})
+	if err != nil {
+		return err
+	}
+	podsChan := podsWatcher.ResultChan()
+	for event := range podsChan {
+		pod, err := event.Object.(*corev1.Pod)
+		if err {
+			return nil
+		}
+
+		switch event.Type {
+		case watch.Added:
+			c.updateRunningPod(pod)
+		case watch.Modified:
+			c.updateRunningPod(pod)
+		case watch.Bookmark:
+			c.updateRunningPod(pod)
+			//todo case delete
+
+		}
+	}
+
+	return nil
 }
 
 /*

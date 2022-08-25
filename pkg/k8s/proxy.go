@@ -198,9 +198,22 @@ func (l *FunctionLookup) Resolve(name string) (url.URL, string, error) {
 	return *urlRes, podName, nil
 }
 
-func (l *FunctionLookup) deleteFunction(name string) {
+func (l *FunctionLookup) DeleteFunction(name string) {
 	delete(*l.shareInfos, name)
 	return
+}
+
+func (l *FunctionLookup) AddFunc(funcname string) {
+	if sharepodinfo, ok := (*l.shareInfos)[funcname]; !ok {
+		podinfos := make(map[string]PodInfo)
+		sharepodinfo = SharePodInfo{podInfos: podinfos}
+		(*l.shareInfos)[funcname] = sharepodinfo
+	} else {
+		if &sharepodinfo.podInfos == nil {
+			sharepodinfo.podInfos = make(map[string]PodInfo)
+		}
+
+	}
 }
 
 func (l *FunctionLookup) Update(duration time.Duration, functionName string, podName string) {
