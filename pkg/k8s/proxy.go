@@ -61,7 +61,7 @@ func (s PodsWithInfos) Less(i, j int) bool {
 	return s.podInfos[name_i].rateChange < s.podInfos[name_j].rateChange
 }
 
-func NewFunctionLookup(ns string, podLister corelister.PodLister, faasLister faas.SharePodLister, sharepodInfos *map[string]SharePodInfo) *FunctionLookup {
+func NewFunctionLookup(ns string, podLister corelister.PodLister, faasLister faas.SharePodLister, sharepodInfos map[string]*SharePodInfo) *FunctionLookup {
 	return &FunctionLookup{
 		DefaultNamespace: ns,
 		//EndpointLister:   lister,
@@ -81,7 +81,7 @@ type FunctionLookup struct {
 	podLister  corelister.PodLister
 	Listers    map[string]shareLister
 
-	shareInfos *map[string]SharePodInfo
+	shareInfos map[string]*SharePodInfo
 	lock       sync.RWMutex
 }
 
@@ -141,7 +141,7 @@ func (l *FunctionLookup) Resolve(name string) (url.URL, string, error) {
 
 	filteredPods := devicemanager.FilterActivePods(pods)
 
-	pInfos := ((*l.shareInfos)[functionName]).podInfos
+	pInfos := (l.shareInfos[functionName]).podInfos
 
 	//pods := make([]PodInfo, len(pInfos))
 	/*
@@ -216,12 +216,12 @@ func (l *FunctionLookup) Resolve(name string) (url.URL, string, error) {
 
 func (l *FunctionLookup) DeleteFunction(name string) {
 	//l.lock
-	delete(*l.shareInfos, name)
+	delete(l.shareInfos, name)
 	return
 }
 
 func (l *FunctionLookup) AddFunc(funcname string) {
-	(*l.shareInfos)[funcname] = SharePodInfo{podInfos: make(map[string]PodInfo), lock: sync.RWMutex{}}
+	(l.shareInfos)[funcname] = &SharePodInfo{podInfos: make(map[string]PodInfo), lock: sync.RWMutex{}}
 	klog.Infof("Info of Sharepod %s initialized...", funcname)
 	/*
 		if sharepodinfo, ok := (*l.shareInfos)[funcname]; !ok {
@@ -242,25 +242,26 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 	//var sharepodInfo SharePodInfo
 	//sharepodInfo = (*l.shareInfos)[functionName]
 
-	if ((*l.shareInfos)[functionName].podInfos) == nil {
+	if (l.shareInfos[functionName].podInfos) == nil {
 
 		//
 		klog.Infof("Sharepod %s with Pod %s 's info nil...", functionName, podName)
 		//(*l.shareInfos)[functionName] = SharePodInfo{podInfos: make(map[string]PodInfo), lock: sync.RWMutex{}}
 		//TODO
 		//var tmp map[string]PodInfo
-		//(*l.shareInfos)[functionName].podInfos = tmp
+		//(*l.shareInfos)[functionName].podInfos = make(map[string]PodInfo)
+
 		//((*l.shareInfos)[functionName].podInfos)[podName] = PodInfo{podName: podName, serviceName: functionName, totalInvoke: 1, avgResponseTime: duration, rate: float32(1000 / avgResponseTime.Milliseconds())}
 		//return
 	}
 
 	var test SharePodInfo
-	test = (*l.shareInfos)[functionName]
+	test = *(l.shareInfos)[functionName]
 
 	test.lock.Lock()
 	defer test.lock.Unlock()
 
-	var podInfo PodInfo = (*l.shareInfos)[functionName].podInfos[podName]
+	var podInfo PodInfo = (l.shareInfos)[functionName].podInfos[podName]
 
 	//podInfo.totalInvoke++
 	//time.Duration()
@@ -288,7 +289,7 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 }
 
 func (l *FunctionLookup) Insert(shrName string, podName string, podIp string) {
-	if sharepodInfo, ok := (*l.shareInfos)[shrName]; ok {
+	if sharepodInfo, ok := (l.shareInfos)[shrName]; ok {
 		if podInfo, ok2 := (sharepodInfo.podInfos)[podName]; ok2 {
 			if podInfo.podIp == "" {
 				podInfo.podIp = podIp
@@ -297,7 +298,7 @@ func (l *FunctionLookup) Insert(shrName string, podName string, podIp string) {
 	} else {
 		podinfos := make(map[string]PodInfo)
 		podinfos[podName] = PodInfo{podName: podName, podIp: podIp, serviceName: shrName, totalInvoke: 0, rate: 0}
-		(*l.shareInfos)[shrName] = SharePodInfo{podInfos: podinfos}
+		(l.shareInfos)[shrName] = &SharePodInfo{podInfos: podinfos}
 		return
 	}
 }

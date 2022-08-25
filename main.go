@@ -206,9 +206,9 @@ func runOperator(setup serverSetup, cfg config.BootstrapConfig) {
 	//operator := true
 	listers := startInformers(setup, stopCh)
 
-	shareInfos := make(map[string]k8s.SharePodInfo)
+	shareInfos := make(map[string]*k8s.SharePodInfo)
 
-	sharepodLookup := k8s.NewFunctionLookup("faas-share-fn", listers.PodsInformer.Lister(), listers.SharepodsInformer.Lister(), &shareInfos)
+	sharepodLookup := k8s.NewFunctionLookup("faas-share-fn", listers.PodsInformer.Lister(), listers.SharepodsInformer.Lister(), shareInfos)
 
 	//TOOD: conttroller pkg for faas-share
 	ctrl := controller.NewController(
