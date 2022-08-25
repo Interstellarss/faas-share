@@ -135,11 +135,12 @@ func main() {
 }
 
 type customInformers struct {
-	EndpointsInformer v1core.EndpointsInformer
+	//EndpointsInformer v1core.EndpointsInformer
 
 	//DeploymentInformer v1apps.DeploymentInformer
 	//TODO here, may need to change
 	SharepodsInformer v1.SharePodInformer
+	PodsInformer      v1core.PodInformer
 }
 
 //we probably will not need the operator bool, since we only have one deploy mode
@@ -163,16 +164,23 @@ func startInformers(setup serverSetup, stopCh <-chan struct{}) customInformers {
 	//	log.Fatalf("failed to wait for cache to sync")
 	//}
 
-	endpoints := kubeInformerFactory.Core().V1().Endpoints()
-	go endpoints.Informer().Run(stopCh)
-	if ok := cache.WaitForNamedCacheSync("faas-share:endpoints", stopCh, endpoints.Informer().HasSynced); !ok {
-		log.Fatalf("failed to wait for cache to sync")
+	pods := kubeInformerFactory.Core().V1().Pods()
+	go pods.Informer().Run(stopCh)
+	if ok := cache.WaitForNamedCacheSync("faas-share: pods", stopCh, pods.Informer().HasSynced); !ok {
+		log.Fatalf("fail to wait for cache to sync")
 	}
+
+	//endpoints := kubeInformerFactory.Core().V1().Endpoints()
+	//go endpoints.Informer().Run(stopCh)
+	//if ok := cache.WaitForNamedCacheSync("faas-share:endpoints", stopCh, endpoints.Informer().HasSynced); !ok {
+	//	log.Fatalf("failed to wait for cache to sync")
+	//}
 
 	//profielInformerFactory.Start()
 	//we may not meed
 	return customInformers{
-		EndpointsInformer: endpoints,
+		//EndpointsInformer: endpoints,
+		PodsInformer: pods,
 		//DeploymentInformer: deployments,
 		SharepodsInformer: sharepods,
 	}
@@ -186,7 +194,7 @@ func runOperator(setup serverSetup, cfg config.BootstrapConfig) {
 	faasInformerfactory := setup.faasInformerFactory
 
 	//
-	facory := controller.FunctionFactory{
+	factory := controller.FunctionFactory{
 		Factory: setup.functionFactory,
 	}
 
@@ -198,16 +206,21 @@ func runOperator(setup serverSetup, cfg config.BootstrapConfig) {
 	//operator := true
 	listers := startInformers(setup, stopCh)
 
+	shareInfos := make(map[string]*k8s.SharePodInfo)
+
+	sharepodLookup := k8s.NewFunctionLookup("faas-share-fn", listers.PodsInformer.Lister(), listers.SharepodsInformer.Lister(), &shareInfos)
+
 	//TOOD: conttroller pkg for faas-share
 	ctrl := controller.NewController(
 		kubeClient,
 		shareClient,
 		kubeInformerfacotry,
 		faasInformerfactory,
-		facory,
+		factory,
+		sharepodLookup,
 	)
 	//listers.SharepodsInformer.Lister()
-	srv := server.New(shareClient, kubeClient, listers.EndpointsInformer, listers.SharepodsInformer.Lister(), cfg.ClusterRole, cfg)
+	srv := server.New(shareClient, kubeClient, listers.PodsInformer, listers.SharepodsInformer.Lister(), cfg.ClusterRole, sharepodLookup, cfg)
 
 	//TODO here
 	go srv.Start()

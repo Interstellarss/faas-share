@@ -17,7 +17,6 @@ import (
 	"k8s.io/client-go/kubernetes"
 
 	"github.com/openfaas/faas-provider/logs"
-	"github.com/openfaas/faas-provider/proxy"
 	"github.com/openfaas/faas-provider/types"
 
 	//listers "github.com/Interstellarss/faas-share/pkg/client/listers/kubeshare/v1"
@@ -40,10 +39,10 @@ const defaultWriteTimeout = 8
 // New created HTTP server struct
 func New(client clientset.Interface,
 	kube kubernetes.Interface,
-	endpointsInformer coreinformer.EndpointsInformer,
-	//deploymentLister v1apps.DeploymentLister,
+	podInformer coreinformer.PodInformer,
 	sharepodLister lister.SharePodLister,
 	clusterRole bool,
+	sharepodLookup *k8s.FunctionLookup,
 	cfg config.BootstrapConfig) *Server {
 
 	sharepodNamespace := "faas-share-fn"
@@ -58,8 +57,9 @@ func New(client clientset.Interface,
 		pprof = val
 	}
 
-	lister := endpointsInformer.Lister()
-	sharepodLookup := k8s.NewFunctionLookup(sharepodNamespace, lister)
+	//podlister := podInformer.Lister()
+
+	//sharepodLookup := k8s.NewFunctionLookup(sharepodNamespace, podlister, sharepodLister, shareInfos)
 
 	bootstrapConfig := types.FaaSConfig{
 		ReadTimeout:  cfg.FaaSConfig.ReadTimeout,
@@ -70,7 +70,7 @@ func New(client clientset.Interface,
 
 	bootstrapHandlers := types.FaaSHandlers{
 		//TODO: amybe need tochange the proxy  newHandlerFunc?
-		FunctionProxy:  proxy.NewHandlerFunc(bootstrapConfig, sharepodLookup),
+		FunctionProxy:  NewHandlerFunc(bootstrapConfig, sharepodLookup),
 		DeleteHandler:  makeDeleteHandler(sharepodNamespace, client),
 		DeployHandler:  makeApplyHandler(sharepodNamespace, client),
 		FunctionReader: makeListHandler(sharepodNamespace, client, sharepodLister),

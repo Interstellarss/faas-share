@@ -3,6 +3,8 @@ package controller
 import (
 	"context"
 	"fmt"
+	"github.com/Interstellarss/faas-share/pkg/devicemanager"
+	"github.com/Interstellarss/faas-share/pkg/k8s"
 	"strconv"
 	"strings"
 	"time"
@@ -84,8 +86,13 @@ type Controller struct {
 	// Kubernetes API.
 	recorder record.EventRecorder
 
+	resolver *k8s.FunctionLookup
+
 	// OpenFaaS function factory
 	factory FunctionFactory
+
+	//podQueue for handling events
+	//podQueue
 }
 
 // NewController returns a new OpenFaaS controller
@@ -94,7 +101,8 @@ func NewController(
 	faasclientset clientset.Interface,
 	kubeInformerFactory kubeinformers.SharedInformerFactory,
 	faasInformerFactory informers.SharedInformerFactory,
-	factory FunctionFactory) *Controller {
+	factory FunctionFactory,
+	resolver *k8s.FunctionLookup) *Controller {
 
 	// obtain references to shared index informers for the Deployment and Function types
 	//deploymentInformer := kubeInformerFactory.Apps().V1().Deployments()
@@ -117,6 +125,7 @@ func NewController(
 		sharepodsSynced: faasInformer.Informer().HasSynced,
 		workqueue:       workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "Sharepods"),
 		recorder:        recorder,
+		resolver:        resolver,
 		factory:         factory,
 	}
 
@@ -139,6 +148,12 @@ func NewController(
 
 		})
 	*/
+
+	//podQueue := ocache.NewEventQueue(cache.MetaNamespaceKeyFunc)
+
+	//podLW := &cache.wa
+
+	//watch.EventType()
 
 	// Set up an event handler for when functions related resources like pods, deployments, replica sets
 	// can't be materialized. This logs abnormal events like ImagePullBackOff, back-off restarting failed container,
@@ -408,6 +423,21 @@ func (c *Controller) handleObject(obj interface{}) {
 		glog.V(4).Infof("Recovered deleted object '%s' from tombstone", object.GetName())
 	}
 	glog.V(4).Infof("Processing object: %s", object.GetName())
+
+	if pod, ok := obj.(*corev1.Pod); ok {
+		if ownerRef := metav1.GetControllerOf(object); ownerRef != nil {
+			if ownerRef.Kind != faasKind {
+				return
+			}
+			if (pod.Status.Phase == corev1.PodRunning || *pod.Status.ContainerStatuses[0].Started) && pod.Annotations[devicemanager.FaasShareWarm] != "true" {
+				//(*c.faasShareInfos)[ownerRef.Name]
+				if pod.Status.PodIP != "" {
+					c.resolver.Insert(ownerRef.Name, pod.Name, pod.Status.PodIP)
+				}
+			}
+		}
+	}
+
 	if ownerRef := metav1.GetControllerOf(object); ownerRef != nil {
 		// If this object is not owned by a function, we should not do anything more
 		// with it.
