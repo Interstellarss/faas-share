@@ -235,11 +235,17 @@ func (l *FunctionLookup) AddFunc(funcname string) {
 
 func (l *FunctionLookup) Update(duration time.Duration, functionName string, podName string) {
 	//podinfo := *((*l.shareInfos)[functionName])
-	var sharepodInfo SharePodInfo
-	sharepodInfo = (*l.shareInfos)[functionName]
+	//var sharepodInfo SharePodInfo
+	//sharepodInfo = (*l.shareInfos)[functionName]
+
+	var test SharePodInfo
+	test = (*l.shareInfos)[functionName]
+
+	test.lock.Lock()
+	defer test.lock.Unlock()
 
 	var podInfo PodInfo
-	podInfo = (sharepodInfo.podInfos)[podName]
+	podInfo = ((*l.shareInfos)[functionName].podInfos)[podName]
 
 	//podInfo.totalInvoke++
 	//time.Duration()
@@ -262,10 +268,8 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 		podInfo.rateChange = ChangeType(Sta)
 	}
 
-	sharepodInfo.podInfos[podName] = podInfo
-
-	(*l.shareInfos)[functionName] = sharepodInfo
-	return
+	(*l.shareInfos)[functionName].podInfos[podName] = podInfo
+	//return
 }
 
 func (l *FunctionLookup) Insert(shrName string, podName string, podIp string) {
