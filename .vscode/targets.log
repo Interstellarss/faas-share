@@ -8,7 +8,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This program built for i386-apple-darwin11.3.0
  
 
-# Make data base, printed on Wed Aug 24 16:08:42 2022
+# Make data base, printed on Thu Aug 25 17:35:19 2022
 
 # Variables
 
@@ -39,14 +39,13 @@ _ = /usr/bin/make
 # environment
 TIGRESS_HOME = /Users/puxuan/downloads/tigress/3.1
 # makefile (from `Makefile', line 27)
-GIT_COMMIT := 84feb602eda553042999ecdee16eaf900b6519f7
+GIT_COMMIT := f78f3f21c614a63d982c52d7b4a9c51369df773d
 # makefile (from `Makefile', line 1)
 MAKEFILE_LIST :=  Makefile
 # environment
 VSCODE_AMD_ENTRYPOINT = vs/workbench/api/node/extensionHostProcess
- 
 # makefile (from `Makefile', line 26)
-VERSION := v0.1.21-1-g84feb60-dirty
+VERSION := v0.1.22-dirty
 # environment
 __CFBundleIdentifier = com.microsoft.VSCode
 # environment
@@ -64,15 +63,13 @@ CODEGEN_VERSION := k8s.io/code-generator
 # makefile (from `Makefile', line 22)
 GOPATH := /Users/puxuan/go
 # environment
-LaunchInstanceID = AECB658F-2A32-436D-8CCD-FC56285C57F5
-# environment
 ELECTRON_RUN_AS_NODE = 1
 # default
 .FEATURES := target-specific order-only second-expansion else-if archives jobserver check-symlink
 # makefile (from `Makefile', line 12)
-TAG = v0.1.21
+TAG = v0.1.22
 # environment
-SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.Jej6lDykiM/Listeners
+SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.02W9BkLXzJ/Listeners
 # automatic
 %F = $(notdir $%)
 # environment
@@ -94,7 +91,7 @@ HOME = /Users/puxuan
 # default
 MAKEFILEPATH := /Applications/Xcode.app/Contents/Developer/Makefiles
 # environment
-VSCODE_CODE_CACHE_PATH = /Users/puxuan/Library/Application Support/Code/CachedData/3b889b090b5ad5793f524b5d1d39fda662b96a2a
+VSCODE_CODE_CACHE_PATH = /Users/puxuan/Library/Application Support/Code/CachedData/e4503b30fc78200f846c62cf8091b76ff5547662
 # environment
 LOGNAME = puxuan
 # environment
@@ -138,7 +135,7 @@ TMPDIR = /var/folders/7m/b3h099s90tgbh61my4m6x9c80000gn/T/
 # automatic
 *F = $(notdir $*)
 # environment
-VSCODE_IPC_HOOK = /Users/puxuan/Library/Application Support/Code/1.69.2-main.sock
+VSCODE_IPC_HOOK = /Users/puxuan/Library/Application Support/Code/1.70.2-main.sock
 # environment
 MallocNanoZone = 0
 # makefile
@@ -148,7 +145,7 @@ MFLAGS = -Rrqp
 # automatic
 *D = $(patsubst %/,%,$(dir $*))
 # environment
-XPC_SERVICE_NAME = application.com.microsoft.VSCode.59639425.59639431
+XPC_SERVICE_NAME = application.com.microsoft.VSCode.62911957.62911963
 # automatic
 +D = $(patsubst %/,%,$(dir $+))
 # makefile (from `Makefile', line 24)
@@ -171,8 +168,6 @@ BIN_DIR = bin/
 LC_ALL = C
 # environment
 CONDA_PYTHON_EXE = /Users/puxuan/opt/anaconda3/bin/python
-# environment
-SECURITYSESSIONID = 186a7
 # automatic
 ^F = $(notdir $^)
 # default
@@ -190,13 +185,13 @@ MAKELEVEL := 0
 # environment
 CONDA_PREFIX = /Users/puxuan/opt/anaconda3
 # environment
-VSCODE_PID = 521
+VSCODE_PID = 5461
 # environment
 _CE_CONDA = 
 # environment
 LANG = C
 # variable set hash-table stats:
-# Load=91/1024=9%, Rehash=0, Collisions=6/145=4%
+# Load=89/1024=9%, Rehash=0, Collisions=6/143=4%
 
 # Pattern-specific Variable Values
 
@@ -282,18 +277,18 @@ push:
 # Not a target:
 Makefile:
 #  Implicit rule search has been done.
-#  Last modified 2022-08-22 12:15:23
+#  Last modified 2022-08-25 11:00:54
 #  File has been updated.
 #  Successfully updated.
 # variable set hash-table stats:
 # Load=0/32=0%, Rehash=0, Collisions=0/0=0%
 
- 
 render-charts:
 #  Phony target (prerequisite of .PHONY).
 #  Implicit rule search has not been done.
 #  File does not exist.
 #  File has not been updated.
+ 
 #  commands to execute (from `Makefile', line 93):
 	./contrib/create-static-manifest.sh
 	./contrib/create-static-manifest.sh ./chart/faas-share ./yaml_arm64 ./chart/faas-share/values-arm64.yaml
@@ -497,10 +492,9 @@ install:
 
 # # of strings in strcache: 1
 # # of strcache buffers: 1
- 
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Wed Aug 24 16:08:42 2022
+# Finished Make data base on Thu Aug 25 17:35:19 2022
 
  

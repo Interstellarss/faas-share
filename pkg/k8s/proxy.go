@@ -221,16 +221,20 @@ func (l *FunctionLookup) DeleteFunction(name string) {
 }
 
 func (l *FunctionLookup) AddFunc(funcname string) {
-	if sharepodinfo, ok := (*l.shareInfos)[funcname]; !ok {
-		sharepodinfo = SharePodInfo{podInfos: make(map[string]PodInfo), lock: sync.RWMutex{}}
-		(*l.shareInfos)[funcname] = sharepodinfo
-		klog.Infof("Info of Sharepod %s initialized...", funcname)
-	} else {
-		if &sharepodinfo.podInfos == nil {
-			sharepodinfo.podInfos = make(map[string]PodInfo)
-		}
+	(*l.shareInfos)[funcname] = SharePodInfo{podInfos: make(map[string]PodInfo), lock: sync.RWMutex{}}
+	klog.Infof("Info of Sharepod %s initialized...", funcname)
+	/*
+		if sharepodinfo, ok := (*l.shareInfos)[funcname]; !ok {
+			sharepodinfo = SharePodInfo{podInfos: make(map[string]PodInfo), lock: sync.RWMutex{}}
+			(*l.shareInfos)[funcname] = sharepodinfo
+			klog.Infof("Info of Sharepod %s initialized...", funcname)
+		} else {
+			if &sharepodinfo.podInfos == nil {
+				sharepodinfo.podInfos = make(map[string]PodInfo)
+			}
 
-	}
+		}
+	*/
 }
 
 func (l *FunctionLookup) Update(duration time.Duration, functionName string, podName string) {
@@ -238,14 +242,25 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 	//var sharepodInfo SharePodInfo
 	//sharepodInfo = (*l.shareInfos)[functionName]
 
+	if ((*l.shareInfos)[functionName].podInfos) == nil {
+
+		//
+		klog.Infof("Sharepod %s with Pod %s 's info nil...", functionName, podName)
+		//(*l.shareInfos)[functionName] = SharePodInfo{podInfos: make(map[string]PodInfo), lock: sync.RWMutex{}}
+		//TODO
+		//var tmp map[string]PodInfo
+		//(*l.shareInfos)[functionName].podInfos = tmp
+		//((*l.shareInfos)[functionName].podInfos)[podName] = PodInfo{podName: podName, serviceName: functionName, totalInvoke: 1, avgResponseTime: duration, rate: float32(1000 / avgResponseTime.Milliseconds())}
+		//return
+	}
+
 	var test SharePodInfo
 	test = (*l.shareInfos)[functionName]
 
 	test.lock.Lock()
 	defer test.lock.Unlock()
 
-	var podInfo PodInfo
-	podInfo = ((*l.shareInfos)[functionName].podInfos)[podName]
+	var podInfo PodInfo = (*l.shareInfos)[functionName].podInfos[podName]
 
 	//podInfo.totalInvoke++
 	//time.Duration()
@@ -268,7 +283,7 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 		podInfo.rateChange = ChangeType(Sta)
 	}
 
-	(*l.shareInfos)[functionName].podInfos[podName] = podInfo
+	//var testPod *PodInfo = (*l.shareInfos)[functionName].podInfos[podName]
 	//return
 }
 

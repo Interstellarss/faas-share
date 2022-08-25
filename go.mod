@@ -1,6 +1,6 @@
 module github.com/Interstellarss/faas-share
 
-go 1.18
+go 1.17
 
 require (
 	//github.com/NTHU-LSALAB/KubeShare v0.9.4
