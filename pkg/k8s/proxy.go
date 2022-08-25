@@ -242,58 +242,59 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 	//var sharepodInfo SharePodInfo
 	//sharepodInfo = (*l.shareInfos)[functionName]
 
-	if (l.shareInfos[functionName].podInfos) == nil {
+	l.shareInfos[functionName].lock.Lock()
+	//test.lock.Lock()
+	defer l.shareInfos[functionName].lock.Unlock()
 
-		//
+	if podInfo, ok := l.shareInfos[functionName].podInfos[podName]; ok {
+		//podInfo.totalInvoke++
+		//time.Duration()
+		var invoke_pre = podInfo.totalInvoke
+		var invoke_cur = podInfo.totalInvoke + 1
+
+		podInfo.avgResponseTime = (podInfo.avgResponseTime*(time.Duration(invoke_pre)) + duration) / time.Duration(invoke_cur)
+
+		podInfo.totalInvoke++
+
+		oldRate := podInfo.rate
+
+		podInfo.rate = float32(1000 / podInfo.avgResponseTime.Milliseconds())
+
+		if oldRate < podInfo.rate {
+			podInfo.rateChange = ChangeType(Inc)
+		} else if oldRate > podInfo.rate {
+			podInfo.rateChange = ChangeType(Dec)
+		} else {
+			podInfo.rateChange = ChangeType(Sta)
+		}
+
+		//return
+
+	} else {
 		klog.Infof("Sharepod %s with Pod %s 's info nil...", functionName, podName)
-		//(*l.shareInfos)[functionName] = SharePodInfo{podInfos: make(map[string]PodInfo), lock: sync.RWMutex{}}
-		//TODO
-		//var tmp map[string]PodInfo
-		//(*l.shareInfos)[functionName].podInfos = make(map[string]PodInfo)
+		l.shareInfos[functionName].podInfos[podName] = PodInfo{podName: podName, serviceName: functionName, avgResponseTime: duration, totalInvoke: 1,
+			lastResponseTime: duration, rateChange: Inc, rate: float32(1000 / duration.Milliseconds())}
 
-		//((*l.shareInfos)[functionName].podInfos)[podName] = PodInfo{podName: podName, serviceName: functionName, totalInvoke: 1, avgResponseTime: duration, rate: float32(1000 / avgResponseTime.Milliseconds())}
 		//return
 	}
 
-	var test SharePodInfo
-	test = *(l.shareInfos)[functionName]
-
-	test.lock.Lock()
-	defer test.lock.Unlock()
-
-	var podInfo PodInfo = (l.shareInfos)[functionName].podInfos[podName]
-
-	//podInfo.totalInvoke++
-	//time.Duration()
-	var invoke_pre = podInfo.totalInvoke
-	var invoke_cur = podInfo.totalInvoke + 1
-
-	podInfo.avgResponseTime = (podInfo.avgResponseTime*(time.Duration(invoke_pre)) + duration) / time.Duration(invoke_cur)
-
-	podInfo.totalInvoke++
-
-	oldRate := podInfo.rate
-
-	podInfo.rate = float32(1000 / podInfo.avgResponseTime.Milliseconds())
-
-	if oldRate < podInfo.rate {
-		podInfo.rateChange = ChangeType(Inc)
-	} else if oldRate > podInfo.rate {
-		podInfo.rateChange = ChangeType(Dec)
-	} else {
-		podInfo.rateChange = ChangeType(Sta)
-	}
-
+	return
 	//var testPod *PodInfo = (*l.shareInfos)[functionName].podInfos[podName]
 	//return
 }
 
 func (l *FunctionLookup) Insert(shrName string, podName string, podIp string) {
+
 	if sharepodInfo, ok := (l.shareInfos)[shrName]; ok {
+
+		sharepodInfo.lock.Lock()
+		defer sharepodInfo.lock.Unlock()
 		if podInfo, ok2 := (sharepodInfo.podInfos)[podName]; ok2 {
 			if podInfo.podIp == "" {
 				podInfo.podIp = podIp
 			}
+		} else {
+			sharepodInfo.podInfos[podName] = PodInfo{podName: podName, podIp: podIp, serviceName: shrName, totalInvoke: 0, rate: 0}
 		}
 	} else {
 		podinfos := make(map[string]PodInfo)
