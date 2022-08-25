@@ -177,6 +177,7 @@ func NewController(
 		},
 	})
 
+	go controller.podWatch()
 	//kube
 
 	return controller

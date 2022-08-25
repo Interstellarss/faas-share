@@ -222,9 +222,9 @@ func (l *FunctionLookup) DeleteFunction(name string) {
 
 func (l *FunctionLookup) AddFunc(funcname string) {
 	if sharepodinfo, ok := (*l.shareInfos)[funcname]; !ok {
-		podinfos := make(map[string]PodInfo)
-		sharepodinfo = SharePodInfo{podInfos: podinfos}
+		sharepodinfo = SharePodInfo{podInfos: make(map[string]PodInfo), lock: sync.RWMutex{}}
 		(*l.shareInfos)[funcname] = sharepodinfo
+		klog.Infof("Info of Sharepod %s initialized...", funcname)
 	} else {
 		if &sharepodinfo.podInfos == nil {
 			sharepodinfo.podInfos = make(map[string]PodInfo)
