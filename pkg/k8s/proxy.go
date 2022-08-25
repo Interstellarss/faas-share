@@ -7,6 +7,8 @@ package k8s
 import (
 	"errors"
 	"fmt"
+	"github.com/Interstellarss/faas-share/pkg/devicemanager"
+	v1 "k8s.io/api/core/v1"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"sort"
 	"time"
@@ -26,7 +28,8 @@ import (
 const watchdogPort = 8080
 
 type PodsWithInfos struct {
-	Pods     []PodInfo
+	//Pods     []PodInfo
+	Pods     []*v1.Pod
 	podInfos map[string]PodInfo
 
 	Now metav1.Time
@@ -41,18 +44,21 @@ func (s PodsWithInfos) Swap(i, j int) {
 }
 
 func (s PodsWithInfos) Less(i, j int) bool {
-	name_i := s.Pods[i].podName
+	name_i := s.Pods[i].Name
 
-	name_j := s.Pods[j].podName
+	name_j := s.Pods[j].Name
 
-	//if the ip is unsigned then the unsigned one is smaller
-	if s.Pods[i].podName != s.Pods[j].podName {
-		return len((s.podInfos[name_i]).podIp) == 0
+	//if a pod is unsigned, then the unsigned one is smaller
+	if s.Pods[i].Spec.NodeName != s.Pods[j].Spec.NodeName && (len(s.Pods[i].Spec.NodeName) == 0 || len(s.Pods[j].Spec.NodeName) == 0) {
+		return len(s.Pods[i].Spec.NodeName) == 0
 	}
 
 	//rate smaller < larger rate
-	return (s.podInfos[name_i]).rate < (s.podInfos[name_j]).rate
+	if s.podInfos[name_i].rateChange == s.podInfos[name_j].rateChange {
+		return s.podInfos[name_i].rate < s.podInfos[name_j].rate
+	}
 
+	return s.podInfos[name_i].rateChange < s.podInfos[name_j].rateChange
 }
 
 func NewFunctionLookup(ns string, podLister corelister.PodLister, faasLister faas.SharePodLister, sharepodInfos *map[string]SharePodInfo) *FunctionLookup {
@@ -131,34 +137,44 @@ func (l *FunctionLookup) Resolve(name string) (url.URL, string, error) {
 
 	//sharepod, err := c.sharepodsLister.SharePods(namespace).Get(name)
 
-	//pods, err := l.podLister.Pods(namespace).List(selector)
+	pods, err := l.podLister.Pods(namespace).List(selector)
+
+	filteredPods := devicemanager.FilterActivePods(pods)
+
 	pInfos := ((*l.shareInfos)[functionName]).podInfos
 
-	pods := make([]PodInfo, len(pInfos))
+	//pods := make([]PodInfo, len(pInfos))
+	/*
+		for _, v := range pInfos {
+			pods = append(pods, v)
+		}
 
-	for _, v := range pInfos {
-		pods = append(pods, v)
-	}
+		if err != nil {
+			return url.URL{}, "", err
+		}
+		//pods[0].Status.PodIP
 
-	if err != nil {
-		return url.URL{}, "", err
-	}
-	//pods[0].Status.PodIP
+		//podsWithRanks :=
 
-	//podsWithRanks :=
+		infos := PodsWithInfos{
+			Pods:     pods,
+			podInfos: pInfos,
+			Now:      metav1.Now(),
+		}
+	*/
 
-	infos := PodsWithInfos{
-		Pods:     pods,
+	podsWithinfo := PodsWithInfos{
+		Pods:     filteredPods,
 		podInfos: pInfos,
 		Now:      metav1.Now(),
 	}
 
-	sort.Sort(infos)
+	sort.Sort(podsWithinfo)
 
-	podName := pods[0].podName
-	serviceIP := pods[0].podIp
+	podName := pods[0].Name
+	serviceIP := pods[0].Status.PodIP
 
-	klog.Infof("picking pod %s out of sharpeod %s with pod IP %s", pods[0].podName, pods[0].serviceName, pods[0].podIp)
+	klog.Infof("picking pod %s out of sharpeod %s with pod IP %s", podName, pInfos[podName].serviceName, serviceIP)
 	//pods[0].Status.ContainerStatuses[0].ContainerID
 	/*
 		nsEndpointLister := l.GetLister(namespace)
@@ -199,6 +215,7 @@ func (l *FunctionLookup) Resolve(name string) (url.URL, string, error) {
 }
 
 func (l *FunctionLookup) DeleteFunction(name string) {
+	//l.lock
 	delete(*l.shareInfos, name)
 	return
 }
@@ -233,7 +250,17 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 
 	podInfo.totalInvoke++
 
+	oldRate := podInfo.rate
+
 	podInfo.rate = float32(1000 / podInfo.avgResponseTime.Milliseconds())
+
+	if oldRate < podInfo.rate {
+		podInfo.rateChange = ChangeType(Inc)
+	} else if oldRate > podInfo.rate {
+		podInfo.rateChange = ChangeType(Dec)
+	} else {
+		podInfo.rateChange = ChangeType(Sta)
+	}
 
 	sharepodInfo.podInfos[podName] = podInfo
 

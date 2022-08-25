@@ -262,7 +262,7 @@ func IsPodActive(p *v1.Pod) bool {
 }
 
 func IsPodHot(p *v1.Pod) bool {
-	return p.Annotations[FaasShareWarm] == "false"
+	return p.Annotations[FaasShareWarm] != "true"
 }
 
 //do we really need this?
