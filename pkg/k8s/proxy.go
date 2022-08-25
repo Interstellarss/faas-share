@@ -27,7 +27,7 @@ const watchdogPort = 8080
 
 type PodsWithInfos struct {
 	Pods     []PodInfo
-	podInfos map[string]*PodInfo
+	podInfos map[string]PodInfo
 
 	Now metav1.Time
 }
@@ -47,15 +47,15 @@ func (s PodsWithInfos) Less(i, j int) bool {
 
 	//if the ip is unsigned then the unsigned one is smaller
 	if s.Pods[i].podName != s.Pods[j].podName {
-		return len((*s.podInfos[name_i]).podIp) == 0
+		return len((s.podInfos[name_i]).podIp) == 0
 	}
 
 	//rate smaller < larger rate
-	return (*s.podInfos[name_i]).rate < (*s.podInfos[name_j]).rate
+	return (s.podInfos[name_i]).rate < (s.podInfos[name_j]).rate
 
 }
 
-func NewFunctionLookup(ns string, podLister corelister.PodLister, faasLister faas.SharePodLister, sharepodInfos *map[string]*SharePodInfo) *FunctionLookup {
+func NewFunctionLookup(ns string, podLister corelister.PodLister, faasLister faas.SharePodLister, sharepodInfos *map[string]SharePodInfo) *FunctionLookup {
 	return &FunctionLookup{
 		DefaultNamespace: ns,
 		//EndpointLister:   lister,
@@ -75,7 +75,7 @@ type FunctionLookup struct {
 	podLister  corelister.PodLister
 	Listers    map[string]shareLister
 
-	shareInfos *map[string]*SharePodInfo
+	shareInfos *map[string]SharePodInfo
 	lock       sync.RWMutex
 }
 
@@ -132,12 +132,12 @@ func (l *FunctionLookup) Resolve(name string) (url.URL, string, error) {
 	//sharepod, err := c.sharepodsLister.SharePods(namespace).Get(name)
 
 	//pods, err := l.podLister.Pods(namespace).List(selector)
-	pInfos := *(*(*l.shareInfos)[functionName]).podInfos
+	pInfos := ((*l.shareInfos)[functionName]).podInfos
 
 	pods := make([]PodInfo, len(pInfos))
 
 	for _, v := range pInfos {
-		pods = append(pods, *v)
+		pods = append(pods, v)
 	}
 
 	if err != nil {
@@ -198,13 +198,18 @@ func (l *FunctionLookup) Resolve(name string) (url.URL, string, error) {
 	return *urlRes, podName, nil
 }
 
+func (l *FunctionLookup) deleteFunction(name string) {
+	delete(*l.shareInfos, name)
+	return
+}
+
 func (l *FunctionLookup) Update(duration time.Duration, functionName string, podName string) {
 	//podinfo := *((*l.shareInfos)[functionName])
 	var sharepodInfo SharePodInfo
-	sharepodInfo = *(*l.shareInfos)[functionName]
+	sharepodInfo = (*l.shareInfos)[functionName]
 
 	var podInfo PodInfo
-	podInfo = *(*sharepodInfo.podInfos)[podName]
+	podInfo = (sharepodInfo.podInfos)[podName]
 
 	//podInfo.totalInvoke++
 	//time.Duration()
@@ -216,19 +221,24 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 	podInfo.totalInvoke++
 
 	podInfo.rate = float32(1000 / podInfo.avgResponseTime.Milliseconds())
+
+	sharepodInfo.podInfos[podName] = podInfo
+
+	(*l.shareInfos)[functionName] = sharepodInfo
+	return
 }
 
 func (l *FunctionLookup) Insert(shrName string, podName string, podIp string) {
 	if sharepodInfo, ok := (*l.shareInfos)[shrName]; ok {
-		if podInfo, ok2 := (*sharepodInfo.podInfos)[podName]; ok2 {
+		if podInfo, ok2 := (sharepodInfo.podInfos)[podName]; ok2 {
 			if podInfo.podIp == "" {
 				podInfo.podIp = podIp
 			}
 		}
 	} else {
-		podinfos := make(map[string]*PodInfo)
-		podinfos[podName] = &PodInfo{podName: podName, podIp: podIp, serviceName: shrName, totalInvoke: 0, rate: 0}
-		(*l.shareInfos)[shrName] = &SharePodInfo{podInfos: &podinfos}
+		podinfos := make(map[string]PodInfo)
+		podinfos[podName] = PodInfo{podName: podName, podIp: podIp, serviceName: shrName, totalInvoke: 0, rate: 0}
+		(*l.shareInfos)[shrName] = SharePodInfo{podInfos: podinfos}
 		return
 	}
 }

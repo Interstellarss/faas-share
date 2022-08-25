@@ -481,6 +481,10 @@ func (c *Controller) handleDeletedSharePod(obj interface{}) {
 		return
 	}
 
+	//TODO: delete sharepod key
+
+	//c.resolver
+
 	namespace := sharepod.Namespace
 
 	name := sharepod.Name

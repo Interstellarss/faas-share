@@ -27,6 +27,7 @@ const (
 type BaseURLResolver interface {
 	Resolve(functionName string) (url.URL, string, error)
 	Update(duration time.Duration, functionName string, podName string)
+	deleteFunction(name string)
 }
 
 // NewHandlerFunc creates a standard http.HandlerFunc to proxy function requests.

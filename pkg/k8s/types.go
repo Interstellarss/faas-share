@@ -16,7 +16,7 @@ type PodInfo struct {
 }
 
 type SharePodInfo struct {
-	podInfos *map[string]*PodInfo
+	podInfos map[string]PodInfo
 }
 
 //may not defined here
