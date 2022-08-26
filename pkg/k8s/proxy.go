@@ -241,6 +241,20 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 	//podinfo := *((*l.shareInfos)[functionName])
 	//var sharepodInfo SharePodInfo
 	//sharepodInfo = (*l.shareInfos)[functionName]
+	//TODO:
+	if l.shareInfos[functionName] == nil {
+
+		podinfos := make(map[string]PodInfo)
+
+		podinfos[podName] = PodInfo{podName: podName, serviceName: functionName, avgResponseTime: duration, lastResponseTime: duration, rate: float32(1000 / duration.Milliseconds()), totalInvoke: 1, rateChange: Inc}
+
+		l.shareInfos[functionName] = &SharePodInfo{
+			podInfos: podinfos,
+			lock:     sync.RWMutex{},
+		}
+		klog.Infof("initializing, pod info %s", l.shareInfos[functionName].podInfos)
+		return
+	}
 
 	l.shareInfos[functionName].lock.Lock()
 	//test.lock.Lock()
