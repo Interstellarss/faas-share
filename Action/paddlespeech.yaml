@@ -1,0 +1,21 @@
+apiVersion: faasshare.tum/v1
+kind: SharePod
+metadata:
+  name: paddlespeech
+  namespace: faas-share-fn
+  labels:
+    #"com.openfaas.scale.min": "1"
+    "com.openfaas.scale.max": "5"
+  annotations:
+    "kubeshare/gpu_request": "0.2"
+    "kubeshare/gpu_limit": "0.5"
+    "kubeshare/gpu_mem": "1572864000" 
+    # 1500 Mb = 1572864000 Byte
+spec:
+  replicas: 3
+  podSpec:
+    terminationGracePeriodSeconds: 1
+    containers:
+      - name: paddlespeech
+        image: yukiozhu/paddlespeech:model-included 
+        command: [ "sh", "-c", "fwatchdog" ]

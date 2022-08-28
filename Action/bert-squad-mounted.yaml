@@ -1,0 +1,40 @@
+apiVersion: faasshare.tum/v1
+kind: SharePod
+metadata:
+  name: bert-squad-mounted
+  namespace: faas-share-fn
+  labels:
+    #"com.openfaas.scale.min": "1"
+    "com.openfaas.scale.max": "5"
+  annotations:
+    "kubeshare/gpu_request": "0.1"
+    "kubeshare/gpu_limit": "0.2"
+    "kubeshare/gpu_mem": "3145728000"
+spec:
+  replicas: 1
+  podSpec:
+    terminationGracePeriodSeconds: 1
+    initContainers:
+      - name: bert-squad-init
+        image: yukiozhu/bert_squad:model-init
+        volumeMounts:
+          - name: "bert-squad-model"
+            mountPath: "/workspace/bert/chekpoints"
+          - name: "bert-squad-datasets"
+            mountPath: "/workspace/bert/data/download/google_pretrained_weights"
+    containers:
+      - name: bert-squad-mounted
+        image: yukiozhu/bert_squad:model-excluded
+        command: [ "fwatchdog" ]
+        volumeMounts:
+          - name: "bert-squad-model"
+            mountPath: "/workspace/bert/checkpoints"
+          - name: "bert-squad-datasets"
+            mountPath: "/workspace/bert/data/download/google_pretrained_weights"
+    volumes:
+      - name: "bert-squad-datasets"
+        hostPath:
+          path: "/model/bert_squad/datasets"
+      - name: "bert-squad-model"
+        hostPath:
+          path: "/model/bert_squad/model"
