@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"strings"
 	"sync"
+	"syscall"
 	"time"
 
 	corev1 "k8s.io/api/core/v1"
@@ -45,6 +46,10 @@ import (
 	apierrors "k8s.io/apimachinery/pkg/api/errors"
 	//"k8s.io/kubernetes/pkg/controller"
 	k8scontroller "k8s.io/kubernetes/pkg/controller"
+
+	"github.com/containerd/containerd"
+	//"github.com/containerd/containerd/namespaces"
+	"github.com/containerd/containerd/cio"
 )
 
 const controllerAgentName = "kubeshare-controller"
@@ -119,6 +124,7 @@ type Controller struct {
 
 	//needed?
 	//factory
+	containerdClient *containerd.Client
 }
 
 // NewController returns a new sample controller
@@ -127,6 +133,7 @@ func NewController(
 	kubeshareclient clientset.Interface,
 	nodeInformer coreinformers.NodeInformer,
 	podInformer coreinformers.PodInformer,
+	//containerdClient *containerd.Client,
 	kubeshareInformer informers.SharePodInformer) *Controller {
 
 	// Create event broadcaster
@@ -136,6 +143,7 @@ func NewController(
 	klog.V(4).Info("Creating event broadcaster")
 	eventBroadcaster := record.NewBroadcaster()
 	eventBroadcaster.StartLogging(klog.Infof)
+
 	eventBroadcaster.StartRecordingToSink(&typedcorev1.EventSinkImpl{Interface: kubeclient.CoreV1().Events("")})
 	recorder := eventBroadcaster.NewRecorder(scheme.Scheme, corev1.EventSource{Component: controllerAgentName})
 
@@ -165,6 +173,7 @@ func NewController(
 		//podControl:   podcontrol,
 		workqueue: workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "SharePods"),
 		recorder:  recorder,
+		//containerdClient: containerd.Client,
 	}
 
 	klog.Info("Setting up event handlers")
@@ -704,6 +713,7 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 
 			if len(gpupod.Status.Node2Id) == 0 {
 				schedNode, schedGPUID = c.schedule(gpupod, gpu_request, gpu_limit, gpu_mem, isGPUPod, key)
+
 				gpupod.Status.Node2Id = append(gpupod.Status.Node2Id, faasv1.Scheded{Node: schedNode, GPU: schedGPUID})
 			} else {
 				schedNode = gpupod.Status.Node2Id[len(gpupod.Status.Node2Id)-1].Node
@@ -817,7 +827,19 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 
 		podsToDelete = podsToDelete[:diff-1]
 
-		diff--
+		//diff--
+
+		podInPools := podsToDelete[len(podsToDelete)-1].DeepCopy()
+
+		//podInPools.Status.Phase = corev1.PodUnknown
+
+		containerId := podInPools.Status.ContainerStatuses[0].ContainerID
+
+		klog.Infof("ContainerID for the warm container: %s", containerId)
+
+		//con, err := c.containerdClient.LoadContainer(ctx.Done(), containerId)
+
+		//con.
 
 		c.expectations.ExpectDeletions(key, getPodKeys(podsToDelete))
 
@@ -877,7 +899,7 @@ func slowStartbatch(count int, initailBatchSize int, fn func() (*corev1.Pod, err
 		var wg sync.WaitGroup
 		wg.Add(batchSize)
 		for i := 0; i < batchSize; i++ {
-			go func() {
+			func() {
 				defer wg.Done()
 				if pod, err := fn(); err != nil {
 					if err.Error() != "Wait4Dummy" {
@@ -1075,4 +1097,17 @@ func (c *Controller) resourceChanged(obj interface{}) {
 	}
 	c.pendingList.Init()
 	c.pendingListMux.Unlock()
+}
+
+func (c *Controller) stopContainer(ID string, pod *corev1.Pod) {
+	container, err := c.containerdClient.LoadContainer(context.Background(), ID)
+	if err != nil {
+
+	}
+
+	stopTask, err := container.NewTask(context.TODO(), cio.NewCreator(cio.WithStdio))
+
+	//TODO:kill a running container
+	stopTask.Kill(context.TODO(), syscall.DLT_ATM_CLIP)
+
 }

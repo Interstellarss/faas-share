@@ -8,7 +8,7 @@ make all --print-data-base --no-builtin-variables --no-builtin-rules --question
 # This program built for i386-apple-darwin11.3.0
  
 
-# Make data base, printed on Thu Aug 25 17:35:19 2022
+# Make data base, printed on Sun Aug 28 22:29:11 2022
 
 # Variables
 
@@ -27,6 +27,7 @@ TARGET = kubeshare-scheduler kubeshare-device-manager kubeshare-config-client
 # automatic
 @F = $(notdir $@)
 # makefile
+ 
 CURDIR := /Users/puxuan/go/src/github.com/Interstellarss/faas-share
 # makefile
 SHELL = /bin/sh
@@ -39,7 +40,7 @@ _ = /usr/bin/make
 # environment
 TIGRESS_HOME = /Users/puxuan/downloads/tigress/3.1
 # makefile (from `Makefile', line 27)
-GIT_COMMIT := f78f3f21c614a63d982c52d7b4a9c51369df773d
+GIT_COMMIT := 9734ee56639669125a3eb48d7876b37a408c0324
 # makefile (from `Makefile', line 1)
 MAKEFILE_LIST :=  Makefile
 # environment
@@ -69,7 +70,7 @@ ELECTRON_RUN_AS_NODE = 1
 # makefile (from `Makefile', line 12)
 TAG = v0.1.22
 # environment
-SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.02W9BkLXzJ/Listeners
+SSH_AUTH_SOCK = /private/tmp/com.apple.launchd.LRNwklzWNE/Listeners
 # automatic
 %F = $(notdir $%)
 # environment
@@ -185,7 +186,7 @@ MAKELEVEL := 0
 # environment
 CONDA_PREFIX = /Users/puxuan/opt/anaconda3
 # environment
-VSCODE_PID = 5461
+VSCODE_PID = 4424
 # environment
 _CE_CONDA = 
 # environment
@@ -195,11 +196,12 @@ LANG = C
 
 # Pattern-specific Variable Values
 
+ 
 # No pattern-specific variable values.
 
 # Directories
 
-# . (device 16777223, inode 52289305): 38 files, no impossibilities.
+# . (device 16777224, inode 52289305): 38 files, no impossibilities.
 
 # 38 files, no impossibilities in 1 directories.
 
@@ -288,7 +290,6 @@ render-charts:
 #  Implicit rule search has not been done.
 #  File does not exist.
 #  File has not been updated.
- 
 #  commands to execute (from `Makefile', line 93):
 	./contrib/create-static-manifest.sh
 	./contrib/create-static-manifest.sh ./chart/faas-share ./yaml_arm64 ./chart/faas-share/values-arm64.yaml
@@ -358,6 +359,7 @@ start-kind:
 #  File has not been updated.
 #  commands to execute (from `Makefile', line 36):
 	@echo "(re)installing k8s.io/code-generator-${CODEGEN_VERSION}"
+ 
 	@cd $(TOOLS_DIR) && go mod download -modfile=code-generator.mod
 	
 
@@ -495,6 +497,6 @@ install:
 # strcache size: total = 4096 / max = 4096 / min = 4096 / avg = 4096
 # strcache free: total = 4087 / max = 4087 / min = 4087 / avg = 4087
 
-# Finished Make data base on Thu Aug 25 17:35:19 2022
+# Finished Make data base on Sun Aug 28 22:29:11 2022
 
  
