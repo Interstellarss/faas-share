@@ -133,7 +133,7 @@ func NewController(
 	kubeshareclient clientset.Interface,
 	nodeInformer coreinformers.NodeInformer,
 	podInformer coreinformers.PodInformer,
-//containerdClient *containerd.Client,
+	//containerdClient *containerd.Client,
 	kubeshareInformer informers.SharePodInformer) *Controller {
 
 	// Create event broadcaster
