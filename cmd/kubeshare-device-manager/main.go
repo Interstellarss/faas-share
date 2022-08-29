@@ -19,7 +19,6 @@ package main
 import (
 	"context"
 	"flag"
-	"github.com/containerd/containerd"
 	"os"
 	"time"
 
@@ -78,16 +77,16 @@ func main() {
 	kubeshareInformerFactory := informers.NewSharedInformerFactory(kubeshareClient, time.Second*30)
 
 	//start client for containerd
-	client, err := containerd.New("/run/containerd/containerd.sock")
-	if err != nil {
-		klog.Fatalf("Error connecting containerd sock...")
-	}
-	defer client.Close()
+	//client, err := containerd.New("/run/containerd/containerd.sock")
+	//if err != nil {
+	//	klog.Fatalf("Error connecting containerd sock...")
+	//}
+	//defer client.Close()
 
 	controller := kubesharecontroller.NewController(kubeClient, kubeshareClient,
 		kubeInformerFactory.Core().V1().Nodes(),
 		kubeInformerFactory.Core().V1().Pods(),
-		client,
+		//client,
 		kubeshareInformerFactory.Kubeshare().V1().SharePods())
 
 	// notice that there is no need to run Start methods in a separate goroutine. (i.e. go kubeInformerFactory.Start(stopCh)
