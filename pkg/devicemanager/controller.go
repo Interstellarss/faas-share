@@ -133,7 +133,7 @@ func NewController(
 	kubeshareclient clientset.Interface,
 	nodeInformer coreinformers.NodeInformer,
 	podInformer coreinformers.PodInformer,
-	//containerdClient *containerd.Client,
+//containerdClient *containerd.Client,
 	kubeshareInformer informers.SharePodInformer) *Controller {
 
 	// Create event broadcaster
@@ -1028,6 +1028,7 @@ func newPod(shrpod *faasv1.SharePod, isWarm bool, podManagerIP string, podManage
 			Labels:      labelCopy,
 		},
 		Spec: corev1.PodSpec{
+			NodeName:   scheNode,
 			Containers: specCopy.Containers,
 			Volumes:    specCopy.Volumes,
 			//InitContainers: []corev1.Container{},
