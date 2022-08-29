@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"strings"
 	"sync"
-	"syscall"
 	"time"
 
 	corev1 "k8s.io/api/core/v1"
@@ -48,8 +47,6 @@ import (
 	k8scontroller "k8s.io/kubernetes/pkg/controller"
 
 	"github.com/containerd/containerd"
-	//"github.com/containerd/containerd/namespaces"
-	"github.com/containerd/containerd/cio"
 )
 
 const controllerAgentName = "kubeshare-controller"
@@ -1101,14 +1098,13 @@ func (c *Controller) resourceChanged(obj interface{}) {
 }
 
 func (c *Controller) stopContainer(ID string, pod *corev1.Pod) {
-	container, err := c.containerdClient.LoadContainer(context.Background(), ID)
-	if err != nil {
+	//container, err := c.containerdClient.LoadContainer(context.Background(), ID)
+	//if err != nil {
+	//}
 
-	}
-
-	stopTask, err := container.NewTask(context.TODO(), cio.NewCreator(cio.WithStdio))
+	//stopTask, err := container.NewTask(context.TODO(), cio.NewCreator(cio.WithStdio))
 
 	//TODO:kill a running container
-	stopTask.Kill(context.TODO(), syscall.DLT_ATM_CLIP)
+	//stopTask.Kill(context.TODO(), syscall.DLT_ATM_CLIP)
 
 }
