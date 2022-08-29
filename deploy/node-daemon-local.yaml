@@ -44,9 +44,6 @@ spec:
           mountPath: "/kubeshare/scheduler"
         - name: "kubeshare-library"
           mountPath: "/kubeshare/library"
-        volumeMounts:
-        - name: "kubeshare-scheduler"
-          mountPath: "/kubeshare/scheduler"
       volumes:
       - name: "kubeshare-scheduler"
         hostPath:

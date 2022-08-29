@@ -39,7 +39,7 @@ func Run(server string) {
 		klog.Fatalf("Error when get hostname!")
 		panic(err)
 	}
-
+	klog.Infof("dialing ip: %s", server)
 	conn, err := net.Dial("tcp", server)
 	if err != nil {
 		klog.Fatalf("Error when connect to manager: %s", err)
