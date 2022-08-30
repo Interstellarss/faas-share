@@ -12,6 +12,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/openfaas/faas-provider/httputil"
 	"github.com/openfaas/faas-provider/types"
+
+	"strings"
 )
 
 const (
@@ -123,6 +125,9 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 		httputil.Errorf(w, http.StatusBadRequest, "Provide function name in the request path")
 		return
 	}
+	suffix := strings.Split(originalReq.Host, "/")[5]
+
+	log.Printf("request suffix with: %s", suffix)
 
 	functionAddr, podName, resolveErr := resolver.Resolve(functionName)
 	if resolveErr != nil {

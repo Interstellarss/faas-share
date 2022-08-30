@@ -5,6 +5,7 @@ import (
 	"math"
 	"sort"
 	"strconv"
+	"time"
 
 	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/faasshare/v1"
 
@@ -22,6 +23,8 @@ import (
 
 	clientset "k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/tools/record"
+
+	"math/rand"
 )
 
 const (
@@ -379,4 +382,15 @@ func makeLabels(sharepod *faasv1.SharePod) map[string]string {
 	}
 
 	return labels
+}
+
+func RandStr(length int) string {
+	str := "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	bytes := []byte(str)
+	result := []byte{}
+	rand.Seed(time.Now().UnixNano() + int64(rand.Intn(100)))
+	for i := 0; i < length; i++ {
+		result = append(result, bytes[rand.Intn(len(bytes))])
+	}
+	return string(result)
 }

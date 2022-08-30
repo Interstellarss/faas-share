@@ -143,6 +143,8 @@ spec:
           value: "false"
         {{- end }}
         {{- end }}
+        - name: write_request_uri
+          value: "true"
         - name: scale_from_zero
           value: "{{ .Values.gateway.scaleFromZero }}"
         - name: max_idle_conns
