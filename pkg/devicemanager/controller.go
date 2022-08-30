@@ -763,7 +763,7 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 					klog.Infof("SharePod %s is bound to GPU uuid: %s", key, physicalGPUuuid)
 					//delete the last element
 					podNamePool[shrCopy.Name].Remove(podNamePool[shrCopy.Name].Back())
-					podNamePoolMux.Unlock()
+					//podNamePoolMux.Unlock()
 				case 1:
 					klog.Infof("SharePod %s/%s is waiting for dummy Pod", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name)
 					//
@@ -808,6 +808,8 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 				(*gpupod.Status.Usage)[schedGPUID] = faasv1.SharepodUsage{GPU: gpu_request, TotalMemoryBytes: float64(gpu_mem) / 8}
 
 				(*shrCopy.Status.PodManagerPort)[newPod.Name] = physicalGPUport
+
+				//podNamePoolMux.Unlock()
 				return newPod, err
 			}
 			return nil, nil
