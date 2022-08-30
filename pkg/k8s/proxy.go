@@ -203,8 +203,12 @@ func (l *FunctionLookup) Resolve(name string, suffix string) (url.URL, string, e
 
 		serviceIP := svc.Subsets[0].Addresses[target].IP
 	*/
-
-	urlStr := fmt.Sprintf("http://%s:%d/%s", serviceIP, watchdogPort, suffix)
+	var urlStr string
+	if suffix == "" {
+		urlStr = fmt.Sprintf("http://%s:%d", serviceIP, watchdogPort)
+	} else {
+		urlStr = fmt.Sprintf("http://%s:%d/%s", serviceIP, watchdogPort, suffix)
+	}
 
 	urlRes, err := url.Parse(urlStr)
 	if err != nil {
