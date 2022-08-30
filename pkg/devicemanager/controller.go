@@ -130,7 +130,7 @@ func NewController(
 	kubeshareclient clientset.Interface,
 	nodeInformer coreinformers.NodeInformer,
 	podInformer coreinformers.PodInformer,
-	//containerdClient *containerd.Client,
+//containerdClient *containerd.Client,
 	kubeshareInformer informers.SharePodInformer) *Controller {
 
 	// Create event broadcaster
@@ -586,6 +586,9 @@ func (c *Controller) handleObject(obj interface{}) {
 }
 
 func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.Pod, gpupod *faasv1.SharePod, key string) error {
+	podNamePoolMux.Lock()
+	defer podNamePoolMux.Unlock()
+
 	diff := len(filteredPods) - int(*(gpupod.Spec.Replicas))
 
 	shrKey, err := KeyFunc(gpupod)
@@ -738,8 +741,8 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 			var podKey string
 			if isGPUPod {
 				var errCode int
-				podNamePoolMux.Lock()
-				defer podNamePoolMux.Unlock()
+				//podNamePoolMux.Lock()
+				//defer podNamePoolMux.Unlock()
 				if podNamePool[shrCopy.Name] != nil {
 					if podNamePool[shrCopy.Name].Len() == 0 {
 						newpodName := shrCopy.Name + "-" + RandStr(5)
@@ -797,7 +800,7 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 					if apierrors.HasStatusCause(err, corev1.NamespaceTerminatingCause) {
 						return nil, nil
 					}
-					podNamePoolMux.Unlock()
+					//podNamePoolMux.Unlock()
 					return nil, err //
 				}
 				//remove the last element
