@@ -124,9 +124,10 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 		httputil.Errorf(w, http.StatusBadRequest, "Provide function name in the request path")
 		return
 	}
-	//log.Printf("originalReq Host: %s", originalReq.U)
+	log.Printf("originalReq Host: %s", originalReq.URL.String())
 	slice := strings.Split(originalReq.URL.String(), "/")
 	suffix := ""
+	log.Printf("after slice: %s", slice)
 	if len(slice) > 5 {
 		suffix = strings.Split(originalReq.URL.String(), "/")[5]
 	}
