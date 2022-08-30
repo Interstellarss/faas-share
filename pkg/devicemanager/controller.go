@@ -734,13 +734,36 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 			//error management check if node is nil
 
 			//boundDeviceId :=
+			var subpodName string
+			var podKey string
 			if isGPUPod {
 				var errCode int
-				physicalGPUuuid, errCode = c.getPhysicalGPUuuid(schedNode, schedGPUID, gpu_request, gpu_limit, gpu_mem, key, &physicalGPUport)
+				podNamePoolMux.Lock()
+				defer podNamePoolMux.Unlock()
+				if podNamePool[shrCopy.Name] != nil {
+					if podNamePool[shrCopy.Name].Len() == 0 {
+						newpodName := shrCopy.Name + "-" + RandStr(5)
+						podNamePool[shrCopy.Name].PushBack(newpodName)
+						subpodName = newpodName
+					} else {
+						subpodName = podNamePool[shrCopy.Name].Back().Value.(string)
+					}
+				} else {
+					podNamePool[shrCopy.Name] = list.New()
+					newpodName := shrCopy.Name + "-" + RandStr(5)
+					podNamePool[shrCopy.Name].PushBack(newpodName)
+					subpodName = newpodName
+				}
+				podKey = fmt.Sprintf("%s/%s", shrCopy.ObjectMeta.Namespace, subpodName)
+
+				physicalGPUuuid, errCode = c.getPhysicalGPUuuid(schedNode, schedGPUID, gpu_request, gpu_limit, gpu_mem, podKey, &physicalGPUport)
 				klog.Infof("Pod of Sharepod %v/%v with vGPU port: %d", shrCopy.Namespace, shrCopy.Name, physicalGPUport)
 				switch errCode {
 				case 0:
 					klog.Infof("SharePod %s is bound to GPU uuid: %s", key, physicalGPUuuid)
+					//delete the last element
+					podNamePool[shrCopy.Name].Remove(podNamePool[shrCopy.Name].Back())
+					podNamePoolMux.Unlock()
 				case 1:
 					klog.Infof("SharePod %s/%s is waiting for dummy Pod", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name)
 					//
@@ -768,7 +791,7 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 
 			if n, ok := nodesInfo[schedNode]; ok {
 				klog.Infof("TESTING: Starting to create new pod of sharepod %v/%v in batch", gpupod.Namespace, gpupod.Name)
-				newPod, err := c.kubeclient.CoreV1().Pods(shrCopy.Namespace).Create(context.TODO(), newPod(gpupod, false, n.PodIP, physicalGPUport, physicalGPUuuid, schedNode, schedGPUID), metav1.CreateOptions{})
+				newPod, err := c.kubeclient.CoreV1().Pods(shrCopy.Namespace).Create(context.TODO(), newPod(gpupod, false, n.PodIP, physicalGPUport, physicalGPUuuid, schedNode, schedGPUID, subpodName), metav1.CreateOptions{})
 				if err != nil {
 					klog.Errorf("error creating pod of Sharepod %v/%v", gpupod.Namespace, gpupod.Name)
 					if apierrors.HasStatusCause(err, corev1.NamespaceTerminatingCause) {
@@ -930,7 +953,7 @@ func slowStartbatch(count int, initailBatchSize int, fn func() (*corev1.Pod, err
 // newDeployment creates a new Deployment for a SharePod resource. It also sets
 // the appropriate OwnerReferences on the resource so handleObject can discover
 // the SharePod resource that 'owns' it.
-func newPod(shrpod *faasv1.SharePod, isWarm bool, podManagerIP string, podManagerPort int, boundDeviceId string, scheNode string, scheGPUID string) *corev1.Pod {
+func newPod(shrpod *faasv1.SharePod, isWarm bool, podManagerIP string, podManagerPort int, boundDeviceId string, scheNode string, scheGPUID string, podName string) *corev1.Pod {
 	specCopy := shrpod.Spec.PodSpec.DeepCopy()
 
 	//scheNode, scheGPUID := c.schedule(shrpod)
@@ -1012,8 +1035,9 @@ func newPod(shrpod *faasv1.SharePod, isWarm bool, podManagerIP string, podManage
 	return &corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			//TODO: here
-			GenerateName: shrpod.Name + "-",
-			Namespace:    shrpod.ObjectMeta.Namespace,
+			//GenerateName: shrpod.Name + "-",
+			Name:      podName,
+			Namespace: shrpod.ObjectMeta.Namespace,
 			OwnerReferences: []metav1.OwnerReference{
 				*metav1.NewControllerRef(shrpod, schema.GroupVersionKind{
 					Group:   faasv1.SchemeGroupVersion.Group,

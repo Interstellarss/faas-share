@@ -55,7 +55,21 @@ type NodeInfo struct {
 var (
 	nodesInfo    map[string]*NodeInfo = make(map[string]*NodeInfo)
 	nodesInfoMux sync.Mutex
+
+	podNamePool map[string]*list.List = make(map[string]*list.List)
+	//is this useful?
+	podNamePoolMux sync.Mutex
+
+	schedNodePool map[string]*list.List = make(map[string]*list.List)
+
+	schedNodePoolMux sync.Mutex
 )
+
+//TODO here to extend to new Struct for multil access for different sharepod
+type NameList struct {
+	namelist *list.List
+	listMux  sync.Mutex
+}
 
 func (c *Controller) initNodesInfo() error {
 	//TODO: need new InitnodeInfo for faas-share that go through
