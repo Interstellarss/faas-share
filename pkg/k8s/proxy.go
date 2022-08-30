@@ -274,9 +274,9 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 
 		podInfo.rate = float32(1000 / podInfo.avgResponseTime.Milliseconds())
 
-		if oldRate < podInfo.rate {
+		if podInfo.rate/oldRate > 1.1 {
 			podInfo.rateChange = ChangeType(Inc)
-		} else if oldRate > podInfo.rate {
+		} else if podInfo.rate/oldRate < 0.9 {
 			podInfo.rateChange = ChangeType(Dec)
 		} else {
 			podInfo.rateChange = ChangeType(Sta)
@@ -292,7 +292,18 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 		//return
 	}
 
-	return
+	newReplica := true
+
+	for _, podinfo := range l.shareInfos[functionName].podInfos {
+		if podinfo.rateChange == Inc || podinfo.rateChange == Sta {
+			newReplica = false
+		}
+	}
+	if newReplica {
+
+	}
+
+	//return
 	//var testPod *PodInfo = (*l.shareInfos)[functionName].podInfos[podName]
 	//return
 }
