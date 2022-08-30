@@ -26,7 +26,7 @@ const (
 // BaseURLResolver.Resolve will receive the function name and should return the URL of the
 // function service.
 type BaseURLResolver interface {
-	Resolve(functionName string) (url.URL, string, error)
+	Resolve(functionName string, suffix string) (url.URL, string, error)
 	Update(duration time.Duration, functionName string, podName string)
 	deleteFunction(name string)
 }
@@ -124,16 +124,16 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 		httputil.Errorf(w, http.StatusBadRequest, "Provide function name in the request path")
 		return
 	}
-	log.Printf("originalReq Host: %s", originalReq.URL.String())
+	log.Printf("originalReq: %s", originalReq.URL.String())
 	slice := strings.Split(originalReq.URL.String(), "/")
 	suffix := ""
 	log.Printf("after slice: %s", slice)
-	if len(slice) > 5 {
-		suffix = strings.Split(originalReq.URL.String(), "/")[5]
+	if len(slice) > 3 {
+		suffix = slice[3]
 	}
 	log.Printf("request suffix with: %s", suffix)
 
-	functionAddr, podName, resolveErr := resolver.Resolve(functionName)
+	functionAddr, podName, resolveErr := resolver.Resolve(functionName, suffix)
 	if resolveErr != nil {
 		// TODO: Should record the 404/not found error in Prometheus.
 		log.Printf("resolver error: no endpoints for %s: %s\n", functionName, resolveErr.Error())

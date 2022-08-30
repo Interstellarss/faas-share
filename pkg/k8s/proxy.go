@@ -111,7 +111,7 @@ func getNamespace(name, defaultNamespace string) string {
 	return namespace
 }
 
-func (l *FunctionLookup) Resolve(name string) (url.URL, string, error) {
+func (l *FunctionLookup) Resolve(name string, suffix string) (url.URL, string, error) {
 	functionName := name
 	namespace := getNamespace(name, l.DefaultNamespace)
 	if err := l.verifyNamespace(namespace); err != nil {
@@ -204,7 +204,7 @@ func (l *FunctionLookup) Resolve(name string) (url.URL, string, error) {
 		serviceIP := svc.Subsets[0].Addresses[target].IP
 	*/
 
-	urlStr := fmt.Sprintf("http://%s:%d", serviceIP, watchdogPort)
+	urlStr := fmt.Sprintf("http://%s:%d/%s", serviceIP, watchdogPort, suffix)
 
 	urlRes, err := url.Parse(urlStr)
 	if err != nil {
