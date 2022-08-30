@@ -797,6 +797,7 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 					if apierrors.HasStatusCause(err, corev1.NamespaceTerminatingCause) {
 						return nil, nil
 					}
+					podNamePoolMux.Unlock()
 					return nil, err //
 				}
 				//remove the last element
@@ -1007,7 +1008,7 @@ func newPod(shrpod *faasv1.SharePod, isWarm bool, podManagerIP string, podManage
 			},
 			corev1.EnvVar{
 				Name:  "POD_NAME",
-				Value: fmt.Sprintf("%s/%s", shrpod.ObjectMeta.Namespace, shrpod.ObjectMeta.Name),
+				Value: fmt.Sprintf("%s/%s", shrpod.ObjectMeta.Namespace, podName),
 			},
 		)
 		c.VolumeMounts = append(c.VolumeMounts,
