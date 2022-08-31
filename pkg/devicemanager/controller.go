@@ -130,7 +130,7 @@ func NewController(
 	kubeshareclient clientset.Interface,
 	nodeInformer coreinformers.NodeInformer,
 	podInformer coreinformers.PodInformer,
-//containerdClient *containerd.Client,
+	//containerdClient *containerd.Client,
 	kubeshareInformer informers.SharePodInformer) *Controller {
 
 	// Create event broadcaster
@@ -841,27 +841,28 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 		//TODO
 		podsToDelete := getPodsToDelete(filteredPods, diff)
 
+		//Comment: delete logic for container pool
 		//podsToDelete[i] = podsToDelete[diff - 1]
 
-		warmpod := podsToDelete[diff-1]
+		//warmpod := podsToDelete[diff-1]
 
-		err := c.updateWarmpod(warmpod, "TRUE")
+		//err := c.updateWarmpod(warmpod, "TRUE")
 
-		if err != nil {
-			return err
-		}
+		//if err != nil {
+		//	return err
+		//}
 
-		podsToDelete = podsToDelete[:diff-1]
+		//podsToDelete = podsToDelete[:diff-1]
 
 		//diff--
 
-		podInPools := podsToDelete[len(podsToDelete)-1].DeepCopy()
+		//podInPools := podsToDelete[len(podsToDelete)-1].DeepCopy()
 
 		//podInPools.Status.Phase = corev1.PodUnknown
 
-		containerId := podInPools.Status.ContainerStatuses[0].ContainerID
+		//containerId := podInPools.Status.ContainerStatuses[0].ContainerID
 
-		klog.Infof("ContainerID for the warm container: %s", containerId)
+		//klog.Infof("ContainerID for the warm container: %s", containerId)
 
 		//con, err := c.containerdClient.LoadContainer(ctx.Done(), containerId)
 
