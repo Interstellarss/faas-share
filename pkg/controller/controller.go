@@ -5,11 +5,14 @@ import (
 	"fmt"
 	"github.com/Interstellarss/faas-share/pkg/devicemanager"
 	"github.com/Interstellarss/faas-share/pkg/k8s"
+	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/watch"
+	corelister "k8s.io/client-go/listers/core/v1"
 	"strconv"
 	"strings"
 	"time"
 
+	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -77,6 +80,10 @@ type Controller struct {
 	// Added as a member to the struct to allow injection for testing.
 	sharepodsSynced cache.InformerSynced
 
+	nodelister corelister.NodeLister
+
+	nodesSynced cache.InformerSynced
+
 	// workqueue is a rate limited work queue. This is used to queue work to be
 	// processed instead of performing it as soon as a change happens. This
 	// means we can ensure we only process a fixed amount of resources at a
@@ -127,6 +134,7 @@ func NewController(
 		workqueue:       workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "Sharepods"),
 		recorder:        recorder,
 		resolver:        resolver,
+		nodelister:      kubeInformerFactory.Core().V1().Nodes().Lister(),
 		factory:         factory,
 	}
 
@@ -386,6 +394,8 @@ func (c *Controller) addSHR(obj interface{}) {
 	//create the map for this sharepod/function
 	c.resolver.AddFunc(copy.Name)
 
+	nodeList, err := c.nodelister.List(labels.Everything())
+
 	/*
 		replica := getReplicas(copy)
 
@@ -400,15 +410,41 @@ func (c *Controller) addSHR(obj interface{}) {
 
 	//job, err := c.kubeclient.BatchV1().Jobs(namespace).Create()
 	if copy.Spec.PodSpec.InitContainers != nil {
-		_, err := c.kubeclient.CoreV1().Pods(namespace).Create(context.TODO(), newInitPod(copy), metav1.CreateOptions{})
 
-		if err != nil {
-			glog.Errorf("Error %v starting init container for sharepod %v/%v", err, namespace, name)
-			runtime.HandleError(err)
+		for _, node := range nodeList {
+			_, err := c.kubeclient.BatchV1().Jobs(namespace).Create(context.TODO(), newJob(node.Name, copy), metav1.CreateOptions{})
+
+			if err != nil {
+				glog.Errorf("Error %v starting init container for sharepod %v/%v", err, namespace, name)
+				runtime.HandleError(err)
+			}
 		}
+		//_, err := c.kubeclient.CoreV1().Pods(namespace).Create(context.TODO(), newInitPod(copy), metav1.CreateOptions{})
+
 	}
 
 	c.workqueue.AddRateLimited(key)
+}
+
+func newJob(node string, shrCopy *faasv1.SharePod) *batchv1.Job {
+	namePrefix := shrCopy.Name + "-init-"
+	return &batchv1.Job{
+		ObjectMeta: metav1.ObjectMeta{
+			GenerateName: namePrefix,
+			Namespace:    shrCopy.Namespace,
+		},
+		Spec: batchv1.JobSpec{
+			TTLSecondsAfterFinished: int32p(100),
+			Template: corev1.PodTemplateSpec{
+				Spec: corev1.PodSpec{
+					NodeName:      node,
+					Containers:    shrCopy.Spec.PodSpec.InitContainers,
+					Volumes:       shrCopy.Spec.PodSpec.Volumes,
+					RestartPolicy: corev1.RestartPolicyNever,
+				},
+			},
+		},
+	}
 }
 
 // handleObject will take any resource implementing metav1.Object and attempt
