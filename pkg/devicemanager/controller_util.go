@@ -385,7 +385,7 @@ func makeLabels(sharepod *faasv1.SharePod) map[string]string {
 }
 
 func RandStr(length int) string {
-	str := "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+	str := "0123456789abcdefghijklmnopqrstuvwxyz"
 	bytes := []byte(str)
 	result := []byte{}
 	rand.Seed(time.Now().UnixNano() + int64(rand.Intn(100)))
