@@ -119,7 +119,7 @@ func makeReplicaHandler(defaultNamespace string, kube clientset.Interface) http.
 		}
 
 		opts := metav1.GetOptions{}
-
+		//need to update here!
 		shr, err := kube.KubeshareV1().SharePods(lookupNamespace).Get(r.Context(), shrDepName, opts)
 		if err != nil {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -127,12 +127,23 @@ func makeReplicaHandler(defaultNamespace string, kube clientset.Interface) http.
 			klog.Errorf("Sharepod %s get error: %v", shrDepName, err)
 			return
 		}
+		shrCopy := shr.DeepCopy()
 
 		//what could done better here?
 
 		replica := shr.Spec.Replicas
 
 		klog.Infof("Current replica is %d", *replica)
+
+		shrCopy.Spec.Replicas = int32p(int32(req.Replicas))
+
+		updatedShr, err := kube.KubeshareV1().SharePods(lookupNamespace).Update(r.Context(), shrCopy, metav1.UpdateOptions{})
+		if err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			w.Write([]byte(err.Error()))
+			klog.Errorf("Sharepod %s update error %v", shrDepName, err)
+			return
+		}
 
 		//shrdep.Spec.Replicas = int32p(int32(req.Replicas))
 
@@ -145,9 +156,14 @@ func makeReplicaHandler(defaultNamespace string, kube clientset.Interface) http.
 				return
 			}
 		*/
+		if *updatedShr.Spec.Replicas == int32(req.Replicas) {
+			klog.Infof("Sharepod %s replica updated to %v", shrDepName, req.Replicas)
+			w.WriteHeader(http.StatusAccepted)
+		} else {
+			klog.Infof("Sharepod %s with replica %i failed updated to %v replicas", updatedShr.Name, *updatedShr.Spec.Replicas, req.Replicas)
+			w.WriteHeader(http.StatusInternalServerError)
+		}
 
-		klog.Infof("Sharepod %s replica updated to %v", shrDepName, req.Replicas)
-		w.WriteHeader(http.StatusAccepted)
 	}
 }
 

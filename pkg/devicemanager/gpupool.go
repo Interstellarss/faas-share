@@ -495,6 +495,7 @@ func (c *Controller) removeSharePodFromList(sharepod *faasshareV1.SharePod) {
 				podlist := gpu.PodList
 				for pod := podlist.Front(); pod != nil; pod = pod.Next() {
 					podRequest := pod.Value.(*PodRequest)
+					//TODO
 					if podRequest.Key == key {
 						klog.Infof("Remove MtgpuPod %s from list, remaining %d MtgpuPod(s).", key, podlist.Len())
 						podlist.Remove(pod)
