@@ -5,6 +5,10 @@ import (
 	"fmt"
 	"github.com/Interstellarss/faas-share/pkg/devicemanager"
 	"github.com/Interstellarss/faas-share/pkg/k8s"
+	batchv1 "k8s.io/api/batch/v1"
+	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/watch"
 	corelister "k8s.io/client-go/listers/core/v1"
@@ -12,10 +16,7 @@ import (
 	"strings"
 	"time"
 
-	batchv1 "k8s.io/api/batch/v1"
-	corev1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/errors"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 
 	//"k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/runtime"
@@ -185,6 +186,9 @@ func NewController(
 		},
 	})
 
+	kubeInformerFactory.Core().V1().Nodes().Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
+		//DeleteFunc: controller.resourceChanged,
+	})
 	//go controller.podWatch()
 	//kube
 
@@ -394,6 +398,9 @@ func (c *Controller) addSHR(obj interface{}) {
 	c.resolver.AddFunc(shr.Name)
 
 	nodeList, err := c.nodelister.List(labels.Everything())
+	if err != nil {
+		utilruntime.HandleError(err)
+	}
 	glog.Infof("NoeList: %i", len(nodeList))
 
 	/*
