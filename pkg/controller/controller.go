@@ -185,7 +185,7 @@ func NewController(
 		},
 	})
 
-	go controller.podWatch()
+	//go controller.podWatch()
 	//kube
 
 	return controller
@@ -368,7 +368,6 @@ func (c *Controller) syncHandler(key string) error {
 // passed resources of any type other than Function.
 func (c *Controller) addSHR(obj interface{}) {
 	//shr := obj.(*faasv1.SharePod)
-
 	var key string
 	var err error
 	if key, err = cache.MetaNamespaceKeyFunc(obj); err != nil {
@@ -387,7 +386,6 @@ func (c *Controller) addSHR(obj interface{}) {
 
 	if err != nil {
 		glog.Errorf("Error getting shr %v", name)
-
 	}
 	copy := shr.DeepCopy()
 
@@ -410,7 +408,7 @@ func (c *Controller) addSHR(obj interface{}) {
 
 	//job, err := c.kubeclient.BatchV1().Jobs(namespace).Create()
 	if copy.Spec.PodSpec.InitContainers != nil {
-
+		glog.Infof("Starting to create init container for Sharepod %s/%s", copy.Namespace, copy.Name)
 		for _, node := range nodeList {
 			_, err := c.kubeclient.BatchV1().Jobs(namespace).Create(context.TODO(), newJob(node.Name, copy), metav1.CreateOptions{})
 

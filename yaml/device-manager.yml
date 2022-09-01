@@ -91,7 +91,7 @@ spec:
         - name: "kubeshare-library"
           mountPath: "/kubeshare/library"
       - name: gemini-scheduler
-        image: yukiozhu/kubeshare-gemini-scheduler:debug
+        image: yukiozhu/kubeshare-gemini-scheduler:deletion-optimized-v1.0
         volumeMounts:
         - name: "kubeshare-scheduler"
           mountPath: "/kubeshare/scheduler"
