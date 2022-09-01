@@ -391,7 +391,7 @@ func (c *Controller) addSHR(obj interface{}) {
 	//copy := shr.DeepCopy()
 
 	//create the map for this sharepod/function
-	c.resolver.AddFunc(copy.Name)
+	c.resolver.AddFunc(shr.Name)
 
 	nodeList, err := c.nodelister.List(labels.Everything())
 
