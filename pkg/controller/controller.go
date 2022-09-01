@@ -382,6 +382,7 @@ func (c *Controller) addSHR(obj interface{}) {
 		//handle error
 		runtime.HandleError(err)
 	}
+	glog.Infof("SharePod %s/%s addes: ", namespace, name)
 	shr, err := c.faasclientset.KubeshareV1().SharePods(namespace).Get(context.TODO(), name, metav1.GetOptions{})
 
 	if err != nil {
