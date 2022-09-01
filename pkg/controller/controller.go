@@ -408,7 +408,7 @@ func (c *Controller) addSHR(obj interface{}) {
 	*/
 
 	//job, err := c.kubeclient.BatchV1().Jobs(namespace).Create()
-	if shr.Spec.PodSpec.InitContainers != nil {
+	if len(shr.Spec.PodSpec.InitContainers) > 0 {
 		glog.Infof("Starting to create init container for Sharepod %s/%s", shr.Namespace, shr.Name)
 		for _, node := range nodeList {
 			_, err := c.kubeclient.BatchV1().Jobs(namespace).Create(context.TODO(), newJob(node.Name, shr), metav1.CreateOptions{})
