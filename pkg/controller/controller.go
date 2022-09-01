@@ -5,18 +5,16 @@ import (
 	"fmt"
 	"github.com/Interstellarss/faas-share/pkg/devicemanager"
 	"github.com/Interstellarss/faas-share/pkg/k8s"
+	appsv1 "k8s.io/api/apps/v1"
 	batchv1 "k8s.io/api/batch/v1"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/errors"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/watch"
 	corelister "k8s.io/client-go/listers/core/v1"
 	"strconv"
 	"strings"
 	"time"
-
-	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 
 	//"k8s.io/apimachinery/pkg/util/runtime"
 	"k8s.io/apimachinery/pkg/util/runtime"
@@ -397,34 +395,33 @@ func (c *Controller) addSHR(obj interface{}) {
 	//create the map for this sharepod/function
 	c.resolver.AddFunc(shr.Name)
 
-	nodeList, err := c.nodelister.List(labels.Everything())
-	if err != nil {
-		utilruntime.HandleError(err)
-	}
-	glog.Infof("NoeList: %i", len(nodeList))
-
+	//nodeList, err := c.nodelister.List(labels.Everything())
 	/*
-		replica := getReplicas(copy)
-
-		copy.Spec.Replicas = replica
-
-		_, Err := c.faasclientset.KubeshareV1().SharePods(namespace).Update(context.TODO(), copy, metav1.UpdateOptions{})
-
-		if Err != nil {
-			runtime.HandleError(Err)
+		if err != nil {
+			utilruntime.HandleError(err)
 		}
+		glog.Infof("NoeList: %i", len(nodeList))
+			replica := getReplicas(copy)
+
+			copy.Spec.Replicas = replica
+
+			_, Err := c.faasclientset.KubeshareV1().SharePods(namespace).Update(context.TODO(), copy, metav1.UpdateOptions{})
+
+			if Err != nil {
+				runtime.HandleError(Err)
+			}
 	*/
 
 	//job, err := c.kubeclient.BatchV1().Jobs(namespace).Create()
 	if len(shr.Spec.PodSpec.InitContainers) > 0 {
 		glog.Infof("Starting to create init container for Sharepod %s/%s", shr.Namespace, shr.Name)
-		for _, node := range nodeList {
-			//_, err := c.kubeclient.BatchV1().Jobs(namespace).Create(context.TODO(), newJob(node.Name, shr), metav1.CreateOptions{})
-			_, err := c.kubeclient.CoreV1().Pods(namespace).Create(context.TODO(), newInitPod(shr, node.Name), metav1.CreateOptions{})
-			if err != nil {
-				glog.Errorf("Error %v starting init container for sharepod %v/%v", err, namespace, name)
-				runtime.HandleError(err)
-			}
+
+		//_, err := c.kubeclient.BatchV1().Jobs(namespace).Create(context.TODO(), newJob(node.Name, shr), metav1.CreateOptions{})
+		_, err := c.kubeclient.AppsV1().DaemonSets(namespace).Create(context.TODO(), newDaemonset(shr), metav1.CreateOptions{})
+		if err != nil {
+			glog.Errorf("Error %v starting init container for sharepod %v/%v", err, namespace, name)
+			runtime.HandleError(err)
+
 		}
 		//_, err := c.kubeclient.CoreV1().Pods(namespace).Create(context.TODO(), newInitPod(copy), metav1.CreateOptions{})
 
@@ -432,9 +429,32 @@ func (c *Controller) addSHR(obj interface{}) {
 
 	c.workqueue.AddRateLimited(key)
 }
+func newDaemonset(shrCopy *faasv1.SharePod) *appsv1.DaemonSet {
+	time := int64(10)
+	namePrefix := shrCopy.Name + "-init-"
+	return &appsv1.DaemonSet{
+		ObjectMeta: metav1.ObjectMeta{
+			Name:      namePrefix,
+			Namespace: shrCopy.Namespace,
+		},
+		Spec: appsv1.DaemonSetSpec{
+			//TTLSecondsAfterFinished: int32p(100),
+			Template: corev1.PodTemplateSpec{
+				Spec: corev1.PodSpec{
+					//NodeName:              node,
+					Containers:            shrCopy.Spec.PodSpec.InitContainers,
+					Volumes:               shrCopy.Spec.PodSpec.Volumes,
+					RestartPolicy:         corev1.RestartPolicyNever,
+					ActiveDeadlineSeconds: &time,
+				},
+			},
+		},
+	}
+}
 
 func newJob(node string, shrCopy *faasv1.SharePod) *batchv1.Job {
 	namePrefix := shrCopy.Name + "-init-"
+	//time := int64(10)
 	return &batchv1.Job{
 		ObjectMeta: metav1.ObjectMeta{
 			GenerateName: namePrefix,
@@ -448,6 +468,7 @@ func newJob(node string, shrCopy *faasv1.SharePod) *batchv1.Job {
 					Containers:    shrCopy.Spec.PodSpec.InitContainers,
 					Volumes:       shrCopy.Spec.PodSpec.Volumes,
 					RestartPolicy: corev1.RestartPolicyNever,
+					//ActiveDeadlineSeconds: &time,
 				},
 			},
 		},
