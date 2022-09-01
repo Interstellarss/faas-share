@@ -394,6 +394,7 @@ func (c *Controller) addSHR(obj interface{}) {
 	c.resolver.AddFunc(shr.Name)
 
 	nodeList, err := c.nodelister.List(labels.Everything())
+	glog.Infof("NoeList: %i", len(nodeList))
 
 	/*
 		replica := getReplicas(copy)
