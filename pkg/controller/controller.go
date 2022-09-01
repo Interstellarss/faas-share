@@ -411,8 +411,8 @@ func (c *Controller) addSHR(obj interface{}) {
 	if len(shr.Spec.PodSpec.InitContainers) > 0 {
 		glog.Infof("Starting to create init container for Sharepod %s/%s", shr.Namespace, shr.Name)
 		for _, node := range nodeList {
-			_, err := c.kubeclient.BatchV1().Jobs(namespace).Create(context.TODO(), newJob(node.Name, shr), metav1.CreateOptions{})
-
+			//_, err := c.kubeclient.BatchV1().Jobs(namespace).Create(context.TODO(), newJob(node.Name, shr), metav1.CreateOptions{})
+			_, err := c.kubeclient.CoreV1().Pods(namespace).Create(context.TODO(), newInitPod(shr, node.Name), metav1.CreateOptions{})
 			if err != nil {
 				glog.Errorf("Error %v starting init container for sharepod %v/%v", err, namespace, name)
 				runtime.HandleError(err)
@@ -592,15 +592,19 @@ func getReplicas(sharepod *faasv1.SharePod) *int32 {
 	return minReplicas
 }
 
-func newInitPod(gpu *faasv1.SharePod) *corev1.Pod {
+func newInitPod(gpu *faasv1.SharePod, nodeNmae string) *corev1.Pod {
+	time := int64(10)
 	return &corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      gpu.Name + "-init",
 			Namespace: gpu.Namespace,
 		},
 		Spec: corev1.PodSpec{
+			NodeName:   nodeNmae,
 			Containers: gpu.Spec.PodSpec.InitContainers,
 			Volumes:    gpu.Spec.PodSpec.Volumes,
+			//RestartPolicy: corev1.RestartPolicyNever,
+			ActiveDeadlineSeconds: &time,
 		},
 	}
 }
