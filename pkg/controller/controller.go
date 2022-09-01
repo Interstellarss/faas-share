@@ -430,22 +430,23 @@ func (c *Controller) addSHR(obj interface{}) {
 	c.workqueue.AddRateLimited(key)
 }
 func newDaemonset(shrCopy *faasv1.SharePod) *appsv1.DaemonSet {
-	time := int64(10)
+
 	namePrefix := shrCopy.Name + "-init"
+
 	return &appsv1.DaemonSet{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      namePrefix,
 			Namespace: shrCopy.Namespace,
 		},
 		Spec: appsv1.DaemonSetSpec{
+			Selector: &metav1.LabelSelector{MatchLabels: map[string]string{"init": shrCopy.Name},},
 			//TTLSecondsAfterFinished: int32p(100),
 			Template: corev1.PodTemplateSpec{
 				Spec: corev1.PodSpec{
 					//NodeName:              node,
-					Containers:            shrCopy.Spec.PodSpec.InitContainers,
-					Volumes:               shrCopy.Spec.PodSpec.Volumes,
-					RestartPolicy:         corev1.RestartPolicyNever,
-					ActiveDeadlineSeconds: &time,
+					Containers:    shrCopy.Spec.PodSpec.InitContainers,
+					Volumes:       shrCopy.Spec.PodSpec.Volumes,
+					RestartPolicy: corev1.RestartPolicyNever,
 				},
 			},
 		},
