@@ -431,7 +431,7 @@ func (c *Controller) addSHR(obj interface{}) {
 }
 func newDaemonset(shrCopy *faasv1.SharePod) *appsv1.DaemonSet {
 	time := int64(10)
-	namePrefix := shrCopy.Name + "-init-"
+	namePrefix := shrCopy.Name + "-init"
 	return &appsv1.DaemonSet{
 		ObjectMeta: metav1.ObjectMeta{
 			Name:      namePrefix,
