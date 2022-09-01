@@ -180,6 +180,7 @@ func NewController(
 					glog.V(3).Infof("Abnormal event detected on %s %s: %s", event.LastTimestamp, key, event.Message)
 				}
 			}
+
 			//controller.updateRunningPod()
 		},
 	})
@@ -439,14 +440,20 @@ func newDaemonset(shrCopy *faasv1.SharePod) *appsv1.DaemonSet {
 			Namespace: shrCopy.Namespace,
 		},
 		Spec: appsv1.DaemonSetSpec{
-			Selector: &metav1.LabelSelector{MatchLabels: map[string]string{"init": shrCopy.Name},},
+			Selector: &metav1.LabelSelector{MatchLabels: map[string]string{"init": shrCopy.Name}},
 			//TTLSecondsAfterFinished: int32p(100),
 			Template: corev1.PodTemplateSpec{
+				ObjectMeta: metav1.ObjectMeta{
+					Name:      namePrefix,
+					Namespace: shrCopy.Namespace,
+					Labels:    map[string]string{"init": shrCopy.Name},
+				},
 				Spec: corev1.PodSpec{
+
 					//NodeName:              node,
 					Containers:    shrCopy.Spec.PodSpec.InitContainers,
 					Volumes:       shrCopy.Spec.PodSpec.Volumes,
-					RestartPolicy: corev1.RestartPolicyNever,
+					RestartPolicy: corev1.RestartPolicyAlways,
 				},
 			},
 		},
