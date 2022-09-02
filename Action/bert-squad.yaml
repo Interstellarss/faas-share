@@ -12,7 +12,7 @@ metadata:
     "kubeshare/gpu_mem": "1572864000" 
     # 1500 Mb = 1572864000 Byte
 spec:
-  replicas: 3
+  replicas: 1
   podSpec:
     terminationGracePeriodSeconds: 1
     containers:

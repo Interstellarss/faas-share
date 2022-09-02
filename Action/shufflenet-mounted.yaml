@@ -1,0 +1,36 @@
+apiVersion: faasshare.tum/v1
+kind: SharePod
+metadata:
+  name: shufflenet
+  namespace: faas-share-fn
+  labels:
+    #"com.openfaas.scale.min": "1"
+    "com.openfaas.scale.max": "5"
+  annotations:
+    "kubeshare/gpu_request": "0.1"
+    "kubeshare/gpu_limit": "0.2"
+    "kubeshare/gpu_mem": "7480000000"
+    #934 MiB of memory needed, need to change
+spec:
+  replicas: 1
+  #initContainers:
+  #  - name: shufflenet-init
+  #    image: leslie233/shufflenet-init:model
+  #    volumeMounts:
+  #      - name: "shufflenet-model"
+  #        mountPath: "/model/shufflenet"
+  podSpec:
+    terminationGracePeriodSeconds: 1
+    containers:
+      - name: shufflenet
+        image: leslie233/shufflenet-test:gpu-exclude
+        command: [ "sh", "-c", "fwatchdog" ]
+        volumeMounts:
+          - name: "shufflenet-model"
+            mountPath: "/model/shufflenet"
+    volumes:
+      - name: "shufflenet-model"
+        hostPath:
+          path: "/model/shufflenet"
+
+
