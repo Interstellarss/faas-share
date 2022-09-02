@@ -76,6 +76,8 @@ func (c *Controller) initNodesInfo() error {
 	var pods []*corev1.Pod
 	var sharepods []*faasshareV1.SharePod
 	//var deployments []*appsv1.Deployment
+	var nodes []*corev1.Node
+
 	var err error
 
 	dummyPodsLabel := labels.SelectorFromSet(labels.Set{faasshareV1.KubeShareRole: "dummyPod"})
@@ -88,6 +90,12 @@ func (c *Controller) initNodesInfo() error {
 		errrr := fmt.Errorf("error when list sharepods: %s", err)
 		klog.Error(errrr)
 		return errrr
+	}
+
+	if nodes, err = c.nodesLister.List(labels.Everything()); err != nil {
+		errr := fmt.Errorf("error when list nodes: #{err}")
+		klog.Error(errr)
+		return errr
 	}
 
 	nodesInfoMux.Lock()
@@ -239,6 +247,32 @@ func (c *Controller) initNodesInfo() error {
 			}
 		}
 	}
+
+	if len(processDummyPodLaterList) == 0 {
+		for _, node := range nodes {
+			processDummyPodLaterList = append(processDummyPodLaterList, processDummyPodLaterItem{
+				NodeName: node.Name,
+				GPUID:    faasshareV1.NewGPUID(5),
+			})
+		}
+	} else {
+		for _, node := range nodes {
+			notFound := true
+			for _, item := range processDummyPodLaterList {
+				if item.NodeName == node.Name && item.GPUID != "" {
+					notFound = false
+				}
+			}
+
+			if notFound {
+				processDummyPodLaterList = append(processDummyPodLaterList, processDummyPodLaterItem{
+					NodeName: node.Name,
+					GPUID:    faasshareV1.NewGPUID(5),
+				})
+			}
+		}
+	}
+
 	for _, item := range processDummyPodLaterList {
 		go c.createDummyPod(item.NodeName, item.GPUID)
 	}

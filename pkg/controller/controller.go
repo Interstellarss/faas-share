@@ -517,6 +517,7 @@ func (c *Controller) handleObject(obj interface{}) {
 					c.resolver.Insert(ownerRef.Name, pod.Name, pod.Status.PodIP)
 				}
 			}
+			//TODO check pod in daemonset,
 		}
 	}
 
