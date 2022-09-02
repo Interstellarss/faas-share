@@ -23,7 +23,21 @@ func syncPodResources(nodeRes NodeResources, podList []*corev1.Pod, sharePodList
 		// 1. If Pod is not scheduled, it don't use resources.
 		// 2. If Pod's name contains "sharepod-dummypod" is managed by SharePod,
 		//    resource usage will be calcuated later.
-		if nodeName == "" || strings.Contains(pod.Name, kubesharev1.KubeShareDummyPodName) {
+		if nodeName == "" {
+			continue
+		}
+
+		if strings.Contains(pod.Name, kubesharev1.KubeShareDummyPodName) {
+			GPUID := pod.ObjectMeta.Labels[kubesharev1.KubeShareResourceGPUID]
+			if _, ok := nodeRes[nodeName].GpuFree[GPUID]; !ok {
+				if nodeRes[nodeName].GpuFreeCount > 0 {
+					nodeRes[nodeName].GpuFreeCount--
+					nodeRes[nodeName].GpuFree[GPUID] = &GPUResource{
+						GPUFreeReq: 1000,
+						GPUFreeMem: nodeRes[nodeName].GpuMemTotal,
+					}
+				}
+			}
 			continue
 		}
 
