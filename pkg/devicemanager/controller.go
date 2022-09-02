@@ -130,7 +130,7 @@ func NewController(
 	kubeshareclient clientset.Interface,
 	nodeInformer coreinformers.NodeInformer,
 	podInformer coreinformers.PodInformer,
-	//containerdClient *containerd.Client,
+//containerdClient *containerd.Client,
 	kubeshareInformer informers.SharePodInformer) *Controller {
 
 	// Create event broadcaster
@@ -714,14 +714,18 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 			}
 			var schedNode, schedGPUID string
 
-			if len(gpupod.Status.Node2Id) == 0 {
-				schedNode, schedGPUID = c.schedule(gpupod, gpu_request, gpu_limit, gpu_mem, isGPUPod, key)
+			schedNode, schedGPUID = c.schedule(gpupod, gpu_request, gpu_limit, gpu_mem, isGPUPod, key)
 
-				gpupod.Status.Node2Id = append(gpupod.Status.Node2Id, faasv1.Scheded{Node: schedNode, GPU: schedGPUID})
-			} else {
-				schedNode = gpupod.Status.Node2Id[len(gpupod.Status.Node2Id)-1].Node
-				schedGPUID = gpupod.Status.Node2Id[len(gpupod.Status.Node2Id)-1].GPU
-			}
+			/*
+				if len(gpupod.Status.Node2Id) == 0 {
+					schedNode, schedGPUID = c.schedule(gpupod, gpu_request, gpu_limit, gpu_mem, isGPUPod, key)
+
+					gpupod.Status.Node2Id = append(gpupod.Status.Node2Id, faasv1.Scheded{Node: schedNode, GPU: schedGPUID})
+				} else {
+					schedNode = gpupod.Status.Node2Id[len(gpupod.Status.Node2Id)-1].Node
+					schedGPUID = gpupod.Status.Node2Id[len(gpupod.Status.Node2Id)-1].GPU
+				}
+			*/
 
 			//TODO:
 			//if gpupod.Status.
@@ -807,12 +811,12 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 					return nil, err //
 				}
 				//remove the last element
-				gpupod.Status.Node2Id = gpupod.Status.Node2Id[:len(gpupod.Status.Node2Id)-1]
-				(*gpupod.Status.Pod2Node)[newPod.Name] = schedNode
+				//gpupod.Status.Node2Id = gpupod.Status.Node2Id[:len(gpupod.Status.Node2Id)-1]
+				//(*gpupod.Status.Pod2Node)[newPod.Name] = schedNode
 
 				//should be mapping from pod to physical devciceID, use vGPU id for simplicity
 				(*gpupod.Status.BoundDeviceIDs)[newPod.Name] = schedGPUID
-				(*gpupod.Status.Usage)[schedGPUID] = faasv1.SharepodUsage{GPU: gpu_request, TotalMemoryBytes: float64(gpu_mem) / 8}
+				//(*gpupod.Status.Usage)[schedGPUID] = faasv1.SharepodUsage{GPU: gpu_request, TotalMemoryBytes: float64(gpu_mem) / 8}
 
 				(*shrCopy.Status.PodManagerPort)[newPod.Name] = physicalGPUport
 
