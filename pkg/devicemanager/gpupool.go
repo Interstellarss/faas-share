@@ -250,10 +250,27 @@ func (c *Controller) initNodesInfo() error {
 
 	if len(processDummyPodLaterList) == 0 {
 		for _, node := range nodes {
-			processDummyPodLaterList = append(processDummyPodLaterList, processDummyPodLaterItem{
+			dummyPodItem := processDummyPodLaterItem{
 				NodeName: node.Name,
 				GPUID:    faasshareV1.NewGPUID(5),
-			})
+			}
+			processDummyPodLaterList = append(processDummyPodLaterList, dummyPodItem)
+
+			if nod, ok := nodesInfo[node.Name]; !ok {
+				bm := bitmap.NewRRBitmap(512)
+				bm.Mask(0)
+				nod = &NodeInfo{
+					GPUID2GPU:            make(map[string]*GPUInfo),
+					PodManagerPortBitmap: bm,
+				}
+				nod.GPUID2GPU[dummyPodItem.GPUID] = &GPUInfo{
+					UUID:    "",
+					Usage:   0.0,
+					Mem:     0,
+					PodList: list.New(),
+				}
+				nodesInfo[node.Name] = nod
+			}
 		}
 	} else {
 		for _, node := range nodes {
@@ -265,10 +282,27 @@ func (c *Controller) initNodesInfo() error {
 			}
 
 			if notFound {
-				processDummyPodLaterList = append(processDummyPodLaterList, processDummyPodLaterItem{
+				dummyPodItem := processDummyPodLaterItem{
 					NodeName: node.Name,
 					GPUID:    faasshareV1.NewGPUID(5),
-				})
+				}
+				processDummyPodLaterList = append(processDummyPodLaterList, dummyPodItem)
+
+				if nod, ok := nodesInfo[node.Name]; !ok {
+					bm := bitmap.NewRRBitmap(512)
+					bm.Mask(0)
+					nod = &NodeInfo{
+						GPUID2GPU:            make(map[string]*GPUInfo),
+						PodManagerPortBitmap: bm,
+					}
+					nod.GPUID2GPU[dummyPodItem.GPUID] = &GPUInfo{
+						UUID:    "",
+						Usage:   0.0,
+						Mem:     0,
+						PodList: list.New(),
+					}
+					nodesInfo[node.Name] = nod
+				}
 			}
 		}
 	}
@@ -421,6 +455,7 @@ func (c *Controller) createDummyPod(nodeName string, GPUID string) error {
 		}
 		return nil
 	}
+	klog.Infof("Dummy pod %s on Node %s is created!", podName, nodeName)
 
 	if dummypod, err := c.kubeclient.CoreV1().Pods("kube-system").Get(context.TODO(), podName, metav1.GetOptions{}); err != nil {
 		if errors.IsNotFound(err) {
