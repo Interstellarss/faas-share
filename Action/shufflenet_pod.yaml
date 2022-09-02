@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: shufflenet-3
+  namespace: faas-share-fn
+spec:
+  nodeName: gpu-one
+  terminationGracePeriodSeconds: 1
+  containers:
+  - name: shufflenet
+    image: leslie233/shufflenet-test:index
+    command: ["sh", "-c", "fwatchdog"]

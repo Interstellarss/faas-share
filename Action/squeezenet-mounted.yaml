@@ -1,7 +1,7 @@
 apiVersion: faasshare.tum/v1
 kind: SharePod
 metadata:
-  name: mobilenet
+  name: squeezenet
   namespace: faas-share-fn
   labels:
     #"com.openfaas.scale.min": "1"
@@ -14,20 +14,21 @@ spec:
   replicas: 1
   podSpec:
     terminationGracePeriodSeconds: 1
+    #initContainers:
+    #- name: squeezenet-init
+    #  image: leslie233/squeezenet-init:models
+    #  volumeMounts:
+    #    - name: "squeezenet-model"
+    #      mountPath: "/model/squeezenet"
     containers:
-      - name: mobilenet-test
-        image: leslie233/mobilenet-2:index
-        #image: leslie233/mobilenet-test:shared
+      - name: squeezenet
+        image: leslie233/squeezenet:gpu-exclude
         command: [ "sh", "-c", "fwatchdog" ]
         volumeMounts:
-          - name: "mobilenet-model"
-            mountPath: "/model/mobilenet"
+          - name: "squeezenet-model"
+            mountPath: "/model/squeezenet"
     volumes:
-      - name: "mobilenet-model"
+      - name: "squeezenet-model"
         hostPath:
-          path: "/model/mobilenet"
-              #type:
-        #volumeMounts:
-        #- name:
-
+          path: "/model/squeezenet"
 
