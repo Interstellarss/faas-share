@@ -320,8 +320,9 @@ func (c *Controller) cleanOrphanDummyPod() {
 	for nodeName, node := range nodesInfo {
 		for gpuid, gpu := range node.GPUID2GPU {
 			if gpu.PodList.Len() == 0 {
-				delete(node.GPUID2GPU, gpuid)
-				c.deleteDummyPod(nodeName, gpuid, gpu.UUID)
+				klog.V(5).Infof("vGPU %s on Node %s is now orphan...", gpuid, nodeName)
+				//delete(node.GPUID2GPU, gpuid)
+				//c.deleteDummyPod(nodeName, gpuid, gpu.UUID)
 			}
 		}
 	}
@@ -573,8 +574,8 @@ func (c *Controller) removeSharePodFromList(sharepod *faasshareV1.SharePod) {
 						remove := false
 
 						if podlist.Len() == 0 {
-							delete(node.GPUID2GPU, GPUID)
-							remove = true
+							//delete(node.GPUID2GPU, GPUID)
+							//remove = true
 						} else {
 							gpu.Usage -= podRequest.Request
 							gpu.Mem -= podRequest.Memory

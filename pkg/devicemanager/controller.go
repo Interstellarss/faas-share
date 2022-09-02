@@ -232,10 +232,13 @@ func (c *Controller) Run(threadiness int, stopCh <-chan struct{}) error {
 		return fmt.Errorf("failed to wait for caches to sync")
 	}
 
+	//In our logic, we should have a vGPU pool running...Therefore, clean before create...
+	c.cleanOrphanDummyPod()
+
 	if err := c.initNodesInfo(); err != nil {
 		return fmt.Errorf("failed to init NodeClient: %s", err)
 	}
-	c.cleanOrphanDummyPod()
+	//
 	// clientHandler in ConfigManager must have correct PodList of every SharePods,
 	// so call it after initNodeClient
 
