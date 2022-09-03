@@ -341,7 +341,7 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 		//var ratio float32
 		// <= or < ?
 		//debugging
-		klog.Infof("Sharepod %s with %i PodInfos and %i dec pods...", functionName, len(l.ShareInfos[functionName].PodInfos), dec)
+		klog.Infof("Sharepod %s with %d PodInfos and %d dec pods...", functionName, len(l.ShareInfos[functionName].PodInfos), dec)
 		if len(l.ShareInfos[functionName].PodInfos)-dec < 1 {
 			newReplica = true
 		}
@@ -364,13 +364,14 @@ func (l *FunctionLookup) UpdateReplica(kube clientset.Interface, namepsace strin
 			var targetRep int32
 
 			if t, ok := shrCopy.ObjectMeta.Labels[target]; ok {
+
 				tar, errr := strconv.ParseInt(t, 10, 32)
 				if errr != nil {
 					klog.Infof("Erro parsing target of sharepod %s...", shrName)
 					return
 				}
 				targetRep = int32(math.Ceil(float64(invoke) / float64(tar)))
-
+				klog.Infof("DEBUG:Target based with %d, and current %d invoke, need to upload %d", tar, invoke, targetRep)
 				shrCopy.Spec.Replicas = &targetRep
 			} else {
 				targetRep = int32(float32(*shrCopy.Spec.Replicas) * 1.2)
