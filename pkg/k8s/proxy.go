@@ -12,6 +12,7 @@ import (
 	"github.com/Interstellarss/faas-share/pkg/devicemanager"
 	v1 "k8s.io/api/core/v1"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
+	"math"
 	"strconv"
 
 	//"net/http"
@@ -184,6 +185,20 @@ func (l *FunctionLookup) Resolve(name string, suffix string) (url.URL, string, e
 	podName := pods[0].Name
 	serviceIP := pods[0].Status.PodIP
 
+	l.ShareInfos[functionName].Lock.Lock()
+	defer l.ShareInfos[functionName].Lock.Unlock()
+
+	if podinfo, ok := l.ShareInfos[functionName].PodInfos[podName]; ok {
+		podinfo.TotalInvoke++
+	} else {
+		l.ShareInfos[functionName].PodInfos[podName] = PodInfo{
+			PodName:     podName,
+			ServiceName: functionName,
+			PodIp:       serviceIP,
+			TotalInvoke: 1,
+		}
+	}
+
 	klog.Infof("picking pod %s out of sharpeod %s with pod IP %s", podName, name, serviceIP)
 	//pods[0].Status.ContainerStatuses[0].ContainerID
 	/*
@@ -272,7 +287,7 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 			PodInfos: podinfos,
 			Lock:     sync.Mutex{},
 		}
-		klog.Infof("initializing, pod info %s", l.ShareInfos[functionName].PodInfos)
+		klog.Infof("DEBUG: initializing, SharePod info %s", functionName)
 		return
 	} else {
 		needUpdate := false
@@ -288,12 +303,12 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 		if podInfo, ok := l.ShareInfos[functionName].PodInfos[podName]; ok {
 			//podInfo.totalInvoke++
 			//time.Duration()
-			var invoke_pre = podInfo.TotalInvoke
-			var invoke_cur = podInfo.TotalInvoke + 1
+			var invoke_pre = podInfo.TotalInvoke - 1
+			var invoke_cur = podInfo.TotalInvoke
 
 			podInfo.AvgResponseTime = (podInfo.AvgResponseTime*(time.Duration(invoke_pre)) + duration) / time.Duration(invoke_cur)
 
-			podInfo.TotalInvoke++
+			//podInfo.TotalInvoke++
 
 			oldRate := podInfo.Rate
 
@@ -358,11 +373,11 @@ func UpdateReplica(kube clientset.Interface, namepsace string, shrName string, i
 				klog.Infof("Erro parsing target of sharepod %s...", shrName)
 				return
 			}
-			targetRep = int32(invoke / int32(tar))
+			targetRep = int32(math.Ceil(float64(invoke) / float64(tar)))
 
 			shrCopy.Spec.Replicas = &targetRep
 		} else {
-			targetRep = int32(float32(*shrCopy.Spec.Replicas) * 1.4)
+			targetRep = int32(float32(*shrCopy.Spec.Replicas) * 1.2)
 		}
 
 		updatedShr, err := kube.KubeshareV1().SharePods(namepsace).Update(context.TODO(), shrCopy, metav1.UpdateOptions{})
@@ -404,6 +419,14 @@ func (l *FunctionLookup) Insert(shrName string, podName string, podIp string) {
 		podinfos := make(map[string]PodInfo)
 		podinfos[podName] = PodInfo{PodName: podName, PodIp: podIp, ServiceName: shrName, TotalInvoke: 0, Rate: 0}
 		(l.ShareInfos)[shrName] = &SharePodInfo{PodInfos: podinfos}
+	}
+}
+
+func (l *FunctionLookup) deletepPodinfo(functionName string, podName string) {
+	if sharepodInfo, ok := l.ShareInfos[functionName]; ok {
+		sharepodInfo.Lock.Lock()
+		defer sharepodInfo.Lock.Unlock()
+		delete(sharepodInfo.PodInfos, podName)
 	}
 }
 

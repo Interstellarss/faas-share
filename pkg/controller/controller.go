@@ -648,7 +648,8 @@ func newInitPod(gpu *faasv1.SharePod, nodeNmae string) *corev1.Pod {
 }
 
 func (c *Controller) updateRunningPod(pod *corev1.Pod) {
-	if len(pod.Status.PodIP) > 0 {
+	//TOOD: healthz cheeck
+	if pod.Status.PodIP != "" {
 		if ownerRef := metav1.GetControllerOf(pod); ownerRef != nil {
 			if ownerRef.Kind != faasKind {
 				return
@@ -656,6 +657,17 @@ func (c *Controller) updateRunningPod(pod *corev1.Pod) {
 			if pod.Status.Phase == corev1.PodRunning || *pod.Status.ContainerStatuses[0].Started {
 				c.resolver.Insert(ownerRef.Name, pod.Name, pod.Status.PodIP)
 			}
+		}
+	}
+}
+
+func (c *Controller) deletePodInfo(pod *corev1.Pod) {
+	if ownerRef := metav1.GetControllerOf(pod); ownerRef != nil {
+		if ownerRef.Kind != faasKind {
+			return
+		}
+		if pod.Status.Phase == corev1.PodRunning || *pod.Status.ContainerStatuses[0].Started {
+			//c.resolver.d
 		}
 	}
 }
@@ -677,9 +689,8 @@ func (c *Controller) podWatch() error {
 			c.updateRunningPod(pod)
 		case watch.Modified:
 			c.updateRunningPod(pod)
-		case watch.Bookmark:
-			c.updateRunningPod(pod)
-			//todo case delete
+		case watch.Deleted:
+			c.deletePodInfo(pod)
 
 		}
 	}
