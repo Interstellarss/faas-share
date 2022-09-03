@@ -13,6 +13,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/openfaas/faas-provider/httputil"
 	"github.com/openfaas/faas-provider/types"
+
+	clientset "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned"
 )
 
 const (
@@ -25,11 +27,15 @@ const (
 // The FaaS provider implementation is responsible for providing the resolver function implementation.
 // BaseURLResolver.Resolve will receive the function name and should return the URL of the
 // function service.
+/*
 type BaseURLResolver interface {
+	//map[string]*SharePodInfo
 	Resolve(functionName string, suffix string) (url.URL, string, error)
 	Update(duration time.Duration, functionName string, podName string)
 	deleteFunction(name string)
+	GetSharePodInfo(sharepod string) *map[string]k8s.PodInfo
 }
+*/
 
 // NewHandlerFunc creates a standard http.HandlerFunc to proxy function requests.
 // The returned http.HandlerFunc will ensure:
@@ -42,7 +48,7 @@ type BaseURLResolver interface {
 //
 // Note that this will panic if `resolver` is nil.
 
-func NewHandlerFunc(config types.FaaSConfig, resolver *k8s.FunctionLookup) http.HandlerFunc {
+func NewHandlerFunc(config types.FaaSConfig, resolver *k8s.FunctionLookup, kube clientset.Interface) http.HandlerFunc {
 	if resolver == nil {
 		panic("NewHandlerFunc: empty proxy handler resolver, cannot be nil")
 	}
@@ -62,7 +68,7 @@ func NewHandlerFunc(config types.FaaSConfig, resolver *k8s.FunctionLookup) http.
 			http.MethodGet,
 			http.MethodOptions,
 			http.MethodHead:
-			proxyRequest(w, r, proxyClient, resolver)
+			proxyRequest(w, r, proxyClient, resolver, kube)
 
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
@@ -115,7 +121,8 @@ func NewProxyClient(timeout time.Duration, maxIdleConns int, maxIdleConnsPerHost
 }
 
 // proxyRequest handles the actual resolution of and then request to the function service.
-func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient *http.Client, resolver *k8s.FunctionLookup) {
+func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient *http.Client, resolver *k8s.FunctionLookup,
+	kube clientset.Interface) {
 	ctx := originalReq.Context()
 
 	pathVars := mux.Vars(originalReq)
@@ -162,7 +169,7 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 		return
 	}
 
-	resolver.Update(seconds, functionName, podName)
+	go resolver.Update(seconds, functionName, podName, kube)
 
 	//resolver.
 	if response.Body != nil {

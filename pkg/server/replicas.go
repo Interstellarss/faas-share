@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/Interstellarss/faas-share/pkg/k8s"
 	//"go/types"
 	"io/ioutil"
 	"net/http"
@@ -85,7 +86,7 @@ func getReplicas(sharepodName string, namespace string, lister lister.SharePodLi
 	return desiredReplicas, availableReplicas, nil
 }
 
-func makeReplicaHandler(defaultNamespace string, kube clientset.Interface) http.HandlerFunc {
+func makeReplicaHandler(defaultNamespace string, kube clientset.Interface, functionlookup *k8s.FunctionLookup) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 		shrDepName := vars["name"]
@@ -132,6 +133,10 @@ func makeReplicaHandler(defaultNamespace string, kube clientset.Interface) http.
 		//what could done better here?
 
 		replica := shr.Spec.Replicas
+
+		if *replica >= int32(req.Replicas) {
+			go functionlookup.ScaleDown(shrDepName)
+		}
 
 		klog.Infof("Current replica is %d", *replica)
 

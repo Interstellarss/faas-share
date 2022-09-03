@@ -210,6 +210,14 @@ func runOperator(setup serverSetup, cfg config.BootstrapConfig) {
 
 	sharepodLookup := k8s.NewFunctionLookup("faas-share-fn", listers.PodsInformer.Lister(), listers.SharepodsInformer.Lister(), shareInfos)
 
+	rateScale := false
+
+	if cfg.FunctionRate {
+		rateScale = cfg.FunctionRate
+	}
+
+	sharepodLookup.RateRep = rateScale
+
 	//TOOD: conttroller pkg for faas-share
 	ctrl := controller.NewController(
 		kubeClient,

@@ -120,6 +120,9 @@ type BootstrapConfig struct {
 
 	// ClusterRole determines whether the operator should have cluster wide access
 	ClusterRole bool
+
+	//custom replica policy based on funtion rate
+	FunctionRate bool
 }
 
 // Fprint pretty-prints the config with the stdlib logger. One line per config value.

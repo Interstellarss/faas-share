@@ -6,23 +6,25 @@ import (
 )
 
 type PodInfo struct {
-	podName          string
-	podIp            string
-	serviceName      string
-	avgResponseTime  time.Duration
-	lastResponseTime time.Duration
-	totalInvoke      int64
-	lastInvoke       time.Time
-	rate             float32
+	PodName          string
+	PodIp            string
+	ServiceName      string
+	AvgResponseTime  time.Duration
+	LastResponseTime time.Duration
+	TotalInvoke      int32
+	LastInvoke       time.Time
+	Rate             float32
 	//
-	rateChange ChangeType
+	RateChange ChangeType
 }
 
 type SharePodInfo struct {
-	podInfos map[string]PodInfo
+	PodInfos map[string]PodInfo
 
+	ScaleDown bool
 	//todo make thread safe
-	lock sync.RWMutex
+	//Lock sync.RWMutex
+	Lock sync.Mutex
 }
 
 //may not defined here

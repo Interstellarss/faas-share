@@ -70,12 +70,12 @@ func New(client clientset.Interface,
 
 	bootstrapHandlers := types.FaaSHandlers{
 		//TODO: amybe need tochange the proxy  newHandlerFunc?
-		FunctionProxy:  NewHandlerFunc(bootstrapConfig, sharepodLookup),
+		FunctionProxy:  NewHandlerFunc(bootstrapConfig, sharepodLookup, client),
 		DeleteHandler:  makeDeleteHandler(sharepodNamespace, client),
 		DeployHandler:  makeApplyHandler(sharepodNamespace, client),
 		FunctionReader: makeListHandler(sharepodNamespace, client, sharepodLister),
 		ReplicaReader:  makeReplicaReader(sharepodNamespace, client, sharepodLister),
-		ReplicaUpdater: makeReplicaHandler(sharepodNamespace, client),
+		ReplicaUpdater: makeReplicaHandler(sharepodNamespace, client, sharepodLookup),
 		UpdateHandler:  makeHealthReader(),
 		HealthHandler:  makeHealthReader(),
 		InfoHandler:    makeInfoHandler(),

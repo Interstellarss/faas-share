@@ -97,7 +97,6 @@ type Controller struct {
 
 	// OpenFaaS function factory
 	factory FunctionFactory
-
 	//podQueue for handling events
 	//podQueue
 }
@@ -292,6 +291,7 @@ func (c *Controller) syncHandler(key string) error {
 	}
 
 	needUpdate := false
+
 	/*
 		if sharepod.Spec.Selector == nil {
 			sharepod.Spec.Selector = &metav1.LabelSelector{
