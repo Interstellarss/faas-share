@@ -43,6 +43,8 @@ func (ReadConfig) Read(hasEnv ftypes.HasEnv) (BootstrapConfig, error) {
 	livenessProbePeriodSeconds := ftypes.ParseIntValue(hasEnv.Getenv("liveness_probe_period_seconds"), 10)
 	imagePullPolicy := ftypes.ParseString(hasEnv.Getenv("image_pull_policy"), "Always")
 
+	rateReplica := ftypes.ParseBoolValue(hasEnv.Getenv("rate_rep"), false)
+
 	if !validPullPolicyOptions[imagePullPolicy] {
 		return cfg, fmt.Errorf("invalid image_pull_policy configured: %s", imagePullPolicy)
 	}
@@ -63,6 +65,8 @@ func (ReadConfig) Read(hasEnv ftypes.HasEnv) (BootstrapConfig, error) {
 	cfg.LivenessProbePeriodSeconds = livenessProbePeriodSeconds
 
 	cfg.ImagePullPolicy = imagePullPolicy
+
+	cfg.FunctionRate = rateReplica
 
 	return cfg, nil
 }
