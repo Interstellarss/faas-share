@@ -325,7 +325,6 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 
 			} else {
 				podInfo.RateChange = ChangeType(Sta)
-				return
 			}
 		} else {
 			klog.Infof("Sharepod %s with Pod %s 's info nil...", functionName, podName)
