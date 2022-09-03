@@ -166,6 +166,7 @@ operator:
     requests:
       memory: "120Mi"
       cpu: "50m"
+  rateReplica: "true"
 
 # OpenFaaS Pro
 # The values for queueWorkerPro are merged with those under

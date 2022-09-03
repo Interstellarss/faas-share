@@ -216,6 +216,8 @@ func runOperator(setup serverSetup, cfg config.BootstrapConfig) {
 		rateScale = cfg.FunctionRate
 	}
 
+	klog.Infof("rate scale: %i", rateScale)
+
 	sharepodLookup.RateRep = rateScale
 
 	//TOOD: conttroller pkg for faas-share

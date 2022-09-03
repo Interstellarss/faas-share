@@ -290,14 +290,16 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 		klog.Infof("DEBUG: initializing, SharePod info %s", functionName)
 		return
 	} else {
-		needUpdate := false
+		newReplica := false
 		var totalInvoke int32 = 0
-
 		l.ShareInfos[functionName].Lock.Lock()
+		var dec = 0
 		//test.lock.Lock()
 		defer func() {
 			l.ShareInfos[functionName].Lock.Unlock()
-			go UpdateReplica(kube, l.DefaultNamespace, functionName, totalInvoke, needUpdate)
+
+			go l.UpdateReplica(kube, l.DefaultNamespace, functionName, totalInvoke, newReplica)
+
 		}()
 
 		if podInfo, ok := l.ShareInfos[functionName].PodInfos[podName]; ok {
@@ -320,27 +322,7 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 			} else if podInfo.Rate/oldRate < 0.8 {
 				podInfo.RateChange = ChangeType(Dec)
 				//needUpdate := false
-				klog.Infof("pod %s of sharepod %s rate decrease...", podInfo.PodName, functionName)
-				if l.RateRep {
-					//newReplica := false
-					if _, ok := l.ShareInfos[functionName]; ok {
-						dec := 0
 
-						for _, podinfo := range l.ShareInfos[functionName].PodInfos {
-							totalInvoke += podinfo.TotalInvoke
-							if podinfo.RateChange == Dec {
-								dec++
-							}
-						}
-						//var ratio float32
-						// <= or < ?
-						if len(l.ShareInfos[functionName].PodInfos)-dec < 1 {
-
-							needUpdate = true
-							return
-						}
-					}
-				}
 			} else {
 				podInfo.RateChange = ChangeType(Sta)
 				return
@@ -351,47 +333,64 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 				LastResponseTime: duration, RateChange: Inc, Rate: float32(1000 / duration.Milliseconds())}
 			//return
 		}
+		for _, podinfo := range l.ShareInfos[functionName].PodInfos {
+			totalInvoke += podinfo.TotalInvoke
+			if podinfo.RateChange == Dec {
+				dec++
+			}
+		}
+		//var ratio float32
+		// <= or < ?
+		//debugging
+		klog.Infof("Sharepod %s with %i PodInfos and %i dec pods...", functionName, len(l.ShareInfos[functionName].PodInfos), dec)
+		if len(l.ShareInfos[functionName].PodInfos)-dec < 1 {
+			newReplica = true
+		}
 	}
 }
 
-func UpdateReplica(kube clientset.Interface, namepsace string, shrName string, invoke int32, needUpdate bool) {
-	if needUpdate {
-		klog.Infof("Starting Update Sharepod %s Replica ...", shrName)
+func (l *FunctionLookup) UpdateReplica(kube clientset.Interface, namepsace string, shrName string, invoke int32, neRep bool) {
+	//klog.Infof("pod %s of sharepod %s rate decrease...", podInfo.PodName, functionName)
+	if l.RateRep {
+		if neRep {
+			klog.Infof("Starting Update Sharepod %s Replica ...", shrName)
 
-		shr, err := kube.KubeshareV1().SharePods(namepsace).Get(context.TODO(), shrName, metav1.GetOptions{})
-		if err != nil {
-			klog.Errorf("Sharepod %s get error: %v", shrName, err)
-			return
-		}
-		shrCopy := shr.DeepCopy()
-
-		var targetRep int32
-
-		if t, ok := shrCopy.ObjectMeta.Labels[target]; ok {
-			tar, errr := strconv.ParseInt(t, 10, 32)
-			if errr != nil {
-				klog.Infof("Erro parsing target of sharepod %s...", shrName)
+			shr, err := kube.KubeshareV1().SharePods(namepsace).Get(context.TODO(), shrName, metav1.GetOptions{})
+			if err != nil {
+				klog.Errorf("Sharepod %s get error: %v", shrName, err)
 				return
 			}
-			targetRep = int32(math.Ceil(float64(invoke) / float64(tar)))
+			shrCopy := shr.DeepCopy()
 
-			shrCopy.Spec.Replicas = &targetRep
-		} else {
-			targetRep = int32(float32(*shrCopy.Spec.Replicas) * 1.2)
-		}
+			var targetRep int32
 
-		updatedShr, err := kube.KubeshareV1().SharePods(namepsace).Update(context.TODO(), shrCopy, metav1.UpdateOptions{})
-		if err != nil {
-			klog.Errorf("Sharepod %s update error %v", shrName, err)
-			return
-		}
-		if *updatedShr.Spec.Replicas == targetRep {
-			klog.Infof("Sharepod %s replica updated to %v", shrName, targetRep)
+			if t, ok := shrCopy.ObjectMeta.Labels[target]; ok {
+				tar, errr := strconv.ParseInt(t, 10, 32)
+				if errr != nil {
+					klog.Infof("Erro parsing target of sharepod %s...", shrName)
+					return
+				}
+				targetRep = int32(math.Ceil(float64(invoke) / float64(tar)))
 
-		} else {
-			klog.Infof("Sharepod %s with replica %i failed updated to %v replicas", updatedShr.Name, *updatedShr.Spec.Replicas, targetRep)
+				shrCopy.Spec.Replicas = &targetRep
+			} else {
+				targetRep = int32(float32(*shrCopy.Spec.Replicas) * 1.2)
+			}
+
+			updatedShr, err := kube.KubeshareV1().SharePods(namepsace).Update(context.TODO(), shrCopy, metav1.UpdateOptions{})
+			if err != nil {
+				klog.Errorf("Sharepod %s update error %v", shrName, err)
+				return
+			}
+			if *updatedShr.Spec.Replicas == targetRep {
+				klog.Infof("Sharepod %s replica updated to %v", shrName, targetRep)
+
+			} else {
+				klog.Infof("Sharepod %s with replica %i failed updated to %v replicas", updatedShr.Name, *updatedShr.Spec.Replicas, targetRep)
+			}
 		}
 	}
+
 }
 
 func (l *FunctionLookup) ScaleDown(funtionName string) {

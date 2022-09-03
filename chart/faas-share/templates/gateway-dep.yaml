@@ -253,6 +253,8 @@ spec:
           value: "{{ .Values.faasshare.writeTimeout }}"
         - name: image_pull_policy
           value: {{ .Values.faasshare.imagePullPolicy | quote }}
+        - name: rate_rep
+          value: "{{ .Values.operator.rateReplica }}"
         - name: http_probe
           value: "{{ .Values.faasshare.httpProbe }}"
         - name: set_nonroot_user
@@ -269,8 +271,6 @@ spec:
           value: "{{ .Values.faasshare.livenessProbe.timeoutSeconds }}"
         - name: liveness_probe_period_seconds
           value: "{{ .Values.faasshare.livenessProbe.periodSeconds }}"
-        - name: rate_rep
-          value: "true"
         - name: cluster_role
           value: "{{ .Values.clusterRole }}"
         volumeMounts:
