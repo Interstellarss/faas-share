@@ -92,6 +92,8 @@ type FunctionLookup struct {
 
 	RateRep bool
 
+	//Service bool
+
 	ShareInfos map[string]*SharePodInfo
 	lock       sync.RWMutex
 }
@@ -190,6 +192,9 @@ func (l *FunctionLookup) Resolve(name string, suffix string) (url.URL, string, e
 
 	if podinfo, ok := l.ShareInfos[functionName].PodInfos[podName]; ok {
 		podinfo.TotalInvoke++
+		if podinfo.PodIp == "" {
+			podinfo.PodIp = serviceIP
+		}
 	} else {
 		l.ShareInfos[functionName].PodInfos[podName] = PodInfo{
 			PodName:     podName,
@@ -248,6 +253,17 @@ func (l *FunctionLookup) DeleteFunction(name string) {
 	delete(l.ShareInfos, name)
 	return
 }
+
+func (l *FunctionLookup) DeletePodInfo(funcName string, podName string) {
+	if shrInfo, ok := l.ShareInfos[funcName]; ok {
+		shrInfo.Lock.Lock()
+		defer shrInfo.Lock.Unlock()
+		if _, ok := shrInfo.PodInfos[podName]; ok {
+			delete(shrInfo.PodInfos, podName)
+		}
+	}
+}
+
 func (l *FunctionLookup) GetSharePodInfo(name string) SharePodInfo {
 	if _, ok := l.ShareInfos[name]; ok {
 		return *l.ShareInfos[name]

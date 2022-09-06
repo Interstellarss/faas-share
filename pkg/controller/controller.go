@@ -178,6 +178,7 @@ func NewController(
 				if since.Seconds() < 61 && strings.Contains(event.Type, "Warning") {
 					glog.V(3).Infof("Abnormal event detected on %s %s: %s", event.LastTimestamp, key, event.Message)
 				}
+				//event.
 			}
 
 			//controller.updateRunningPod()
@@ -189,6 +190,10 @@ func NewController(
 	})
 	//go controller.podWatch()
 	//kube
+
+	kubeInformerFactory.Core().V1().Pods().Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
+		DeleteFunc: controller.deletePodInfo,
+	})
 
 	return controller
 }
@@ -460,6 +465,16 @@ func newDaemonset(shrCopy *faasv1.SharePod) *appsv1.DaemonSet {
 	}
 }
 
+func (c *Controller) deletePodInfo(obj interface{}) {
+	if pod, ok := obj.(*corev1.Pod); ok {
+		if ownerRef := metav1.GetControllerOf(pod); ownerRef != nil {
+			if ownerRef.Kind == "SharePod" {
+				c.resolver.DeletePodInfo(ownerRef.Name, pod.Name)
+			}
+		}
+	}
+}
+
 func newJob(node string, shrCopy *faasv1.SharePod) *batchv1.Job {
 	namePrefix := shrCopy.Name + "-init-"
 	//time := int64(10)
@@ -661,6 +676,7 @@ func (c *Controller) updateRunningPod(pod *corev1.Pod) {
 	}
 }
 
+/*
 func (c *Controller) deletePodInfo(pod *corev1.Pod) {
 	if ownerRef := metav1.GetControllerOf(pod); ownerRef != nil {
 		if ownerRef.Kind != faasKind {
@@ -671,6 +687,7 @@ func (c *Controller) deletePodInfo(pod *corev1.Pod) {
 		}
 	}
 }
+*/
 
 func (c *Controller) podWatch() error {
 	podsWatcher, err := c.kubeclient.CoreV1().Pods("faas-share-fn").Watch(context.Background(), metav1.ListOptions{Watch: true})
@@ -690,7 +707,7 @@ func (c *Controller) podWatch() error {
 		case watch.Modified:
 			c.updateRunningPod(pod)
 		case watch.Deleted:
-			c.deletePodInfo(pod)
+			//c.deletePodInfo(pod)
 
 		}
 	}
