@@ -329,8 +329,12 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 			//podInfo.TotalInvoke++
 
 			oldRate := podInfo.Rate
+			if podInfo.AvgResponseTime.Milliseconds() > 0 {
+				podInfo.Rate = float32(1000 / podInfo.AvgResponseTime.Milliseconds())
+			} else {
+				podInfo.Rate = float32(1000 / duration.Milliseconds())
+			}
 
-			podInfo.Rate = float32(1000 / podInfo.AvgResponseTime.Milliseconds())
 			podInfo.LastInvoke = time.Now()
 
 			if podInfo.Rate/oldRate > 1.2 {
