@@ -283,7 +283,7 @@ func (l *FunctionLookup) GetSharePodInfo(name string) SharePodInfo {
 func (l *FunctionLookup) AddFunc(funcname string) {
 
 	if sharepodinfo, ok := l.ShareInfos[funcname]; !ok {
-		sharepodinfo = &SharePodInfo{PodInfos: make(map[string]PodInfo), Lock: sync.Mutex{}}
+		sharepodinfo = &SharePodInfo{PodInfos: make(map[string]PodInfo), Lock: sync.RWMutex{}}
 		l.ShareInfos[funcname] = sharepodinfo
 		klog.Infof("Info of Sharepod %s initialized...", funcname)
 	} else {
@@ -308,7 +308,7 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 
 		l.ShareInfos[functionName] = &SharePodInfo{
 			PodInfos: podinfos,
-			Lock:     sync.Mutex{},
+			Lock:     sync.RWMutex{},
 		}
 		klog.Infof("DEBUG: initializing, SharePod info %s", functionName)
 		return

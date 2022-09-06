@@ -23,8 +23,8 @@ type SharePodInfo struct {
 
 	ScaleDown bool
 	//todo make thread safe
-	//Lock sync.RWMutex
-	Lock sync.Mutex
+	Lock sync.RWMutex
+	//Lock sync.Mutex
 }
 
 //may not defined here
