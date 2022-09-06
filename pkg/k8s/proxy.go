@@ -160,6 +160,9 @@ func (l *FunctionLookup) Resolve(name string, suffix string) (url.URL, string, e
 
 	if _, ok := l.ShareInfos[functionName]; ok {
 
+		l.ShareInfos[functionName].Lock.Lock()
+		defer l.ShareInfos[functionName].Lock.Unlock()
+
 		pInfos := (l.ShareInfos[functionName]).PodInfos
 
 		if len(pInfos) > 0 {
@@ -193,9 +196,6 @@ func (l *FunctionLookup) Resolve(name string, suffix string) (url.URL, string, e
 
 	podName := pods[0].Name
 	serviceIP := pods[0].Status.PodIP
-
-	l.ShareInfos[functionName].Lock.Lock()
-	defer l.ShareInfos[functionName].Lock.Unlock()
 
 	if podinfo, ok := l.ShareInfos[functionName].PodInfos[podName]; ok {
 		podinfo.TotalInvoke++
