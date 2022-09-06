@@ -58,6 +58,8 @@ func (s PodsWithInfos) Less(i, j int) bool {
 	name_j := s.Pods[j].Name
 
 	//if a pod is unsigned, then the unsigned one is smaller
+
+	//TODO: if key not exist
 	if s.Pods[i].Spec.NodeName != s.Pods[j].Spec.NodeName && (len(s.Pods[i].Spec.NodeName) == 0 || len(s.Pods[j].Spec.NodeName) == 0) {
 		return len(s.Pods[i].Spec.NodeName) == 0
 	}
@@ -154,35 +156,40 @@ func (l *FunctionLookup) Resolve(name string, suffix string) (url.URL, string, e
 
 	filteredPods := devicemanager.FilterActivePods(pods)
 
-	pInfos := (l.ShareInfos[functionName]).PodInfos
+	//if
 
-	//pods := make([]PodInfo, len(pInfos))
-	/*
-		for _, v := range pInfos {
-			pods = append(pods, v)
+	if _, ok := l.ShareInfos[functionName]; ok {
+
+		pInfos := (l.ShareInfos[functionName]).PodInfos
+
+		if len(pInfos) > 0 {
+			podsWithinfo := PodsWithInfos{
+				Pods:     filteredPods,
+				podInfos: pInfos,
+				Now:      metav1.Now(),
+			}
+			sort.Sort(podsWithinfo)
 		}
+		//pods := make([]PodInfo, len(pInfos))
+		/*
+			for _, v := range pInfos {
+				pods = append(pods, v)
+			}
 
-		if err != nil {
-			return url.URL{}, "", err
-		}
-		//pods[0].Status.PodIP
+			if err != nil {
+				return url.URL{}, "", err
+			}
+			//pods[0].Status.PodIP
 
-		//podsWithRanks :=
+			//podsWithRanks :=
 
-		infos := PodsWithInfos{
-			Pods:     pods,
-			podInfos: pInfos,
-			Now:      metav1.Now(),
-		}
-	*/
-
-	podsWithinfo := PodsWithInfos{
-		Pods:     filteredPods,
-		podInfos: pInfos,
-		Now:      metav1.Now(),
+			infos := PodsWithInfos{
+				Pods:     pods,
+				podInfos: pInfos,
+				Now:      metav1.Now(),
+			}
+		*/
 	}
-
-	sort.Sort(podsWithinfo)
 
 	podName := pods[0].Name
 	serviceIP := pods[0].Status.PodIP
@@ -235,9 +242,9 @@ func (l *FunctionLookup) Resolve(name string, suffix string) (url.URL, string, e
 	*/
 	var urlStr string
 	if suffix == "" {
-		urlStr = fmt.Sprintf("http://%s:%d", serviceIP, watchdogPort)
+		urlStr = fmt.Sprintf("http://%s:%d/", serviceIP, watchdogPort)
 	} else {
-		urlStr = fmt.Sprintf("http://%s:%d/%s", serviceIP, watchdogPort, suffix)
+		urlStr = fmt.Sprintf("http://%s:%d/%s/", serviceIP, watchdogPort, suffix)
 	}
 
 	urlRes, err := url.Parse(urlStr)
@@ -308,8 +315,8 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 	} else {
 		newReplica := false
 		var totalInvoke int32 = 0
-		l.ShareInfos[functionName].Lock.Lock()
 		var dec = 0
+		l.ShareInfos[functionName].Lock.Lock()
 		//test.lock.Lock()
 		defer func() {
 			l.ShareInfos[functionName].Lock.Unlock()
