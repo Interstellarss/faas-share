@@ -403,10 +403,10 @@ type SharepodProbes struct {
 
 func makeSimpleProbes() (*SharepodProbes, error) {
 	var handler v1.ProbeHandler
-	path := filepath.Join("/tmp/", ".lock")
+	path := filepath.Join("/home/app", "probe.sh")
 	handler = v1.ProbeHandler{
 		Exec: &v1.ExecAction{
-			Command: []string{"cat", path},
+			Command: []string{"/bin/bash", path},
 		},
 	}
 	probes := SharepodProbes{}
@@ -420,7 +420,11 @@ func makeSimpleProbes() (*SharepodProbes, error) {
 	}
 
 	probes.Liveness = &v1.Probe{
-		ProbeHandler:        handler,
+		ProbeHandler: v1.ProbeHandler{
+			Exec: &v1.ExecAction{
+				Command: []string{"cat", filepath.Join("/tmp/", ".lock")},
+			},
+		},
 		InitialDelaySeconds: int32(2),
 		TimeoutSeconds:      int32(1),
 		PeriodSeconds:       int32(10),
