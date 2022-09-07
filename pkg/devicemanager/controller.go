@@ -130,7 +130,7 @@ func NewController(
 	kubeshareclient clientset.Interface,
 	nodeInformer coreinformers.NodeInformer,
 	podInformer coreinformers.PodInformer,
-//containerdClient *containerd.Client,
+	//containerdClient *containerd.Client,
 	kubeshareInformer informers.SharePodInformer) *Controller {
 
 	// Create event broadcaster
@@ -423,7 +423,8 @@ func (c *Controller) syncHandler(key string) error {
 		shrCopy.Status.Usage = &usages
 	}
 
-	shrNeedsSync := c.expectations.SatisfiedExpectations(key)
+	//shrNeedsSync := c.expectations.SatisfiedExpectations(key)
+	shrNeedsSync := true
 
 	selector, err := metav1.LabelSelectorAsSelector(shrCopy.Spec.Selector)
 
@@ -452,7 +453,7 @@ func (c *Controller) syncHandler(key string) error {
 	klog.Infof("Pod of SharePod %v/%v with length %d", shrCopy.Namespace, shrCopy.Name, len(filteredPods))
 
 	var manageReplicasErr error
-	if shrNeedsSync && shr.DeletionTimestamp == nil {
+	if shrNeedsSync {
 		manageReplicasErr = c.manageReplicas(context.TODO(), filteredPods, shrCopy, key)
 	}
 
@@ -599,8 +600,6 @@ func (c *Controller) handleObject(obj interface{}) {
 }
 
 func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.Pod, gpupod *faasv1.SharePod, key string) error {
-	podNamePoolMux.Lock()
-	defer podNamePoolMux.Unlock()
 
 	diff := len(filteredPods) - int(*(gpupod.Spec.Replicas))
 
@@ -614,6 +613,8 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 		return nil
 	}
 
+	podNamePoolMux.Lock()
+	defer podNamePoolMux.Unlock()
 	if diff < 0 {
 		diff *= -1
 

@@ -251,7 +251,7 @@ func int32p(i int32) *int32 {
 func FilterActivePods(pods []*v1.Pod) []*v1.Pod {
 	var result []*v1.Pod
 	for _, p := range pods {
-		if IsPodActive(p) && IsPodHot(p) {
+		if IsPodActive(p) {
 			result = append(result, p)
 		} else {
 			klog.V(4).Infof("Ignoring inactive pod %v/%v in state %v, deletion time %v", p.Namespace, p.Name, p.Status.Phase, p.DeletionTimestamp)
