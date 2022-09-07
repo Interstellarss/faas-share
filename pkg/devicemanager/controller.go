@@ -906,7 +906,6 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 						klog.V(2).Infof("Failed to delete %v, decremented expectations for %v %s/%s", podKey, shrCopy.Kind, shrCopy.Namespace, shrCopy.Name)
 						errCh <- err
 					}
-
 				}
 			}(pod)
 		}

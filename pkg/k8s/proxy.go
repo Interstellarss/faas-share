@@ -140,6 +140,10 @@ func (l *FunctionLookup) Resolve(name string, suffix string) (url.URL, string, e
 
 	shrpod, err := l.faasLister.SharePods(namespace).Get(functionName)
 
+	if err != nil {
+		return url.URL{}, "", err
+	}
+
 	selector, err := metav1.LabelSelectorAsSelector(shrpod.Spec.Selector)
 
 	if err != nil {
@@ -155,14 +159,20 @@ func (l *FunctionLookup) Resolve(name string, suffix string) (url.URL, string, e
 
 	pods, err := l.podLister.Pods(namespace).List(selector)
 
+	if err != nil {
+		return url.URL{}, "", err
+	}
+
 	filteredPods := devicemanager.FilterActivePods(pods)
 
+	var podName string
+
+	var serviceIP string
 	//if
 
-	if _, ok := l.ShareInfos[functionName]; ok {
+	if shareinfo, ok := l.ShareInfos[functionName]; ok {
 
-		l.ShareInfos[functionName].Lock.Lock()
-		defer l.ShareInfos[functionName].Lock.Unlock()
+		shareinfo.Lock.Lock()
 
 		pInfos := (l.ShareInfos[functionName]).PodInfos
 
@@ -193,23 +203,29 @@ func (l *FunctionLookup) Resolve(name string, suffix string) (url.URL, string, e
 				Now:      metav1.Now(),
 			}
 		*/
-	}
+		podName = pods[0].Name
+		serviceIP = pods[0].Status.PodIP
 
-	podName := pods[0].Name
-	serviceIP := pods[0].Status.PodIP
-
-	if podinfo, ok := l.ShareInfos[functionName].PodInfos[podName]; ok {
-		podinfo.TotalInvoke++
-		if podinfo.PodIp == "" {
-			podinfo.PodIp = serviceIP
+		if podinfo, ok := l.ShareInfos[functionName].PodInfos[podName]; ok {
+			podinfo.TotalInvoke++
+			if podinfo.PodIp == "" {
+				podinfo.PodIp = serviceIP
+			}
+		} else {
+			l.ShareInfos[functionName].PodInfos[podName] = PodInfo{
+				PodName:     podName,
+				ServiceName: functionName,
+				PodIp:       serviceIP,
+				TotalInvoke: 1,
+			}
 		}
+
+		shareinfo.Lock.Unlock()
 	} else {
-		l.ShareInfos[functionName].PodInfos[podName] = PodInfo{
-			PodName:     podName,
-			ServiceName: functionName,
-			PodIp:       serviceIP,
-			TotalInvoke: 1,
-		}
+		podName = pods[0].Name
+		serviceIP = pods[0].Status.PodIP
+
+		l.AddFunc(functionName)
 	}
 
 	klog.Infof("picking pod %s out of sharpeod %s with pod IP %s", podName, name, serviceIP)

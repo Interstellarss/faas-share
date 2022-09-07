@@ -5,6 +5,7 @@ package k8s
 
 import (
 	corev1 "k8s.io/api/core/v1"
+	glog "k8s.io/klog"
 )
 
 // removeVolume returns a Volume slice with any volumes matching volumeName removed.
@@ -41,4 +42,20 @@ func removeVolumeMount(volumeName string, mounts []corev1.VolumeMount) []corev1.
 	}
 
 	return newMounts
+}
+
+func FilterActivePods(pods []*corev1.Pod) []*corev1.Pod {
+	var result []*corev1.Pod
+	for _, p := range pods {
+		if IsPodActive(p) {
+			result = append(result, p)
+		} else {
+			glog.V(4).Infof("Ignoring inactive pod %v/%v in state %v, deletion time %v", p.Namespace, p.Name, p.Status.Phase, p.DeletionTimestamp)
+		}
+	}
+	return result
+}
+
+func IsPodActive(p *corev1.Pod) bool {
+	return corev1.PodSucceeded != p.Status.Phase && corev1.PodFailed != p.Status.Phase && p.DeletionTimestamp == nil && p.Status.ContainerStatuses[0].Ready
 }
