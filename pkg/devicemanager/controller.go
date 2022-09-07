@@ -130,7 +130,7 @@ func NewController(
 	kubeshareclient clientset.Interface,
 	nodeInformer coreinformers.NodeInformer,
 	podInformer coreinformers.PodInformer,
-//containerdClient *containerd.Client,
+	//containerdClient *containerd.Client,
 	kubeshareInformer informers.SharePodInformer) *Controller {
 
 	// Create event broadcaster
@@ -178,6 +178,11 @@ func NewController(
 	kubeshareInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: controller.enqueueSharePod,
 		UpdateFunc: func(old, new interface{}) {
+			newSHR := new.(*faasv1.SharePod)
+			oldSHR := old.(*faasv1.SharePod)
+			if newSHR.ResourceVersion == oldSHR.ResourceVersion {
+				return
+			}
 			controller.enqueueSharePod(new)
 		},
 		DeleteFunc: controller.handleDeletedSharePod,
