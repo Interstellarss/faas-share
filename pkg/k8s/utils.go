@@ -57,5 +57,5 @@ func FilterActivePods(pods []*corev1.Pod) []*corev1.Pod {
 }
 
 func IsPodActive(p *corev1.Pod) bool {
-	return corev1.PodSucceeded != p.Status.Phase && corev1.PodFailed != p.Status.Phase && p.DeletionTimestamp == nil && p.Status.ContainerStatuses[0].Ready
+	return corev1.PodSucceeded != p.Status.Phase && corev1.PodFailed != p.Status.Phase && p.DeletionTimestamp == nil && len(p.Status.ContainerStatuses) > 0 && p.Status.ContainerStatuses[0].Ready
 }

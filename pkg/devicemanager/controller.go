@@ -130,7 +130,7 @@ func NewController(
 	kubeshareclient clientset.Interface,
 	nodeInformer coreinformers.NodeInformer,
 	podInformer coreinformers.PodInformer,
-	//containerdClient *containerd.Client,
+//containerdClient *containerd.Client,
 	kubeshareInformer informers.SharePodInformer) *Controller {
 
 	// Create event broadcaster
@@ -892,6 +892,7 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 		errCh := make(chan error, diff)
 
 		var wg sync.WaitGroup
+		wg.Add(diff)
 		for _, pod := range podsToDelete {
 			go func(targetPod *corev1.Pod) {
 				//c.kubeclient.CoreV1().Pods(pod.Namespace).de
