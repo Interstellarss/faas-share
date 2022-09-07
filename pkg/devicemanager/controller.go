@@ -130,7 +130,7 @@ func NewController(
 	kubeshareclient clientset.Interface,
 	nodeInformer coreinformers.NodeInformer,
 	podInformer coreinformers.PodInformer,
-	//containerdClient *containerd.Client,
+//containerdClient *containerd.Client,
 	kubeshareInformer informers.SharePodInformer) *Controller {
 
 	// Create event broadcaster
@@ -604,6 +604,7 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 
 	diff := len(filteredPods) - int(*(gpupod.Spec.Replicas))
 
+	klog.Infof("SHR %s with current replica %s", gpupod.Name, diff)
 	shrKey, err := KeyFunc(gpupod)
 
 	shrCopy := gpupod.DeepCopy()
