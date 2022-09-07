@@ -10,7 +10,6 @@ import (
 	"fmt"
 	clientset "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned"
 	"github.com/Interstellarss/faas-share/pkg/controller"
-	"github.com/Interstellarss/faas-share/pkg/devicemanager"
 	v1 "k8s.io/api/core/v1"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"math"
@@ -163,7 +162,7 @@ func (l *FunctionLookup) Resolve(name string, suffix string) (url.URL, string, e
 		return url.URL{}, "", err
 	}
 
-	filteredPods := devicemanager.FilterActivePods(pods)
+	filteredPods := FilterActivePods(pods)
 
 	var podName string
 
