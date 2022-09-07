@@ -3,6 +3,7 @@ package devicemanager
 import (
 	"fmt"
 	"math"
+	"path/filepath"
 	"sort"
 	"strconv"
 	"time"
@@ -393,4 +394,39 @@ func RandStr(length int) string {
 		result = append(result, bytes[rand.Intn(len(bytes))])
 	}
 	return string(result)
+}
+
+type SharepodProbes struct {
+	Liveness  *v1.Probe
+	Readiness *v1.Probe
+}
+
+func makeSimpleProbes() (*SharepodProbes, error) {
+	var handler v1.ProbeHandler
+	path := filepath.Join("/tmp/", ".lock")
+	handler = v1.ProbeHandler{
+		Exec: &v1.ExecAction{
+			Command: []string{"cat", path},
+		},
+	}
+	probes := SharepodProbes{}
+	probes.Readiness = &v1.Probe{
+		ProbeHandler:        handler,
+		InitialDelaySeconds: int32(2),
+		TimeoutSeconds:      int32(1),
+		PeriodSeconds:       int32(10),
+		SuccessThreshold:    1,
+		FailureThreshold:    3,
+	}
+
+	probes.Liveness = &v1.Probe{
+		ProbeHandler:        handler,
+		InitialDelaySeconds: int32(2),
+		TimeoutSeconds:      int32(1),
+		PeriodSeconds:       int32(10),
+		SuccessThreshold:    1,
+		FailureThreshold:    3,
+	}
+
+	return &probes, nil
 }

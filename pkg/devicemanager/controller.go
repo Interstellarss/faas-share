@@ -130,7 +130,7 @@ func NewController(
 	kubeshareclient clientset.Interface,
 	nodeInformer coreinformers.NodeInformer,
 	podInformer coreinformers.PodInformer,
-//containerdClient *containerd.Client,
+	//containerdClient *containerd.Client,
 	kubeshareInformer informers.SharePodInformer) *Controller {
 
 	// Create event broadcaster
@@ -992,6 +992,11 @@ func newPod(shrpod *faasv1.SharePod, isWarm bool, podManagerIP string, podManage
 		annotationCopy[key] = val
 	}
 
+	probes, err := makeSimpleProbes()
+	if err != nil {
+		klog.Errorf("Error makeing Probes %s...", err)
+	}
+
 	//annotationCopy = append(annotationCopy,)
 	if isWarm {
 		annotationCopy[FaasShareWarm] = "true"
@@ -1040,6 +1045,8 @@ func newPod(shrpod *faasv1.SharePod, isWarm bool, podManagerIP string, podManage
 				MountPath: KubeShareLibraryPath,
 			},
 		)
+		c.ReadinessProbe = probes.Readiness
+		c.LivenessProbe = probes.Liveness
 	}
 	specCopy.Volumes = append(specCopy.Volumes,
 		corev1.Volume{
