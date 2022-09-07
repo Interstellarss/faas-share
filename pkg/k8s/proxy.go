@@ -9,7 +9,6 @@ import (
 	"errors"
 	"fmt"
 	clientset "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned"
-	"github.com/Interstellarss/faas-share/pkg/controller"
 	v1 "k8s.io/api/core/v1"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"math"
@@ -429,7 +428,7 @@ func (l *FunctionLookup) UpdateReplica(kube clientset.Interface, namepsace strin
 				targetRep = int32(math.Ceil(float64(*shrCopy.Spec.Replicas) * 1.2))
 			}
 
-			if value, ok := shrCopy.Labels[controller.LabelMaxReplicas]; ok {
+			if value, ok := shrCopy.Labels["com.openfaas.scale.max"]; ok {
 				r, err := strconv.Atoi(value)
 				if err == nil && r > 0 {
 					if int32(r) < targetRep {
