@@ -181,6 +181,7 @@ func NewController(
 			newSHR := new.(*faasv1.SharePod)
 			oldSHR := old.(*faasv1.SharePod)
 			if newSHR.ResourceVersion == oldSHR.ResourceVersion {
+				controller.enqueueSharePod(new)
 				return
 			}
 			controller.enqueueSharePod(new)
@@ -518,6 +519,7 @@ func (c *Controller) handleDeletedSharePod(obj interface{}) {
 		utilruntime.HandleError(fmt.Errorf("handleDeletedSharePod: cannot parse object"))
 		return
 	}
+	klog.Infof("Starting to delete pod of sharepod %s/%s", sharepod.Namespace, sharepod.Name)
 	//TODO: delete sharepod
 	go c.removeSharePodFromList(sharepod)
 }
