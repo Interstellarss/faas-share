@@ -9,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	clientset "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned"
+	"github.com/Interstellarss/faas-share/pkg/controller"
 	"github.com/Interstellarss/faas-share/pkg/devicemanager"
 	v1 "k8s.io/api/core/v1"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
@@ -390,6 +391,14 @@ func (l *FunctionLookup) UpdateReplica(kube clientset.Interface, namepsace strin
 			shrCopy := shr.DeepCopy()
 
 			var targetRep int32
+			/*
+				if value, ok := shrCopy.Labels[controller.LabelMaxReplicas];ok{
+					r, err := strconv.Atoi(value)
+					if err == nil && r > 0{
+
+					}
+				}
+			*/
 
 			if t, ok := shrCopy.ObjectMeta.Labels[target]; ok {
 
@@ -400,21 +409,32 @@ func (l *FunctionLookup) UpdateReplica(kube clientset.Interface, namepsace strin
 				}
 				targetRep = int32(math.Ceil(float64(invoke) / float64(tar)))
 				klog.Infof("DEBUG:Target based with %d, and current %d invoke, need to upload %d", tar, invoke, targetRep)
-				shrCopy.Spec.Replicas = &targetRep
+				//shrCopy.Spec.Replicas = &targetRep
 			} else {
 				targetRep = int32(math.Ceil(float64(*shrCopy.Spec.Replicas) * 1.2))
 			}
 
-			updatedShr, err := kube.KubeshareV1().SharePods(namepsace).Update(context.TODO(), shrCopy, metav1.UpdateOptions{})
-			if err != nil {
-				klog.Errorf("Sharepod %s update error %v", shrName, err)
-				return
-			}
-			if *updatedShr.Spec.Replicas == targetRep {
-				klog.Infof("Sharepod %s replica updated to %v", shrName, targetRep)
+			if value, ok := shrCopy.Labels[controller.LabelMaxReplicas]; ok {
+				r, err := strconv.Atoi(value)
+				if err == nil && r > 0 {
+					if int32(r) < targetRep {
+						klog.Infof("DEBUG: Overpass the maximum %i of SHR %s ...", r, shrCopy.Name)
+						return
+					} else {
+						shrCopy.Spec.Replicas = &targetRep
+						updatedShr, err := kube.KubeshareV1().SharePods(namepsace).Update(context.TODO(), shrCopy, metav1.UpdateOptions{})
+						if err != nil {
+							klog.Errorf("Sharepod %s update error %v", shrName, err)
+							return
+						}
+						if *updatedShr.Spec.Replicas == targetRep {
+							klog.Infof("Sharepod %s replica updated to %v", shrName, targetRep)
 
-			} else {
-				klog.Infof("Sharepod %s with replica %i failed updated to %v replicas", updatedShr.Name, *updatedShr.Spec.Replicas, targetRep)
+						} else {
+							klog.Infof("Sharepod %s with replica %i failed updated to %v replicas", updatedShr.Name, *updatedShr.Spec.Replicas, targetRep)
+						}
+					}
+				}
 			}
 		}
 	}

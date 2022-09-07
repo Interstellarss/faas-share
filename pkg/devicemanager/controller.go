@@ -180,10 +180,13 @@ func NewController(
 		UpdateFunc: func(old, new interface{}) {
 			newSHR := new.(*faasv1.SharePod)
 			oldSHR := old.(*faasv1.SharePod)
+			klog.Infof("DEBUG: updating SHR %s with replica %i ", newSHR.Name, *newSHR.Spec.Replicas)
+			klog.Infof("DEBUG: queue length %i", controller.workqueue.Len())
 			if newSHR.ResourceVersion == oldSHR.ResourceVersion {
 				controller.enqueueSharePod(new)
 				return
 			}
+
 			controller.enqueueSharePod(new)
 		},
 		DeleteFunc: controller.handleDeletedSharePod,

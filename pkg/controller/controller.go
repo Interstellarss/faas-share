@@ -45,6 +45,7 @@ const (
 	faasKind            = "SharePod"
 	functionPort        = 8080
 	LabelMinReplicas    = "com.openfaas.scale.min"
+	LabelMaxReplicas    = "com.openfaas.scale.max"
 	// SuccessSynced is used as part of the Event 'reason' when a Function is synced
 	SuccessSynced = "Synced"
 	// ErrResourceExists is used as part of the Event 'reason' when a Function fails
