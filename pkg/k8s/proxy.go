@@ -304,7 +304,7 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 
 		podinfos := make(map[string]PodInfo)
 
-		podinfos[podName] = PodInfo{PodName: podName, ServiceName: functionName, AvgResponseTime: duration, LastResponseTime: duration, Rate: float32(1000 / duration.Milliseconds()), TotalInvoke: 1, RateChange: Inc}
+		podinfos[podName] = PodInfo{PodName: podName, ServiceName: functionName, AvgResponseTime: duration, LastResponseTime: duration, Rate: float32(1000) / float32(duration.Milliseconds()), TotalInvoke: 1, RateChange: Inc}
 
 		l.ShareInfos[functionName] = &SharePodInfo{
 			PodInfos: podinfos,
@@ -337,9 +337,9 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 
 			oldRate := podInfo.Rate
 			if podInfo.AvgResponseTime.Milliseconds() > 0 {
-				podInfo.Rate = float32(1000 / podInfo.AvgResponseTime.Milliseconds())
+				podInfo.Rate = float32(1000) / float32(podInfo.AvgResponseTime.Milliseconds())
 			} else {
-				podInfo.Rate = float32(1000 / duration.Milliseconds())
+				podInfo.Rate = float32(1000) / float32(duration.Milliseconds())
 				podInfo.AvgResponseTime = duration
 			}
 
@@ -357,7 +357,7 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 		} else {
 			klog.Infof("Sharepod %s with Pod %s 's info nil...", functionName, podName)
 			l.ShareInfos[functionName].PodInfos[podName] = PodInfo{PodName: podName, ServiceName: functionName, AvgResponseTime: duration, TotalInvoke: 1,
-				LastResponseTime: duration, RateChange: Inc, Rate: float32(1000 / duration.Milliseconds())}
+				LastResponseTime: duration, RateChange: Inc, Rate: float32(1000) / float32(duration.Milliseconds())}
 			//return
 		}
 		for _, podinfo := range l.ShareInfos[functionName].PodInfos {
@@ -402,7 +402,7 @@ func (l *FunctionLookup) UpdateReplica(kube clientset.Interface, namepsace strin
 				klog.Infof("DEBUG:Target based with %d, and current %d invoke, need to upload %d", tar, invoke, targetRep)
 				shrCopy.Spec.Replicas = &targetRep
 			} else {
-				targetRep = int32(float32(*shrCopy.Spec.Replicas) * 1.2)
+				targetRep = int32(math.Ceil(float64(*shrCopy.Spec.Replicas) * 1.2))
 			}
 
 			updatedShr, err := kube.KubeshareV1().SharePods(namepsace).Update(context.TODO(), shrCopy, metav1.UpdateOptions{})

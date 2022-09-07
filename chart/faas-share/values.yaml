@@ -107,7 +107,7 @@ gateway:
   writeTimeout: "65s"
   upstreamTimeout: "60s"  # Must be smaller than read/write_timeout
   replicas: 1
-  scaleFromZero: true
+  scaleFromZero: false
   # change the port when creating multiple releases in the same baremetal cluster
   nodePort: 31112
   maxIdleConns: 1024
