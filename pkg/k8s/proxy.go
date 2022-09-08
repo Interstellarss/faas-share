@@ -202,9 +202,9 @@ func (l *FunctionLookup) Resolve(name string, suffix string) (url.URL, string, e
 					Now:      metav1.Now(),
 				}
 			*/
-			podName = filteredPods[len(pods)-1].Name
+			podName = filteredPods[len(filteredPods)-1].Name
 			//TODO: ip is nil?
-			serviceIP = filteredPods[len(pods)-1].Status.PodIP
+			serviceIP = filteredPods[len(filteredPods)-1].Status.PodIP
 
 			if podinfo, ok := l.ShareInfos[functionName].PodInfos[podName]; ok {
 				podinfo.TotalInvoke++
