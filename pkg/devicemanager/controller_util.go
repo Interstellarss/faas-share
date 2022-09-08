@@ -403,7 +403,7 @@ type SharepodProbes struct {
 
 func makeSimpleProbes() (*SharepodProbes, error) {
 	var handler v1.ProbeHandler
-	path := filepath.Join("/home/app", "probe.sh")
+	path := filepath.Join("/home/app/probe/", "probe.sh")
 	handler = v1.ProbeHandler{
 		Exec: &v1.ExecAction{
 			Command: []string{"/bin/bash", path},
