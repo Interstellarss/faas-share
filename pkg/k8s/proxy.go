@@ -168,66 +168,67 @@ func (l *FunctionLookup) Resolve(name string, suffix string) (url.URL, string, e
 	var serviceIP string
 	//if
 
-	if shareinfo, ok := l.ShareInfos[functionName]; ok {
+	if len(filteredPods) > 0 {
+		if shareinfo, ok := l.ShareInfos[functionName]; ok {
 
-		shareinfo.Lock.Lock()
+			shareinfo.Lock.Lock()
 
-		pInfos := (l.ShareInfos[functionName]).PodInfos
+			pInfos := (l.ShareInfos[functionName]).PodInfos
 
-		if len(pInfos) > 0 {
-			podsWithinfo := PodsWithInfos{
-				Pods:     filteredPods,
-				podInfos: pInfos,
-				Now:      metav1.Now(),
+			if len(pInfos) > 0 {
+				podsWithinfo := PodsWithInfos{
+					Pods:     filteredPods,
+					podInfos: pInfos,
+					Now:      metav1.Now(),
+				}
+				sort.Sort(podsWithinfo)
 			}
-			sort.Sort(podsWithinfo)
-		}
-		//pods := make([]PodInfo, len(pInfos))
-		/*
-			for _, v := range pInfos {
-				pods = append(pods, v)
+			//pods := make([]PodInfo, len(pInfos))
+			/*
+				for _, v := range pInfos {
+					pods = append(pods, v)
+				}
+
+				if err != nil {
+					return url.URL{}, "", err
+				}
+				//pods[0].Status.PodIP
+
+				//podsWithRanks :=
+
+				infos := PodsWithInfos{
+					Pods:     pods,
+					podInfos: pInfos,
+					Now:      metav1.Now(),
+				}
+			*/
+			podName = filteredPods[len(pods)-1].Name
+			//TODO: ip is nil?
+			serviceIP = filteredPods[len(pods)-1].Status.PodIP
+
+			if podinfo, ok := l.ShareInfos[functionName].PodInfos[podName]; ok {
+				podinfo.TotalInvoke++
+				if podinfo.PodIp == "" {
+					podinfo.PodIp = serviceIP
+				}
+			} else {
+				l.ShareInfos[functionName].PodInfos[podName] = PodInfo{
+					PodName:     podName,
+					ServiceName: functionName,
+					PodIp:       serviceIP,
+					TotalInvoke: 1,
+				}
 			}
 
-			if err != nil {
-				return url.URL{}, "", err
-			}
-			//pods[0].Status.PodIP
-
-			//podsWithRanks :=
-
-			infos := PodsWithInfos{
-				Pods:     pods,
-				podInfos: pInfos,
-				Now:      metav1.Now(),
-			}
-		*/
-		podName = pods[0].Name
-		//TODO: ip is nil?
-		serviceIP = pods[0].Status.PodIP
-
-		if podinfo, ok := l.ShareInfos[functionName].PodInfos[podName]; ok {
-			podinfo.TotalInvoke++
-			if podinfo.PodIp == "" {
-				podinfo.PodIp = serviceIP
-			}
+			shareinfo.Lock.Unlock()
 		} else {
-			l.ShareInfos[functionName].PodInfos[podName] = PodInfo{
-				PodName:     podName,
-				ServiceName: functionName,
-				PodIp:       serviceIP,
-				TotalInvoke: 1,
-			}
+			podName = pods[len(pods)-1].Name
+			serviceIP = pods[len(pods)-1].Status.PodIP
+
+			l.AddFunc(functionName)
 		}
-
-		shareinfo.Lock.Unlock()
-	} else {
-		podName = pods[0].Name
-		serviceIP = pods[0].Status.PodIP
-
-		l.AddFunc(functionName)
 	}
-
-	klog.Infof("picking pod %s out of sharpeod %s with pod IP %s", podName, name, serviceIP)
+	//klog.Infof("picking pod %s out of sharpeod %s with pod IP %s", podName, name, serviceIP)
 	//pods[0].Status.ContainerStatuses[0].ContainerID
 	/*
 		nsEndpointLister := l.GetLister(namespace)
@@ -270,6 +271,8 @@ func (l *FunctionLookup) Resolve(name string, suffix string) (url.URL, string, e
 			urlStr = fmt.Sprintf("http://%s%s:%d", functionName, suffix, watchdogPort)
 		}
 	}
+
+	klog.Infof("picking pod %s out of sharpeod %s with pod IP %s", podName, name, serviceIP)
 
 	urlRes, err := url.Parse(urlStr)
 	if err != nil {
