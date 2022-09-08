@@ -16,5 +16,5 @@ spec:
     terminationGracePeriodSeconds: 1
     containers:
       - name: squeezenet
-        image: leslie233/squeezenet:index
+        image: leslie233/squeezenet:model-probe
         command: [ "sh", "-c", "fwatchdog" ]

@@ -24,7 +24,7 @@ spec:
       - name: mobilenet-test
         # image: leslie233/mobilenet-2:index
         #image: leslie233/mobilenet-test:shared
-        image: leslie233/mobilenet-test:gpu-exclude
+        image: leslie233/mobilenet-test:shared-probe
         command: [ "sh", "-c", "fwatchdog" ]
         volumeMounts:
           - name: "mobilenet-model"

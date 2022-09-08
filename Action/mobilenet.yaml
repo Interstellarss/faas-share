@@ -16,7 +16,7 @@ spec:
     terminationGracePeriodSeconds: 1
     containers:
       - name: mobilenet-test
-        image: leslie233/mobilenet-2:index
+        image: leslie233/mobilenet-2:probe
         #image: leslie233/mobilenet-test:shared
         command: [ "sh", "-c", "fwatchdog" ]
         volumeMounts:

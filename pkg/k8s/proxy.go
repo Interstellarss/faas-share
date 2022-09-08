@@ -202,6 +202,7 @@ func (l *FunctionLookup) Resolve(name string, suffix string) (url.URL, string, e
 			}
 		*/
 		podName = pods[0].Name
+		//TODO: ip is nil?
 		serviceIP = pods[0].Status.PodIP
 
 		if podinfo, ok := l.ShareInfos[functionName].PodInfos[podName]; ok {

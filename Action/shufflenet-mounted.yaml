@@ -23,7 +23,7 @@ spec:
     terminationGracePeriodSeconds: 1
     containers:
       - name: shufflenet
-        image: leslie233/shufflenet-test:gpu-exclude
+        image: leslie233/shufflenet-test:shared-probe
         command: [ "sh", "-c", "fwatchdog" ]
         volumeMounts:
           - name: "shufflenet-model"

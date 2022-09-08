@@ -17,5 +17,5 @@ spec:
     terminationGracePeriodSeconds: 1
     containers:
       - name: shufflenet
-        image: leslie233/shufflenet-test:index
+        image: leslie233/shufflenet-test:model-probe
         command: [ "sh", "-c", "fwatchdog" ]
