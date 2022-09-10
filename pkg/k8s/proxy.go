@@ -59,17 +59,12 @@ func (s PodsWithInfos) Less(i, j int) bool {
 
 	//if a pod is unsigned, then the unsigned one is smaller
 
-	if _, ok := s.podInfos[name_i]; !ok {
-		return !ok
-	}
+	_, ok := s.podInfos[name_i]
 
-	if _, ok := s.podInfos[name_j]; !ok {
-		return !ok
-	}
+	_, ok2 := s.podInfos[name_j]
 
-	//TODO: if key not exist
-	if s.Pods[i].Spec.NodeName != s.Pods[j].Spec.NodeName && (len(s.Pods[i].Spec.NodeName) == 0 || len(s.Pods[j].Spec.NodeName) == 0) {
-		return len(s.Pods[i].Spec.NodeName) == 0
+	if !ok || !ok2 {
+		return !ok
 	}
 
 	//rate smaller < larger rate
@@ -78,12 +73,8 @@ func (s PodsWithInfos) Less(i, j int) bool {
 			return s.podInfos[name_i].Rate < s.podInfos[name_j].Rate
 		}
 	*/
-	if s.podInfos[name_i].Rate == 0 {
+	if s.podInfos[name_i].Rate == 0 || s.podInfos[name_j].Rate == 0 {
 		return !(s.podInfos[name_i].Rate == 0)
-	}
-
-	if s.podInfos[name_j].Rate == 0 {
-		return !(s.podInfos[name_j].Rate == 0)
 	}
 
 	return s.podInfos[name_i].Rate < s.podInfos[name_j].Rate
@@ -330,8 +321,7 @@ func (l *FunctionLookup) GetSharePodInfo(name string) SharePodInfo {
 func (l *FunctionLookup) AddFunc(funcname string) {
 
 	if sharepodinfo, ok := l.ShareInfos[funcname]; !ok {
-		sharepodinfo = &SharePodInfo{PodInfos: make(map[string]PodInfo), Lock: sync.RWMutex{}}
-		l.ShareInfos[funcname] = sharepodinfo
+		l.ShareInfos[funcname] = &SharePodInfo{PodInfos: make(map[string]PodInfo), Lock: sync.RWMutex{}}
 		klog.Infof("Info of Sharepod %s initialized...", funcname)
 	} else {
 		if sharepodinfo.PodInfos == nil {

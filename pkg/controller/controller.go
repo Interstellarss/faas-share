@@ -3,7 +3,6 @@ package controller
 import (
 	"context"
 	"fmt"
-	"github.com/Interstellarss/faas-share/pkg/devicemanager"
 	"github.com/Interstellarss/faas-share/pkg/k8s"
 	appsv1 "k8s.io/api/apps/v1"
 	batchv1 "k8s.io/api/batch/v1"
@@ -145,7 +144,7 @@ func NewController(
 	faasInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{
 		AddFunc: controller.addSHR,
 		UpdateFunc: func(old, new interface{}) {
-			controller.addSHR(new)
+			controller.enqueueSHR(new)
 		},
 		DeleteFunc: controller.handleDeletedSharePod,
 	})
@@ -522,20 +521,23 @@ func (c *Controller) handleObject(obj interface{}) {
 	}
 	glog.V(4).Infof("Processing object: %s", object.GetName())
 
-	if pod, ok := obj.(*corev1.Pod); ok {
-		if ownerRef := metav1.GetControllerOf(object); ownerRef != nil {
-			if ownerRef.Kind != faasKind {
-				return
-			}
-			if (pod.Status.Phase == corev1.PodRunning || *pod.Status.ContainerStatuses[0].Started) && pod.Annotations[devicemanager.FaasShareWarm] != "true" {
-				//(*c.faasShareInfos)[ownerRef.Name]
-				if pod.Status.PodIP != "" {
-					c.resolver.Insert(ownerRef.Name, pod.Name, pod.Status.PodIP)
+	/*
+		if pod, ok := obj.(*corev1.Pod); ok {
+			if ownerRef := metav1.GetControllerOf(object); ownerRef != nil {
+				if ownerRef.Kind != faasKind {
+					return
 				}
+				if (pod.Status.Phase == corev1.PodRunning) && pod.Status.ContainerStatuses[0].Ready {
+					//(*c.faasShareInfos)[ownerRef.Name]
+					if pod.Status.PodIP != "" {
+						c.resolver.Insert(ownerRef.Name, pod.Name, pod.Status.PodIP)
+					}
+				}
+				//TODO check pod in daemonset,
 			}
-			//TODO check pod in daemonset,
 		}
-	}
+
+	*/
 
 	if ownerRef := metav1.GetControllerOf(object); ownerRef != nil {
 		// If this object is not owned by a function, we should not do anything more
@@ -550,9 +552,19 @@ func (c *Controller) handleObject(obj interface{}) {
 			return
 		}
 
-		c.addSHR(function)
+		c.enqueueSHR(function)
 		return
 	}
+}
+
+func (c *Controller) enqueueSHR(obj interface{}) {
+	var key string
+	var err error
+	if key, err = cache.MetaNamespaceKeyFunc(obj); err != nil {
+		runtime.HandleError(err)
+		return
+	}
+	c.workqueue.Add(key)
 }
 
 /*
@@ -595,6 +607,7 @@ func (c *Controller) handleDeletedSharePod(obj interface{}) {
 	//todo: keep these pod? or keep the vGPU
 	//
 	//c.kubeclientset.AppsV1().Deployments()
+	c.resolver.DeleteFunction(name)
 }
 
 // getReplicas returns the desired number of replicas for a function taking into account
