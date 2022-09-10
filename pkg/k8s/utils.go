@@ -4,8 +4,11 @@
 package k8s
 
 import (
+	"fmt"
 	corev1 "k8s.io/api/core/v1"
 	glog "k8s.io/klog"
+	"math/rand"
+	"time"
 )
 
 // removeVolume returns a Volume slice with any volumes matching volumeName removed.
@@ -65,4 +68,12 @@ func IsPodActive(p *corev1.Pod) bool {
 	}
 
 	return re
+}
+
+func GenerateRangeNum(min, max int) int {
+	rand.Seed(time.Now().Unix())
+	randNum := rand.Intn(max - min)
+	randNum = randNum + min
+	fmt.Printf("rand is %v\n", randNum)
+	return randNum
 }

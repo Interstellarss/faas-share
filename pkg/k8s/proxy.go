@@ -12,6 +12,7 @@ import (
 	v1 "k8s.io/api/core/v1"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"math"
+	//"math/rand"
 	"strconv"
 
 	//"net/http"
@@ -58,17 +59,36 @@ func (s PodsWithInfos) Less(i, j int) bool {
 
 	//if a pod is unsigned, then the unsigned one is smaller
 
+	if _, ok := s.podInfos[name_i]; !ok {
+		return !ok
+	}
+
+	if _, ok := s.podInfos[name_j]; !ok {
+		return !ok
+	}
+
 	//TODO: if key not exist
 	if s.Pods[i].Spec.NodeName != s.Pods[j].Spec.NodeName && (len(s.Pods[i].Spec.NodeName) == 0 || len(s.Pods[j].Spec.NodeName) == 0) {
 		return len(s.Pods[i].Spec.NodeName) == 0
 	}
 
 	//rate smaller < larger rate
-	if s.podInfos[name_i].RateChange == s.podInfos[name_j].RateChange {
-		return s.podInfos[name_i].Rate < s.podInfos[name_j].Rate
+	/*
+		if s.podInfos[name_i].RateChange >= s.podInfos[name_j].RateChange {
+			return s.podInfos[name_i].Rate < s.podInfos[name_j].Rate
+		}
+	*/
+	if s.podInfos[name_i].Rate == 0 {
+		return !(s.podInfos[name_i].Rate == 0)
 	}
 
-	return s.podInfos[name_i].RateChange < s.podInfos[name_j].RateChange
+	if s.podInfos[name_j].Rate == 0 {
+		return !(s.podInfos[name_j].Rate == 0)
+	}
+
+	return s.podInfos[name_i].Rate < s.podInfos[name_j].Rate
+
+	//return s.podInfos[name_i].RateChange < s.podInfos[name_j].RateChange
 }
 
 func NewFunctionLookup(ns string, podLister corelister.PodLister, faasLister faas.SharePodLister, sharepodInfos map[string]*SharePodInfo) *FunctionLookup {
@@ -202,9 +222,10 @@ func (l *FunctionLookup) Resolve(name string, suffix string) (url.URL, string, e
 					Now:      metav1.Now(),
 				}
 			*/
-			podName = filteredPods[len(filteredPods)-1].Name
+			target := GenerateRangeNum(len(filteredPods)/2, len(filteredPods))
+			podName = filteredPods[target].Name
 			//TODO: ip is nil?
-			serviceIP = filteredPods[len(filteredPods)-1].Status.PodIP
+			serviceIP = filteredPods[target].Status.PodIP
 
 			if podinfo, ok := l.ShareInfos[functionName].PodInfos[podName]; ok {
 				podinfo.TotalInvoke++
