@@ -292,9 +292,8 @@ func (l *FunctionLookup) DeletePodInfo(funcName string, podName string) {
 	if shrInfo, ok := l.ShareInfos[funcName]; ok {
 		shrInfo.Lock.Lock()
 		defer shrInfo.Lock.Unlock()
-		if _, ok := shrInfo.PodInfos[podName]; ok {
-			delete(shrInfo.PodInfos, podName)
-		}
+		delete(shrInfo.PodInfos, podName)
+		klog.Infof("Deleting pod %s info of shr %s", podName, funcName)
 	}
 }
 
@@ -347,9 +346,9 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 		//test.lock.Lock()
 		defer func() {
 			l.ShareInfos[functionName].Lock.Unlock()
-
-			go l.UpdateReplica(kube, l.DefaultNamespace, functionName, totalInvoke, newReplica)
-
+			if newReplica {
+				go l.UpdateReplica(kube, l.DefaultNamespace, functionName, totalInvoke)
+			}
 		}()
 
 		if podInfo, ok := l.ShareInfos[functionName].PodInfos[podName]; ok {
@@ -403,66 +402,66 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 	}
 }
 
-func (l *FunctionLookup) UpdateReplica(kube clientset.Interface, namepsace string, shrName string, invoke int32, neRep bool) {
+func (l *FunctionLookup) UpdateReplica(kube clientset.Interface, namepsace string, shrName string, invoke int32) {
 	//klog.Infof("pod %s of sharepod %s rate decrease...", podInfo.PodName, functionName)
 	if l.RateRep {
-		if neRep {
-			klog.Infof("Starting Update Sharepod %s Replica ...", shrName)
+		klog.Infof("Starting Update Sharepod %s Replica ...", shrName)
 
-			shr, err := kube.KubeshareV1().SharePods(namepsace).Get(context.TODO(), shrName, metav1.GetOptions{})
-			if err != nil {
-				klog.Errorf("Sharepod %s get error: %v", shrName, err)
+		shr, err := kube.KubeshareV1().SharePods(namepsace).Get(context.TODO(), shrName, metav1.GetOptions{})
+		if err != nil {
+			klog.Errorf("Sharepod %s get error: %v", shrName, err)
+			return
+		}
+		shrCopy := shr.DeepCopy()
+
+		var targetRep int32
+		/*
+			if value, ok := shrCopy.Labels[controller.LabelMaxReplicas];ok{
+				r, err := strconv.Atoi(value)
+				if err == nil && r > 0{
+
+				}
+			}
+		*/
+
+		if t, ok := shrCopy.ObjectMeta.Labels[target]; ok {
+
+			tar, errr := strconv.ParseInt(t, 10, 32)
+			if errr != nil {
+				klog.Infof("Erro parsing target of sharepod %s...", shrName)
 				return
 			}
-			shrCopy := shr.DeepCopy()
+			targetRep = int32(math.Ceil(float64(invoke) / float64(tar)))
+			klog.Infof("DEBUG:Target based with %d, and current %d invoke, need to upload %d", tar, invoke, targetRep)
+			//shrCopy.Spec.Replicas = &targetRep
+		} else {
+			targetRep = int32(math.Ceil(float64(*shrCopy.Spec.Replicas) * 1.2))
+		}
 
-			var targetRep int32
-			/*
-				if value, ok := shrCopy.Labels[controller.LabelMaxReplicas];ok{
-					r, err := strconv.Atoi(value)
-					if err == nil && r > 0{
-
-					}
-				}
-			*/
-
-			if t, ok := shrCopy.ObjectMeta.Labels[target]; ok {
-
-				tar, errr := strconv.ParseInt(t, 10, 32)
-				if errr != nil {
-					klog.Infof("Erro parsing target of sharepod %s...", shrName)
+		if value, ok := shrCopy.Labels["com.openfaas.scale.max"]; ok {
+			r, err := strconv.Atoi(value)
+			if err == nil && r > 0 {
+				if int32(r) < targetRep {
+					klog.Infof("DEBUG: Overpass the maximum %i of SHR %s ...", r, shrCopy.Name)
+					targetRep = int32(r)
 					return
-				}
-				targetRep = int32(math.Ceil(float64(invoke) / float64(tar)))
-				klog.Infof("DEBUG:Target based with %d, and current %d invoke, need to upload %d", tar, invoke, targetRep)
-				//shrCopy.Spec.Replicas = &targetRep
-			} else {
-				targetRep = int32(math.Ceil(float64(*shrCopy.Spec.Replicas) * 1.2))
-			}
-
-			if value, ok := shrCopy.Labels["com.openfaas.scale.max"]; ok {
-				r, err := strconv.Atoi(value)
-				if err == nil && r > 0 {
-					if int32(r) < targetRep {
-						klog.Infof("DEBUG: Overpass the maximum %i of SHR %s ...", r, shrCopy.Name)
-						return
-					} else {
-						shrCopy.Spec.Replicas = &targetRep
-						updatedShr, err := kube.KubeshareV1().SharePods(namepsace).Update(context.TODO(), shrCopy, metav1.UpdateOptions{})
-						if err != nil {
-							klog.Errorf("Sharepod %s update error %v", shrName, err)
-							return
-						}
-						if *updatedShr.Spec.Replicas == targetRep {
-							klog.Infof("Sharepod %s replica updated to %v", shrName, targetRep)
-
-						} else {
-							klog.Infof("Sharepod %s with replica %i failed updated to %v replicas", updatedShr.Name, *updatedShr.Spec.Replicas, targetRep)
-						}
-					}
 				}
 			}
 		}
+
+		shrCopy.Spec.Replicas = &targetRep
+		updatedShr, err := kube.KubeshareV1().SharePods(namepsace).Update(context.TODO(), shrCopy, metav1.UpdateOptions{})
+		if err != nil {
+			klog.Errorf("Sharepod %s update error %v", shrName, err)
+			return
+		}
+		if *updatedShr.Spec.Replicas == targetRep {
+			klog.Infof("Sharepod %s replica updated to %v", shrName, targetRep)
+
+		} else {
+			klog.Infof("Sharepod %s with replica %i failed updated to %v replicas", updatedShr.Name, *updatedShr.Spec.Replicas, targetRep)
+		}
+
 	}
 
 }
