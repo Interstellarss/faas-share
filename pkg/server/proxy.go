@@ -159,17 +159,14 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 		defer proxyReq.Body.Close()
 	}
 	var possi bool = false
-	var timeout *time.Timer
+	var timeout *time.Timer = time.NewTimer(600 * time.Millisecond)
 
 	if shrinfo, ok := resolver.ShareInfos[functionName]; ok {
 		if podinfo, ok := shrinfo.PodInfos[podName]; ok {
-			if podinfo.AvgResponseTime.Milliseconds() > 0 && len(shrinfo.PodInfos) > 2 {
+			if podinfo.AvgResponseTime.Milliseconds() > 0 && podinfo.AvgResponseTime.Milliseconds() < 300 && len(shrinfo.PodInfos) > 2 {
 				timeout = time.NewTimer(podinfo.AvgResponseTime * 2)
 			}
 		}
-		timeout = time.NewTimer(600 * time.Millisecond)
-	} else {
-		timeout = time.NewTimer(600 * time.Millisecond)
 	}
 	go func() {
 		<-timeout.C
