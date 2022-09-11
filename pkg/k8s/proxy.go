@@ -194,13 +194,12 @@ func (l *FunctionLookup) Resolve(name string, suffix string) (url.URL, string, e
 	var serviceIP string
 	//if
 
-	if len(filteredPods) > 0 {
+	if len(filteredPods) > 2 {
 		if shareinfo, ok := l.ShareInfos[functionName]; ok {
+			//shareinfo.Lock.Lock()
+			//defer shareinfo.Lock.Unlock()
 
-			shareinfo.Lock.Lock()
-			defer shareinfo.Lock.Unlock()
-
-			pInfos := (l.ShareInfos[functionName]).PodInfos
+			pInfos := (shareinfo).PodInfos
 
 			if len(pInfos) > 0 {
 				podsWithinfo := PodsWithInfos{
@@ -233,27 +232,31 @@ func (l *FunctionLookup) Resolve(name string, suffix string) (url.URL, string, e
 			podName = filteredPods[target].Name
 			//TODO: ip is nil?
 			serviceIP = filteredPods[target].Status.PodIP
+			/*
+				if podinfo, ok := l.ShareInfos[functionName].PodInfos[podName]; ok {
+					/*
+					podinfo.TotalInvoke++
+					if podinfo.PodIp == "" {
+						podinfo.PodIp = serviceIP
+					}
 
-			if podinfo, ok := l.ShareInfos[functionName].PodInfos[podName]; ok {
-				podinfo.TotalInvoke++
-				if podinfo.PodIp == "" {
-					podinfo.PodIp = serviceIP
+				} else {
+					l.ShareInfos[functionName].PodInfos[podName] = PodInfo{
+						PodName:     podName,
+						ServiceName: functionName,
+						PodIp:       serviceIP,
+						TotalInvoke: 1,
+					}
 				}
-			} else {
-				l.ShareInfos[functionName].PodInfos[podName] = PodInfo{
-					PodName:     podName,
-					ServiceName: functionName,
-					PodIp:       serviceIP,
-					TotalInvoke: 1,
-				}
-			}
+			*/
 
 		} else {
-			podName = pods[len(pods)-1].Name
-			serviceIP = pods[len(pods)-1].Status.PodIP
-
 			l.AddFunc(functionName)
 		}
+	} else if len(filteredPods) > 0 {
+		target := GenerateRangeNum(0, len(filteredPods))
+		podName = filteredPods[target].Name
+		serviceIP = filteredPods[target].Status.PodIP
 	}
 	//klog.Infof("picking pod %s out of sharpeod %s with pod IP %s", podName, name, serviceIP)
 	//pods[0].Status.ContainerStatuses[0].ContainerID
@@ -336,7 +339,7 @@ func (l *FunctionLookup) GetSharePodInfo(name string) SharePodInfo {
 func (l *FunctionLookup) AddFunc(funcname string) {
 
 	if sharepodinfo, ok := l.ShareInfos[funcname]; !ok {
-		l.ShareInfos[funcname] = &SharePodInfo{PodInfos: make(map[string]PodInfo), Lock: sync.RWMutex{}}
+		l.ShareInfos[funcname] = &SharePodInfo{PodInfos: make(map[string]PodInfo), Lock: sync.RWMutex{}, ScaleDown: false}
 		klog.Infof("Info of Sharepod %s initialized...", funcname)
 	} else {
 		if sharepodinfo.PodInfos == nil {
@@ -407,8 +410,8 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 		if podInfo, ok := l.ShareInfos[functionName].PodInfos[podName]; ok {
 			//podInfo.totalInvoke++
 			//time.Duration()
-			var invoke_pre = podInfo.TotalInvoke - 1
-			var invoke_cur = podInfo.TotalInvoke
+			var invoke_pre = podInfo.TotalInvoke
+			var invoke_cur = podInfo.TotalInvoke + 1
 
 			podInfo.AvgResponseTime = (podInfo.AvgResponseTime*(time.Duration(invoke_pre)) + duration) / time.Duration(invoke_cur)
 
@@ -435,7 +438,6 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 			} else if podInfo.Rate/oldRate < 0.8 {
 				podInfo.RateChange = ChangeType(Dec)
 				//needUpdate := false
-
 			} else {
 				podInfo.RateChange = ChangeType(Sta)
 			}
@@ -447,14 +449,15 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 		}
 		for _, podinfo := range l.ShareInfos[functionName].PodInfos {
 			totalInvoke += podinfo.TotalInvoke
-			if podinfo.RateChange == Dec {
+			if podinfo.PossiTimeout || podinfo.Timeout {
 				dec++
 			}
 		}
+
 		//var ratio float32
 		// <= or < ?
 		//debugging
-		klog.Infof("Sharepod %s with %d PodInfos and %d dec pods...", functionName, len(l.ShareInfos[functionName].PodInfos), dec)
+		klog.Infof("Sharepod %s with %d PodInfos and %d pods time out...", functionName, len(l.ShareInfos[functionName].PodInfos), dec)
 		if len(l.ShareInfos[functionName].PodInfos)-dec < 1 {
 			newReplica = true
 		}

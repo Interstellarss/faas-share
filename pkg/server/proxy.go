@@ -188,13 +188,20 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 		return
 	}
 
-	if timeout.Stop() || response.StatusCode == 200 {
+	if timeout.Stop() {
 		possi = false
 	} else {
 		possi = true
 	}
 
-	defer func() { go resolver.Update(seconds, functionName, podName, kube, possi) }()
+	defer func() {
+		if response.StatusCode == 200 {
+			go resolver.Update(seconds, functionName, podName, kube, possi)
+		} else {
+			go resolver.Update(10, functionName, podName, kube, possi)
+		}
+
+	}()
 	//resolver.
 	if response.Body != nil {
 		defer response.Body.Close()
