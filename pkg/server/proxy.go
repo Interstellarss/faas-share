@@ -191,6 +191,12 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 		possi = true
 	}
 
+	if response.StatusCode == 200 {
+		possi = false
+	} else {
+		possi = true
+	}
+
 	go resolver.Update(seconds, functionName, podName, kube, possi)
 
 	//resolver.
