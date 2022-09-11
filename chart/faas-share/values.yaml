@@ -104,7 +104,8 @@ oidcAuthPlugin:
 
 gateway:
   #image: ghcr.io/openfaas/gateway:0.21.3
-  image: ghcr.io/openfaas/gateway:0.24.0
+  #image: ghcr.io/openfaas/gateway:0.24.0
+  image: ghcr.io/interstellarss/gateway:v0.1.23
   readTimeout: "65s"
   writeTimeout: "65s"
   upstreamTimeout: "60s"  # Must be smaller than read/write_timeout
@@ -114,7 +115,7 @@ gateway:
   nodePort: 31112
   maxIdleConns: 1024
   maxIdleConnsPerHost: 1024
-  directFunctions: false
+  directFunctions: true
   # Custom logs provider url. For example openfaas-loki would be
   # "http://ofloki-openfaas-loki.openfaas:9191/"
   logsProviderURL: ""

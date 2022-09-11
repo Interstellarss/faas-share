@@ -543,7 +543,7 @@ func (c *Controller) removePodFromList(sharepod *faasshareV1.SharePod, pod *core
 	key := fmt.Sprintf("%s/%s", pod.ObjectMeta.Namespace, pod.ObjectMeta.Name)
 
 	nodesInfoMux.Lock()
-
+	defer nodesInfoMux.Unlock()
 	if node, nodeOk := nodesInfo[nodeName]; nodeOk {
 		if gpu, gpuOk := node.GPUID2GPU[GPUID]; gpuOk {
 			podlist := gpu.PodList
@@ -567,7 +567,7 @@ func (c *Controller) removePodFromList(sharepod *faasshareV1.SharePod, pod *core
 					}
 					node.PodManagerPortBitmap.Unmask(podRequest.PodManagerPort - PodManagerPortStart)
 
-					nodesInfoMux.Unlock()
+					//nodesInfoMux.Unlock()
 
 					if remove {
 						c.deleteDummyPod(nodeName, GPUID, uuid)
@@ -577,7 +577,7 @@ func (c *Controller) removePodFromList(sharepod *faasshareV1.SharePod, pod *core
 			}
 		}
 	}
-	nodesInfoMux.Unlock()
+	//nodesInfoMux.Unlock()
 }
 
 func (c *Controller) removeSharePodFromList(sharepod *faasshareV1.SharePod) {
@@ -602,6 +602,7 @@ func (c *Controller) removeSharePodFromList(sharepod *faasshareV1.SharePod) {
 		key := fmt.Sprintf("%s/%s", pod.ObjectMeta.Namespace, pod.ObjectMeta.Name)
 
 		nodesInfoMux.Lock()
+		defer nodesInfoMux.Unlock()
 
 		if node, nodeOk := nodesInfo[nodeName]; nodeOk {
 			if gpu, gpuOk := node.GPUID2GPU[GPUID]; gpuOk {
@@ -626,7 +627,7 @@ func (c *Controller) removeSharePodFromList(sharepod *faasshareV1.SharePod) {
 						}
 						node.PodManagerPortBitmap.Unmask(podRequest.PodManagerPort - PodManagerPortStart)
 
-						nodesInfoMux.Unlock()
+						//nodesInfoMux.Unlock()
 
 						if remove {
 							c.deleteDummyPod(nodeName, GPUID, uuid)
@@ -636,7 +637,7 @@ func (c *Controller) removeSharePodFromList(sharepod *faasshareV1.SharePod) {
 				}
 			}
 		}
-		nodesInfoMux.Unlock()
+		//nodesInfoMux.Unlock()
 	}
 
 }

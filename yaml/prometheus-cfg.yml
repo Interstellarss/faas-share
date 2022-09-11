@@ -63,6 +63,19 @@ data:
         rules:
         - alert: service_down
           expr: up == 0
+          for: 5s
+          labels:
+            service: gateway
+            severity: major
+        - alert: InstanceDown
+          expr: sum(rate(gateway_function_invocation_total{code="200"}[15s])) BY (function_name) == 0
+          for: 5s
+          labels:
+            service: gateway
+            severity: major
+          annotations:
+            summary: Instance "{{$labels.function_name}}" down
+            description: Having "{{$labels.function_name}}" has been down for more than 5s
         - alert: APIHighInvocationRate
           expr: sum(rate(gateway_function_invocation_total{code="200"}[10s])) BY (function_name) > 5
           for: 5s

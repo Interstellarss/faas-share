@@ -30,7 +30,7 @@ spec:
             requests:
               cpu: 50m
               memory: 120Mi
-        image: ghcr.io/openfaas/gateway:0.24.0
+        image: ghcr.io/interstellarss/gateway:v0.1.23
         imagePullPolicy: Always
         livenessProbe:
           httpGet:
@@ -52,7 +52,7 @@ spec:
         - name: functions_provider_url
           value: "http://127.0.0.1:8081/"
         - name: direct_functions
-          value: "false"
+          value: "true"
         - name: direct_functions_suffix
           value: "faas-share-fn.svc.cluster.local"
         - name: function_namespace
@@ -99,7 +99,7 @@ spec:
           - name: image_pull_policy
             value: "Always"
           - name: http_probe
-            value: "true"
+            value: "false"
           - name: set_nonroot_user
             value: "false"
           - name: readiness_probe_initial_delay_seconds
