@@ -537,6 +537,49 @@ func (c *Controller) getAndSetUUIDFromDummyPod(nodeName, GPUID, podName string, 
 	return nil
 }
 
+func (c *Controller) removePodFromList(sharepod *faasshareV1.SharePod, pod *corev1.Pod) {
+	nodeName := pod.Spec.NodeName
+	GPUID := pod.Annotations[faasshareV1.KubeShareResourceGPUID]
+	key := fmt.Sprintf("%s/%s", pod.ObjectMeta.Namespace, pod.ObjectMeta.Name)
+
+	nodesInfoMux.Lock()
+
+	if node, nodeOk := nodesInfo[nodeName]; nodeOk {
+		if gpu, gpuOk := node.GPUID2GPU[GPUID]; gpuOk {
+			podlist := gpu.PodList
+			for pod := podlist.Front(); pod != nil; pod = pod.Next() {
+				podRequest := pod.Value.(*PodRequest)
+				//TODO
+				if podRequest.Key == key {
+					klog.Infof("Remove MtgpuPod %s from list, remaining %d MtgpuPod(s).", key, podlist.Len())
+					podlist.Remove(pod)
+
+					uuid := gpu.UUID
+					remove := false
+
+					if podlist.Len() == 0 {
+						//delete(node.GPUID2GPU, GPUID)
+						//remove = true
+					} else {
+						gpu.Usage -= podRequest.Request
+						gpu.Mem -= podRequest.Memory
+						syncConfig(nodeName, uuid, podlist)
+					}
+					node.PodManagerPortBitmap.Unmask(podRequest.PodManagerPort - PodManagerPortStart)
+
+					nodesInfoMux.Unlock()
+
+					if remove {
+						c.deleteDummyPod(nodeName, GPUID, uuid)
+					}
+					continue
+				}
+			}
+		}
+	}
+	nodesInfoMux.Unlock()
+}
+
 func (c *Controller) removeSharePodFromList(sharepod *faasshareV1.SharePod) {
 
 	selector, err := metav1.LabelSelectorAsSelector(sharepod.Spec.Selector)

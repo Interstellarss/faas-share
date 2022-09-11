@@ -130,7 +130,7 @@ func NewController(
 	kubeshareclient clientset.Interface,
 	nodeInformer coreinformers.NodeInformer,
 	podInformer coreinformers.PodInformer,
-//containerdClient *containerd.Client,
+	//containerdClient *containerd.Client,
 	kubeshareInformer informers.SharePodInformer) *Controller {
 
 	// Create event broadcaster
@@ -896,8 +896,11 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 		for _, pod := range podsToDelete {
 			go func(targetPod *corev1.Pod) {
 				//c.kubeclient.CoreV1().Pods(pod.Namespace).de
-
-				defer wg.Done()
+				podCopy := targetPod.DeepCopy()
+				defer func() {
+					wg.Done()
+					go c.removePodFromList(shrCopy, podCopy)
+				}()
 				//c.clientset
 				if err := c.kubeclient.CoreV1().Pods(targetPod.Namespace).Delete(ctx, targetPod.Name, metav1.DeleteOptions{}); err != nil {
 					// Decrement the expected number of deletes because the informer won't observe this deletion
@@ -1049,7 +1052,7 @@ func newPod(shrpod *faasv1.SharePod, isWarm bool, podManagerIP string, podManage
 		if c.ReadinessProbe == nil {
 			c.ReadinessProbe = probes.Readiness
 		}
-
+		c.ImagePullPolicy = shrpod.Spec.PodSpec.Containers[0].ImagePullPolicy
 		c.LivenessProbe = probes.Liveness
 	}
 	specCopy.Volumes = append(specCopy.Volumes,
@@ -1089,6 +1092,7 @@ func newPod(shrpod *faasv1.SharePod, isWarm bool, podManagerIP string, podManage
 			NodeName:   scheNode,
 			Containers: specCopy.Containers,
 			Volumes:    specCopy.Volumes,
+
 			//InitContainers: []corev1.Container{},
 		},
 	}
