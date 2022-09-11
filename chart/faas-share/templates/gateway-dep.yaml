@@ -254,7 +254,7 @@ spec:
         - name: image_pull_policy
           value: {{ .Values.faasshare.imagePullPolicy | quote }}
         - name: rate_rep
-          value: "{{ .Values.operator.rateReplica }}"
+          value: "{{ .Values.rateReplica }}"
         - name: http_probe
           value: "{{ .Values.faasshare.httpProbe }}"
         - name: set_nonroot_user

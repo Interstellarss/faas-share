@@ -15,7 +15,9 @@ type PodInfo struct {
 	LastInvoke       time.Time
 	Rate             float32
 	//
-	RateChange ChangeType
+	RateChange   ChangeType
+	PossiTimeout bool
+	Timeout      bool
 }
 
 type SharePodInfo struct {

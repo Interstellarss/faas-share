@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/Interstellarss/faas-share/pkg/k8s"
 	"io"
+	glog "k8s.io/klog"
 	"log"
 	"net"
 	"net/http"
@@ -157,7 +158,22 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 	if proxyReq.Body != nil {
 		defer proxyReq.Body.Close()
 	}
+	var possi bool = false
+	var timeout *time.Timer = time.NewTimer(600 * time.Millisecond)
 
+	if shrinfo, ok := resolver.ShareInfos[functionName]; ok {
+		if podinfo, ok := shrinfo.PodInfos[podName]; ok {
+			if podinfo.AvgResponseTime.Milliseconds() > 0 && podinfo.AvgResponseTime.Milliseconds() < 300 && len(shrinfo.PodInfos) > 2 {
+				timeout = time.NewTimer(podinfo.AvgResponseTime * 2)
+			}
+		}
+	}
+	go func() {
+		<-timeout.C
+		glog.Warningf("possible time out of 500ms or 2 times avg time of shr %s pod %s", functionName, podName)
+		possi = true
+		go resolver.UpdatePossiTimeOut(true, functionName, podName)
+	}()
 	start := time.Now()
 	response, err := proxyClient.Do(proxyReq.WithContext(ctx))
 	seconds := time.Since(start)
@@ -169,8 +185,20 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 		return
 	}
 
-	go resolver.Update(seconds, functionName, podName, kube)
+	if timeout.Stop() {
+		possi = false
+	} else {
+		possi = true
+	}
 
+	defer func() {
+		if response.StatusCode == 200 {
+			go resolver.Update(seconds, functionName, podName, kube, possi)
+		} else {
+			go resolver.Update(10, functionName, podName, kube, possi)
+		}
+
+	}()
 	//resolver.
 	if response.Body != nil {
 		defer response.Body.Close()
@@ -186,6 +214,7 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 	if response.Body != nil {
 		io.Copy(w, response.Body)
 	}
+
 }
 
 // buildProxyRequest creates a request object for the proxy request, it will ensure that
