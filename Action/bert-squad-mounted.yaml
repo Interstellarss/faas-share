@@ -7,8 +7,8 @@ metadata:
     #"com.openfaas.scale.min": "1"
     "com.openfaas.scale.max": "5"
   annotations:
-    "kubeshare/gpu_request": "0.1"
-    "kubeshare/gpu_limit": "0.2"
+    "kubeshare/gpu_request": "0.5"
+    "kubeshare/gpu_limit": "0.1"
     "kubeshare/gpu_mem": "3145728000"
 spec:
   replicas: 1
@@ -26,6 +26,16 @@ spec:
       - name: bert-squad-mounted
         image: yukiozhu/bert_squad:model-excluded
         command: [ "fwatchdog" ]
+        readinessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - /workspace/probe/probe.sh
+          falureThreshold: 3
+          initialDelaySeconds: 3
+          periodSeconds: 10
+          successThreshold: 1
+          timeoutSeconds: 2
         volumeMounts:
           - name: "bert-squad-model"
             mountPath: "/workspace/bert/checkpoints"

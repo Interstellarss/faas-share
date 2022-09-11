@@ -22,7 +22,7 @@ spec:
     #      mountPath: "/model/squeezenet"
     containers:
       - name: squeezenet
-        image: leslie233/squeezenet:shared-probe
+        image: leslie233/squeezenet:shared-probe-2
         command: [ "sh", "-c", "fwatchdog" ]
         volumeMounts:
           - name: "squeezenet-model"

@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: mobile
+  namespace: faas-share-fn
+spec:
+  nodeName: gpu-one-2
+  terminationGracePeriodSeconds: 1
+  containers:
+  - name: mobileenet
+    image: leslie233/mobilenet-2:probe-2
+    command: ["sh", "-c", "fwatchdog"]
+

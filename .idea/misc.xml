@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="UnattendedHostPersistenceState">
+    <option name="openedFilesInfos">
+      <list>
+        <OpenedFileInfo>
+          <option name="caretOffset" value="1611" />
+          <option name="fileUrl" value="file://$PROJECT_DIR$/pkg/config/read_config.go" />
+        </OpenedFileInfo>
+        <OpenedFileInfo>
+          <option name="caretOffset" value="0" />
+          <option name="fileUrl" value="file://$PROJECT_DIR$/pkg/config/read_config_test.go" />
+        </OpenedFileInfo>
+        <OpenedFileInfo>
+          <option name="caretOffset" value="409" />
+          <option name="fileUrl" value="file://$PROJECT_DIR$/pkg/server/proxy.go" />
+        </OpenedFileInfo>
+        <OpenedFileInfo>
+          <option name="caretOffset" value="0" />
+          <option name="fileUrl" value="file://$PROJECT_DIR$/pkg/server/namespaces.go" />
+        </OpenedFileInfo>
+        <OpenedFileInfo>
+          <option name="caretOffset" value="2833" />
+          <option name="fileUrl" value="file://$PROJECT_DIR$/pkg/k8s/proxy.go" />
+        </OpenedFileInfo>
+        <OpenedFileInfo>
+          <option name="caretOffset" value="0" />
+          <option name="fileUrl" value="file://$PROJECT_DIR$/README.md" />
+        </OpenedFileInfo>
+        <OpenedFileInfo>
+          <option name="caretOffset" value="572" />
+          <option name="fileUrl" value="file://$PROJECT_DIR$/namespaces.yml" />
+        </OpenedFileInfo>
+        <OpenedFileInfo>
+          <option name="caretOffset" value="860" />
+          <option name="fileUrl" value="file://$PROJECT_DIR$/vendor/k8s.io/client-go/listers/core/v1/pod.go" />
+        </OpenedFileInfo>
+        <OpenedFileInfo>
+          <option name="caretOffset" value="12526" />
+          <option name="fileUrl" value="file://$PROJECT_DIR$/pkg/devicemanager/controller.go" />
+        </OpenedFileInfo>
+      </list>
+    </option>
+  </component>
+</project>
