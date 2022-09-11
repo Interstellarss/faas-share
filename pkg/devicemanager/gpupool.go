@@ -595,14 +595,13 @@ func (c *Controller) removeSharePodFromList(sharepod *faasshareV1.SharePod) {
 	if err != nil {
 		utilruntime.HandleError(err)
 	}
+	nodesInfoMux.Lock()
+	defer nodesInfoMux.Unlock()
 
 	for _, pod := range pods {
 		nodeName := pod.Spec.NodeName
 		GPUID := pod.Annotations[faasshareV1.KubeShareResourceGPUID]
 		key := fmt.Sprintf("%s/%s", pod.ObjectMeta.Namespace, pod.ObjectMeta.Name)
-
-		nodesInfoMux.Lock()
-		defer nodesInfoMux.Unlock()
 
 		if node, nodeOk := nodesInfo[nodeName]; nodeOk {
 			if gpu, gpuOk := node.GPUID2GPU[GPUID]; gpuOk {
