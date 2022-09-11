@@ -5,17 +5,38 @@ metadata:
   namespace: faas-share-fn
   labels:
     #"com.openfaas.scale.min": "1"
-    "com.openfaas.scale.max": "5"
+    "com.openfaas.scale.max": "3"
+    #"com.openfaas.scale.target": "3"
+    # com.openfaas.scale.max: "8"
+    com.openfaas.scale.target: "2"
+    com.openfaas.scale.type: capacity
   annotations:
     "kubeshare/gpu_request": "0.2"
-    "kubeshare/gpu_limit": "0.5"
+    "kubeshare/gpu_limit": "0.3"
     "kubeshare/gpu_mem": "1572864000" 
     # 1500 Mb = 1572864000 Byte
 spec:
   replicas: 1
   podSpec:
+    imagePullPolicy: Always
     terminationGracePeriodSeconds: 1
     containers:
       - name: paddlespeech
-        image: yukiozhu/paddlespeech:model-included 
+        image: yukiozhu/paddlespeech:model-included
+        readinessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - /home/app/probe/probe.sh
+          falureThreshold: 3
+          periodSeconds: 60
+          successThreshold: 1
+          timeoutSeconds: 2
+        startupProbe:
+          exec:
+            command:
+            - /bin/bash
+            - /home/app/probe/probe.sh
+          failureThreshold: 30
+          periodSeconds: 2
         command: [ "sh", "-c", "fwatchdog" ]

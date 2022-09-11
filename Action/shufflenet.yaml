@@ -17,5 +17,21 @@ spec:
     terminationGracePeriodSeconds: 1
     containers:
       - name: shufflenet
-        image: leslie233/shufflenet-test:model-probe
+        image: leslie233/shufflenet-test:model-probe-2
+        readinessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - /home/app/probe/probe.sh
+          falureThreshold: 3
+          periodSeconds: 60
+          successThreshold: 1
+          timeoutSeconds: 2
+        startupProbe:
+          exec:
+            command:
+            - /bin/bash
+            - /home/app/probe/probe.sh
+          failureThreshold: 30
+          periodSeconds: 2
         command: [ "sh", "-c", "fwatchdog" ]

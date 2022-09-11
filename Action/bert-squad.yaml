@@ -5,9 +5,9 @@ metadata:
   namespace: faas-share-fn
   labels:
     #"com.openfaas.scale.min": "1"
-    "com.openfaas.scale.max": "5"
+    "com.openfaas.scale.max": "4"
   annotations:
-    "kubeshare/gpu_request": "0.2"
+    "kubeshare/gpu_request": "0.3"
     "kubeshare/gpu_limit": "0.5"
     "kubeshare/gpu_mem": "1572864000" 
     # 1500 Mb = 1572864000 Byte
@@ -17,5 +17,21 @@ spec:
     terminationGracePeriodSeconds: 1
     containers:
       - name: bert-squad
-        image: yukiozhu/bert_squad:model-included 
+        image: yukiozhu/bert_squad:model-included
+        readinessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - /workspace/probe/probe.sh
+          falureThreshold: 3
+          periodSeconds: 60
+          successThreshold: 1
+          timeoutSeconds: 2
+        startupProbe:
+          exec:
+            command:
+            - /bin/bash
+            - /workspace/probe/probe.sh
+          failureThreshold: 30
+          periodSeconds: 2
         command: [ "sh", "-c", "fwatchdog" ]

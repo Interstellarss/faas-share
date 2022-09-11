@@ -16,16 +16,32 @@ spec:
     terminationGracePeriodSeconds: 1
     containers:
       - name: mobilenet-test
-        image: leslie233/mobilenet-2:probe
+        image: leslie233/mobilenet-2:probe-2
         #image: leslie233/mobilenet-test:shared
         command: [ "sh", "-c", "fwatchdog" ]
-        volumeMounts:
-          - name: "mobilenet-model"
-            mountPath: "/model/mobilenet"
-    volumes:
-      - name: "mobilenet-model"
-        hostPath:
-          path: "/model/mobilenet"
+        readinessProbe:
+          exec:
+            command:
+            - /bin/bash
+            - /home/app/probe/probe.sh
+          falureThreshold: 3
+          periodSeconds: 60
+          successThreshold: 1
+          timeoutSeconds: 2
+        startupProbe:
+          exec:
+            command:
+            - /bin/bash
+            - /home/app/probe/probe.sh
+          failureThreshold: 30
+          periodSeconds: 2
+        #volumeMounts:
+        #  - name: "mobilenet-model"
+        #    mountPath: "/model/mobilenet"
+        #volumes:
+        # - name: "mobilenet-model"
+        #hostPath:
+        #  path: "/model/mobilenet"
               #type:
         #volumeMounts:
         #- name:
