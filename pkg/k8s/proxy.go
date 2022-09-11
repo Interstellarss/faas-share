@@ -59,6 +59,14 @@ func (s PodsWithInfos) Less(i, j int) bool {
 
 	//if a pod is unsigned, then the unsigned one is smaller
 
+	if s.podInfos[name_i].Timeout || s.podInfos[name_j].Timeout {
+		return s.podInfos[name_i].Timeout
+	}
+
+	if s.podInfos[name_i].PossiTimeout || s.podInfos[name_j].PossiTimeout {
+		return s.podInfos[name_i].PossiTimeout
+	}
+
 	_, ok := s.podInfos[name_i]
 
 	_, ok2 := s.podInfos[name_j]
@@ -76,6 +84,13 @@ func (s PodsWithInfos) Less(i, j int) bool {
 	if s.podInfos[name_i].Rate == 0 || s.podInfos[name_j].Rate == 0 {
 		return !(s.podInfos[name_i].Rate == 0)
 	}
+
+	/*
+		if s.podInfos[name_i].Rate == s.podInfos[name_j].Rate{
+			return s.podInfos[name_i].LastInvoke < s.podInfos[name_j].LastInvoke
+		}
+
+	*/
 
 	return s.podInfos[name_i].Rate < s.podInfos[name_j].Rate
 
@@ -331,7 +346,34 @@ func (l *FunctionLookup) AddFunc(funcname string) {
 
 }
 
-func (l *FunctionLookup) Update(duration time.Duration, functionName string, podName string, kube clientset.Interface) {
+func (l *FunctionLookup) UpdatePossiTimeOut(possi bool, functionName string, podName string) {
+	if _, ok := l.ShareInfos[functionName]; !ok {
+
+		podinfos := make(map[string]PodInfo)
+
+		podinfos[podName] = PodInfo{PodName: podName, ServiceName: functionName, PossiTimeout: possi}
+
+		l.ShareInfos[functionName] = &SharePodInfo{
+			PodInfos: podinfos,
+			Lock:     sync.RWMutex{},
+		}
+		klog.Infof("DEBUG: initializing, SharePod info %s", functionName)
+		return
+	} else {
+		l.ShareInfos[functionName].Lock.Lock()
+		//test.lock.Lock()
+		defer l.ShareInfos[functionName].Lock.Unlock()
+
+		if podInfo, ok := l.ShareInfos[functionName].PodInfos[podName]; ok {
+			podInfo.PossiTimeout = possi
+		} else {
+			klog.Infof("Sharepod %s with Pod %s 's info nil...", functionName, podName)
+			l.ShareInfos[functionName].PodInfos[podName] = PodInfo{PodName: podName, ServiceName: functionName, PossiTimeout: possi, Timeout: false} //return
+		}
+	}
+}
+
+func (l *FunctionLookup) Update(duration time.Duration, functionName string, podName string, kube clientset.Interface, timeout bool) {
 	//podinfo := *((*l.ShareInfos)[functionName])
 	//var sharepodInfo SharePodInfo
 	//sharepodInfo = (*l.ShareInfos)[functionName]
@@ -372,6 +414,10 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 
 			//podInfo.TotalInvoke++
 
+			if duration.Seconds() >= 5 {
+				podInfo.Timeout = true
+			}
+
 			oldRate := podInfo.Rate
 			if podInfo.AvgResponseTime.Milliseconds() > 0 {
 				podInfo.Rate = float32(1000) / float32(podInfo.AvgResponseTime.Milliseconds())
@@ -379,7 +425,7 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 				podInfo.Rate = float32(1000) / float32(duration.Milliseconds())
 				podInfo.AvgResponseTime = duration
 			}
-
+			podInfo.PossiTimeout = timeout
 			podInfo.LastInvoke = time.Now()
 
 			if podInfo.Rate/oldRate > 1.2 {
@@ -394,7 +440,7 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 		} else {
 			klog.Infof("Sharepod %s with Pod %s 's info nil...", functionName, podName)
 			l.ShareInfos[functionName].PodInfos[podName] = PodInfo{PodName: podName, ServiceName: functionName, AvgResponseTime: duration, TotalInvoke: 1,
-				LastResponseTime: duration, RateChange: Inc, Rate: float32(1000) / float32(duration.Milliseconds())}
+				LastResponseTime: duration, RateChange: Inc, Rate: float32(1000) / float32(duration.Milliseconds()), PossiTimeout: false, Timeout: false}
 			//return
 		}
 		for _, podinfo := range l.ShareInfos[functionName].PodInfos {

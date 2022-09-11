@@ -157,7 +157,23 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 	if proxyReq.Body != nil {
 		defer proxyReq.Body.Close()
 	}
-
+	var possi bool = false
+	var timeout *time.Timer
+	if shrinfo, ok := resolver.ShareInfos[functionName]; ok {
+		if podinfo, ok := shrinfo.PodInfos[podName]; ok {
+			if podinfo.AvgResponseTime.Milliseconds() > 0 {
+				timeout = time.NewTimer(podinfo.AvgResponseTime * 2)
+			}
+		}
+		timeout = time.NewTimer(500 * time.Millisecond)
+	} else {
+		timeout = time.NewTimer(500 * time.Millisecond)
+	}
+	go func() {
+		<-timeout.C
+		possi = true
+		resolver.UpdatePossiTimeOut(true, functionName, podName)
+	}()
 	start := time.Now()
 	response, err := proxyClient.Do(proxyReq.WithContext(ctx))
 	seconds := time.Since(start)
@@ -169,7 +185,13 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 		return
 	}
 
-	go resolver.Update(seconds, functionName, podName, kube)
+	if timeout.Stop() {
+		possi = false
+	} else {
+		possi = true
+	}
+
+	go resolver.Update(seconds, functionName, podName, kube, possi)
 
 	//resolver.
 	if response.Body != nil {
