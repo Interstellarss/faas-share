@@ -160,6 +160,7 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 	}
 	var possi bool = false
 	var timeout *time.Timer
+
 	if shrinfo, ok := resolver.ShareInfos[functionName]; ok {
 		if podinfo, ok := shrinfo.PodInfos[podName]; ok {
 			if podinfo.AvgResponseTime.Milliseconds() > 0 && len(shrinfo.PodInfos) > 2 {
@@ -174,7 +175,7 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 		<-timeout.C
 		glog.Warningf("possible time out of 500ms or 2 times avg time of shr %s pod %s", functionName, podName)
 		possi = true
-		resolver.UpdatePossiTimeOut(true, functionName, podName)
+		go resolver.UpdatePossiTimeOut(true, functionName, podName)
 	}()
 	start := time.Now()
 	response, err := proxyClient.Do(proxyReq.WithContext(ctx))
@@ -193,8 +194,7 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 		possi = true
 	}
 
-	go resolver.Update(seconds, functionName, podName, kube, possi)
-
+	defer func() { go resolver.Update(seconds, functionName, podName, kube, possi) }()
 	//resolver.
 	if response.Body != nil {
 		defer response.Body.Close()
@@ -210,6 +210,7 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 	if response.Body != nil {
 		io.Copy(w, response.Body)
 	}
+
 }
 
 // buildProxyRequest creates a request object for the proxy request, it will ensure that
