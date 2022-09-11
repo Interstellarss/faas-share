@@ -140,7 +140,7 @@ operatorPro:
 
 faasshare:
   image: ghcr.io/interstellarss/faas-share:v0.1.20
-  readTimeout: "60s"
+  readTimeout: "2s"
   writeTimeout: "60s"
   imagePullPolicy: "Always"    # Image pull policy for deployed functions
   httpProbe: false             # Setting to true will use HTTP for readiness and liveness probe on function pods
