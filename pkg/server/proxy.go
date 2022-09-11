@@ -3,6 +3,7 @@ package server
 import (
 	"github.com/Interstellarss/faas-share/pkg/k8s"
 	"io"
+	glog "k8s.io/klog"
 	"log"
 	"net"
 	"net/http"
@@ -165,12 +166,13 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 				timeout = time.NewTimer(podinfo.AvgResponseTime * 2)
 			}
 		}
-		timeout = time.NewTimer(500 * time.Millisecond)
+		timeout = time.NewTimer(600 * time.Millisecond)
 	} else {
-		timeout = time.NewTimer(500 * time.Millisecond)
+		timeout = time.NewTimer(600 * time.Millisecond)
 	}
 	go func() {
 		<-timeout.C
+		glog.Warningf("possible time out of 500ms or 2 times avg time of shr %s pod %s", functionName, podName)
 		possi = true
 		resolver.UpdatePossiTimeOut(true, functionName, podName)
 	}()
@@ -185,13 +187,7 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 		return
 	}
 
-	if timeout.Stop() {
-		possi = false
-	} else {
-		possi = true
-	}
-
-	if response.StatusCode == 200 {
+	if timeout.Stop() || response.StatusCode == 200 {
 		possi = false
 	} else {
 		possi = true

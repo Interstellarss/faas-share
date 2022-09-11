@@ -59,20 +59,20 @@ func (s PodsWithInfos) Less(i, j int) bool {
 
 	//if a pod is unsigned, then the unsigned one is smaller
 
-	if s.podInfos[name_i].Timeout || s.podInfos[name_j].Timeout {
-		return s.podInfos[name_i].Timeout
-	}
-
-	if s.podInfos[name_i].PossiTimeout || s.podInfos[name_j].PossiTimeout {
-		return s.podInfos[name_i].PossiTimeout
-	}
-
 	_, ok := s.podInfos[name_i]
 
 	_, ok2 := s.podInfos[name_j]
 
 	if !ok || !ok2 {
 		return !ok
+	}
+
+	if s.podInfos[name_i].Timeout || s.podInfos[name_j].Timeout {
+		return s.podInfos[name_i].Timeout
+	}
+
+	if s.podInfos[name_i].PossiTimeout || s.podInfos[name_j].PossiTimeout {
+		return s.podInfos[name_i].PossiTimeout
 	}
 
 	//rate smaller < larger rate
@@ -198,6 +198,7 @@ func (l *FunctionLookup) Resolve(name string, suffix string) (url.URL, string, e
 		if shareinfo, ok := l.ShareInfos[functionName]; ok {
 
 			shareinfo.Lock.Lock()
+			defer shareinfo.Lock.Unlock()
 
 			pInfos := (l.ShareInfos[functionName]).PodInfos
 
@@ -247,7 +248,6 @@ func (l *FunctionLookup) Resolve(name string, suffix string) (url.URL, string, e
 				}
 			}
 
-			shareinfo.Lock.Unlock()
 		} else {
 			podName = pods[len(pods)-1].Name
 			serviceIP = pods[len(pods)-1].Status.PodIP
@@ -399,7 +399,7 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 		//test.lock.Lock()
 		defer func() {
 			l.ShareInfos[functionName].Lock.Unlock()
-			if newReplica {
+			if newReplica && !l.ShareInfos[functionName].ScaleDown {
 				go l.UpdateReplica(kube, l.DefaultNamespace, functionName, totalInvoke)
 			}
 		}()
@@ -414,8 +414,10 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 
 			//podInfo.TotalInvoke++
 
-			if duration.Seconds() >= 5 {
+			if duration.Seconds() >= 2 {
 				podInfo.Timeout = true
+			} else {
+				podInfo.Timeout = false
 			}
 
 			oldRate := podInfo.Rate
@@ -527,6 +529,14 @@ func (l *FunctionLookup) ScaleDown(funtionName string) {
 	if podinfos, ok := l.ShareInfos[funtionName]; ok {
 		podinfos.Lock.Lock()
 		podinfos.ScaleDown = true
+		podinfos.Lock.Unlock()
+	}
+}
+
+func (l *FunctionLookup) ScaleUp(funtionName string) {
+	if podinfos, ok := l.ShareInfos[funtionName]; ok {
+		podinfos.Lock.Lock()
+		podinfos.ScaleDown = false
 		podinfos.Lock.Unlock()
 	}
 }
