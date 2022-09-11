@@ -161,7 +161,7 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 	var timeout *time.Timer
 	if shrinfo, ok := resolver.ShareInfos[functionName]; ok {
 		if podinfo, ok := shrinfo.PodInfos[podName]; ok {
-			if podinfo.AvgResponseTime.Milliseconds() > 0 {
+			if podinfo.AvgResponseTime.Milliseconds() > 0 && len(shrinfo.PodInfos) > 2 {
 				timeout = time.NewTimer(podinfo.AvgResponseTime * 2)
 			}
 		}
