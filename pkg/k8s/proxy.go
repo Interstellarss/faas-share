@@ -6,17 +6,13 @@ package k8s
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	clientset "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned"
 	v1 "k8s.io/api/core/v1"
-	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"math"
 	//"math/rand"
 	"strconv"
 
-	//"net/http"
-	"sort"
 	"time"
 
 	//"math/rand"
@@ -152,6 +148,7 @@ func getNamespace(name, defaultNamespace string) string {
 }
 
 func (l *FunctionLookup) Resolve(name string, suffix string) (url.URL, string, error) {
+
 	functionName := name
 	namespace := getNamespace(name, l.DefaultNamespace)
 	if err := l.verifyNamespace(namespace); err != nil {
@@ -161,103 +158,89 @@ func (l *FunctionLookup) Resolve(name string, suffix string) (url.URL, string, e
 	if strings.Contains(name, ".") {
 		functionName = strings.TrimSuffix(name, "."+namespace)
 	}
+	/*
+		shrpod, err := l.faasLister.SharePods(namespace).Get(functionName)
 
-	shrpod, err := l.faasLister.SharePods(namespace).Get(functionName)
+		if err != nil {
+			return url.URL{}, "", err
+		}
 
-	if err != nil {
-		return url.URL{}, "", err
-	}
+		selector, err := metav1.LabelSelectorAsSelector(shrpod.Spec.Selector)
 
-	selector, err := metav1.LabelSelectorAsSelector(shrpod.Spec.Selector)
+		if err != nil {
+			utilruntime.HandleError(fmt.Errorf("error converting pod selector to selector for shr %v/%v: %v", namespace, name, err))
+		}
 
-	if err != nil {
-		utilruntime.HandleError(fmt.Errorf("error converting pod selector to selector for shr %v/%v: %v", namespace, name, err))
-	}
+		if selector == nil {
+			klog.Infof("selector is till nil...")
+			return url.URL{}, "", errors.New("NilSelector")
+		}
 
-	if selector == nil {
-		klog.Infof("selector is till nil...")
-		return url.URL{}, "", errors.New("NilSelector")
-	}
+		//sharepod, err := c.sharepodsLister.SharePods(namespace).Get(name)
 
-	//sharepod, err := c.sharepodsLister.SharePods(namespace).Get(name)
+		//pods, err := l.podLister.Pods(namespace).List(selector)
 
-	pods, err := l.podLister.Pods(namespace).List(selector)
+		if err != nil {
+			return url.URL{}, "", err
+		}
 
-	if err != nil {
-		return url.URL{}, "", err
-	}
+		//filteredPods := FilterActivePods(pods)
 
-	filteredPods := FilterActivePods(pods)
 
+	*/
 	var podName string
 
 	var serviceIP string
 	//if
+	/*
+		if len(filteredPods) > 2 {
+			if shareinfo, ok := l.ShareInfos[functionName]; ok {
+				//shareinfo.Lock.Lock()
+				//defer shareinfo.Lock.Unlock()
 
-	if len(filteredPods) > 2 {
-		if shareinfo, ok := l.ShareInfos[functionName]; ok {
-			//shareinfo.Lock.Lock()
-			//defer shareinfo.Lock.Unlock()
+				pInfos := (shareinfo).PodInfos
 
-			pInfos := (shareinfo).PodInfos
-
-			if len(pInfos) > 0 {
-				podsWithinfo := PodsWithInfos{
-					Pods:     filteredPods,
-					podInfos: pInfos,
-					Now:      metav1.Now(),
+				if len(pInfos) > 0 {
+					podsWithinfo := PodsWithInfos{
+						Pods:     filteredPods,
+						podInfos: pInfos,
+						Now:      metav1.Now(),
+					}
+					sort.Sort(podsWithinfo)
 				}
-				sort.Sort(podsWithinfo)
+				//pods := make([]PodInfo, len(pInfos))
+				/*
+					for _, v := range pInfos {
+						pods = append(pods, v)
+					}
+
+					if err != nil {
+						return url.URL{}, "", err
+					}
+					//pods[0].Status.PodIP
+
+					//podsWithRanks :=
+
+					infos := PodsWithInfos{
+						Pods:     pods,
+						podInfos: pInfos,
+						Now:      metav1.Now(),
+					}
+
+				target := GenerateRangeNum(len(filteredPods)/2, len(filteredPods))
+				podName = filteredPods[target].Name
+				//TODO: ip is nil?
+				serviceIP = filteredPods[target].Status.PodIP
+
+			} else {
+				l.AddFunc(functionName)
 			}
-			//pods := make([]PodInfo, len(pInfos))
-			/*
-				for _, v := range pInfos {
-					pods = append(pods, v)
-				}
-
-				if err != nil {
-					return url.URL{}, "", err
-				}
-				//pods[0].Status.PodIP
-
-				//podsWithRanks :=
-
-				infos := PodsWithInfos{
-					Pods:     pods,
-					podInfos: pInfos,
-					Now:      metav1.Now(),
-				}
-			*/
-			target := GenerateRangeNum(len(filteredPods)/2, len(filteredPods))
+		} else if len(filteredPods) > 0 {
+			target := GenerateRangeNum(0, len(filteredPods))
 			podName = filteredPods[target].Name
-			//TODO: ip is nil?
 			serviceIP = filteredPods[target].Status.PodIP
-			/*
-				if podinfo, ok := l.ShareInfos[functionName].PodInfos[podName]; ok {
-					/*
-					podinfo.TotalInvoke++
-					if podinfo.PodIp == "" {
-						podinfo.PodIp = serviceIP
-					}
-
-				} else {
-					l.ShareInfos[functionName].PodInfos[podName] = PodInfo{
-						PodName:     podName,
-						ServiceName: functionName,
-						PodIp:       serviceIP,
-						TotalInvoke: 1,
-					}
-				}
-			*/
-
-		} else {
-			l.AddFunc(functionName)
 		}
-	} else if len(filteredPods) > 0 {
-		target := GenerateRangeNum(0, len(filteredPods))
-		podName = filteredPods[target].Name
-		serviceIP = filteredPods[target].Status.PodIP
-	}
+	*/
 	//klog.Infof("picking pod %s out of sharpeod %s with pod IP %s", podName, name, serviceIP)
 	//pods[0].Status.ContainerStatuses[0].ContainerID
 	/*
