@@ -480,7 +480,7 @@ func (l *FunctionLookup) UpdateReplica(kube clientset.Interface, namepsace strin
 			klog.Infof("DEBUG:Target based with %d, and current %d invoke, need to upload %d", tar, invoke, targetRep)
 			//shrCopy.Spec.Replicas = &targetRep
 		} else {
-			targetRep = int32(math.Ceil(float64(*shrCopy.Spec.Replicas) * 1.2))
+			targetRep = int32(math.Ceil(float64(*shrCopy.Spec.Replicas) * 1.8))
 		}
 
 		if value, ok := shrCopy.Labels["com.openfaas.scale.max"]; ok {
