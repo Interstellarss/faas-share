@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"github.com/lovoo/goka"
-	"github.com/tidwall/buntdb"
+	gcache "github.com/patrickmn/go-cache"
 	"log"
 	"time"
 
@@ -214,22 +214,22 @@ func runOperator(setup serverSetup, cfg config.BootstrapConfig) {
 	//operator := true
 	listers := startInformers(setup, stopCh)
 
-	shareInfos := make(map[string]*k8s.SharePodInfo)
+	//shareInfos := make(map[string]*k8s.SharePodInfo)
 
 	//emitter, err := goka.NewEmitter()
 
-	//data := gcache.New(6*time.Minute, 10*time.Minute)
+	data := gcache.New(6*time.Minute, 10*time.Minute)
 
-	data, err := buntdb.Open("data.db")
-	if err != nil {
-		klog.Fatalf("Error creating/opening database for gateway ....")
-	}
-	defer data.Close()
+	//data, err := buntdb.Open("data.db")
+	//if err != nil {
+	//	klog.Fatalf("Error creating/opening database for gateway ....")
+	//}
+	//defer data.Close()
 
-	data.CreateIndex("function", "*", buntdb.IndexString)
-	data.CreateIndex("names", "*", buntdb.IndexString)
+	//data.CreateIndex("function", "*", buntdb.IndexString)
+	//data.CreateIndex("names", "*", buntdb.IndexString)
 
-	sharepodLookup := k8s.NewFunctionLookup("faas-share-fn", listers.PodsInformer.Lister(), listers.SharepodsInformer.Lister(), shareInfos)
+	sharepodLookup := k8s.NewFunctionLookup("faas-share-fn", listers.PodsInformer.Lister(), listers.SharepodsInformer.Lister(), data)
 
 	rateScale := false
 
