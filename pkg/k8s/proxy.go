@@ -65,7 +65,7 @@ func (s PodsWithInfos) Less(i, j int) bool {
 	info2, ok2 := s.podInfos.Get(name_j)
 
 	if !ok || !ok2 {
-		return !ok
+		return ok
 	}
 
 	if info1.(*PodInfo).Timeout || info2.(*PodInfo).Timeout {
@@ -384,7 +384,7 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 		l.AddFunc(functionName)
 		//TOOD
 		tmp, _ := l.Database.Get(functionName)
-		tmp.(*gcache.Cache).Set(podName, &PodInfo{PodName: podName, ServiceName: functionName, TotalInvoke: 1, Rate: (float32(1000) / float32(duration.Milliseconds())), PossiTimeout: false, Timeout: false, AvgResponseTime: duration}, gcache.DefaultExpiration)
+		tmp.(*gcache.Cache).Add(podName, &PodInfo{PodName: podName, ServiceName: functionName, TotalInvoke: 1, Rate: (float32(1000) / float32(duration.Milliseconds())), PossiTimeout: false, Timeout: false, AvgResponseTime: duration}, gcache.DefaultExpiration)
 	} else {
 		if pod, found := shr.(*gcache.Cache).Get(podName); found {
 			podInfo := pod.(*PodInfo)
@@ -393,6 +393,7 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 			var dec = 0
 			//test.lock.Lock()
 			defer func() {
+				//shr.(*gcache.Cache).
 				if newReplica {
 					l.UpdateReplica(kube, l.DefaultNamespace, functionName, totalInvoke)
 				}
