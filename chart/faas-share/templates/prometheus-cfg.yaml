@@ -133,8 +133,8 @@ data:
             severity: major
 {{- if or (eq .Values.openfaasPro false) (eq (or .Values.ceScaling false) true) }}
         - alert: InstanceDown
-          expr: sum(rate(gateway_function_invocation_total{code="200"}[15s])) BY (function_name) == 0
-          for: 5s
+          expr: sum by (function_name) (predict_linear(gateway_function_invocation_total{code="200"}[15s], 30))<=0
+          for: 10s
           labels:
             service: gateway
             severity: major

@@ -6,10 +6,15 @@ package k8s
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	clientset "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned"
+	gcache "github.com/patrickmn/go-cache"
 	v1 "k8s.io/api/core/v1"
+	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
 	"math"
+	"sort"
+
 	//"math/rand"
 	"strconv"
 
@@ -35,7 +40,7 @@ const target = "com.openfaas.scale.target"
 type PodsWithInfos struct {
 	//Pods     []PodInfo
 	Pods     []*v1.Pod
-	podInfos map[string]PodInfo
+	podInfos *gcache.Cache
 
 	Now metav1.Time
 }
@@ -55,20 +60,20 @@ func (s PodsWithInfos) Less(i, j int) bool {
 
 	//if a pod is unsigned, then the unsigned one is smaller
 
-	_, ok := s.podInfos[name_i]
+	info1, ok := s.podInfos.Get(name_i)
 
-	_, ok2 := s.podInfos[name_j]
+	info2, ok2 := s.podInfos.Get(name_j)
 
 	if !ok || !ok2 {
 		return !ok
 	}
 
-	if s.podInfos[name_i].Timeout || s.podInfos[name_j].Timeout {
-		return s.podInfos[name_i].Timeout
+	if info1.(*PodInfo).Timeout || info2.(*PodInfo).Timeout {
+		return info1.(*PodInfo).Timeout
 	}
 
-	if s.podInfos[name_i].PossiTimeout || s.podInfos[name_j].PossiTimeout {
-		return s.podInfos[name_i].PossiTimeout
+	if info1.(*PodInfo).PossiTimeout || info2.(*PodInfo).PossiTimeout {
+		return info1.(*PodInfo).PossiTimeout
 	}
 
 	//rate smaller < larger rate
@@ -77,8 +82,8 @@ func (s PodsWithInfos) Less(i, j int) bool {
 			return s.podInfos[name_i].Rate < s.podInfos[name_j].Rate
 		}
 	*/
-	if s.podInfos[name_i].Rate == 0 || s.podInfos[name_j].Rate == 0 {
-		return !(s.podInfos[name_i].Rate == 0)
+	if info1.(*PodInfo).Rate == 0 || info2.(*PodInfo).Rate == 0 {
+		return !(info1.(*PodInfo).Rate == 0)
 	}
 
 	/*
@@ -88,20 +93,22 @@ func (s PodsWithInfos) Less(i, j int) bool {
 
 	*/
 
-	return s.podInfos[name_i].Rate < s.podInfos[name_j].Rate
+	return info1.(*PodInfo).Rate < info2.(*PodInfo).Rate
 
 	//return s.podInfos[name_i].RateChange < s.podInfos[name_j].RateChange
 }
 
-func NewFunctionLookup(ns string, podLister corelister.PodLister, faasLister faas.SharePodLister, sharepodInfos map[string]*SharePodInfo) *FunctionLookup {
+func NewFunctionLookup(ns string, podLister corelister.PodLister, faasLister faas.SharePodLister, db *gcache.Cache) *FunctionLookup {
 	return &FunctionLookup{
 		DefaultNamespace: ns,
 		//EndpointLister:   lister,
-		faasLister: faasLister,
-		podLister:  podLister,
-		Listers:    map[string]shareLister{},
-		ShareInfos: sharepodInfos,
-		lock:       sync.RWMutex{},
+		FaasLister: faasLister,
+		PodLister:  podLister,
+		//Listers:    map[string]shareLister{},
+		//ShareInfos: sharepodInfos,
+		//lock:     sync.RWMutex{},
+		//DB: db,
+		Database: db,
 	}
 }
 
@@ -109,34 +116,40 @@ type FunctionLookup struct {
 	DefaultNamespace string
 	//EndpointLister   corelister.EndpointsLister
 	//endpoint lister may not needed for custom version
-	faasLister faas.SharePodLister
-	podLister  corelister.PodLister
-	Listers    map[string]shareLister
+	FaasLister faas.SharePodLister
+	PodLister  corelister.PodLister
+	//Listers    map[string]shareLister
 
 	RateRep bool
 
 	//Service bool
 
-	ShareInfos map[string]*SharePodInfo
-	lock       sync.RWMutex
+	//emitter goka.Emitter
+
+	//ShareInfos map[string]*SharePodInfo
+	lock sync.RWMutex
+
+	Database *gcache.Cache
+	//DB *buntdb.DB
 }
 
-type shareLister struct {
-	corelister.PodNamespaceLister
-	faas.SharePodNamespaceLister
+type ShareLister struct {
+	podlister  corelister.PodLister
+	faaslister faas.SharePodLister
 }
 
 //extension to moultiple namespaces
-func (f *FunctionLookup) GetLister(ns string) shareLister {
+func (f *FunctionLookup) GetLister() ShareLister {
 	f.lock.RLock()
 	defer f.lock.RUnlock()
-	return f.Listers[ns]
+	return ShareLister{podlister: f.PodLister, faaslister: f.FaasLister}
 }
 
-func (f *FunctionLookup) SetLister(ns string, lister shareLister) {
-	f.lock.Lock()
-	defer f.lock.Unlock()
-	f.Listers[ns] = lister
+func (f *FunctionLookup) SetLister(lister ShareLister) {
+	f.lock.RLock()
+	defer f.lock.RUnlock()
+	f.PodLister = lister.podlister
+	f.FaasLister = lister.faaslister
 }
 
 func getNamespace(name, defaultNamespace string) string {
@@ -158,89 +171,70 @@ func (l *FunctionLookup) Resolve(name string, suffix string) (url.URL, string, e
 	if strings.Contains(name, ".") {
 		functionName = strings.TrimSuffix(name, "."+namespace)
 	}
-	/*
-		shrpod, err := l.faasLister.SharePods(namespace).Get(functionName)
 
-		if err != nil {
-			return url.URL{}, "", err
-		}
+	listens := l.GetLister()
 
-		selector, err := metav1.LabelSelectorAsSelector(shrpod.Spec.Selector)
-
-		if err != nil {
-			utilruntime.HandleError(fmt.Errorf("error converting pod selector to selector for shr %v/%v: %v", namespace, name, err))
-		}
-
-		if selector == nil {
-			klog.Infof("selector is till nil...")
-			return url.URL{}, "", errors.New("NilSelector")
-		}
-
-		//sharepod, err := c.sharepodsLister.SharePods(namespace).Get(name)
-
-		//pods, err := l.podLister.Pods(namespace).List(selector)
-
-		if err != nil {
-			return url.URL{}, "", err
-		}
-
-		//filteredPods := FilterActivePods(pods)
-
-
-	*/
 	var podName string
 
 	var serviceIP string
-	//if
-	/*
-		if len(filteredPods) > 2 {
-			if shareinfo, ok := l.ShareInfos[functionName]; ok {
-				//shareinfo.Lock.Lock()
-				//defer shareinfo.Lock.Unlock()
 
-				pInfos := (shareinfo).PodInfos
+	shrpod, err := listens.faaslister.SharePods(namespace).Get(functionName)
 
-				if len(pInfos) > 0 {
-					podsWithinfo := PodsWithInfos{
-						Pods:     filteredPods,
-						podInfos: pInfos,
-						Now:      metav1.Now(),
-					}
-					sort.Sort(podsWithinfo)
+	if err != nil {
+		return url.URL{}, "", err
+	}
+
+	selector, err := metav1.LabelSelectorAsSelector(shrpod.Spec.Selector)
+
+	if err != nil {
+		utilruntime.HandleError(fmt.Errorf("error converting pod selector to selector for shr %v/%v: %v", namespace, name, err))
+	}
+
+	if selector == nil {
+		klog.Infof("selector is still nil...")
+		return url.URL{}, "", errors.New("NilSelector")
+	}
+
+	//sharepod, err := c.sharepodsLister.SharePods(namespace).Get(name)
+
+	pods, err := listens.podlister.Pods(namespace).List(selector)
+
+	if err != nil {
+		return url.URL{}, "", err
+	}
+
+	filteredPods := FilterActivePods(pods)
+
+	if len(filteredPods) > 2 {
+		if shareinfo, found := l.Database.Get(functionName); found {
+			//shareinfo.Lock.Lock()
+			//defer shareinfo.Lock.Unlock()
+
+			pInfos := shareinfo.(gcache.Cache).Items()
+
+			if len(pInfos) > 0 {
+				podsWithinfo := PodsWithInfos{
+					Pods:     filteredPods,
+					podInfos: shareinfo.(*gcache.Cache),
+					Now:      metav1.Now(),
 				}
-				//pods := make([]PodInfo, len(pInfos))
-				/*
-					for _, v := range pInfos {
-						pods = append(pods, v)
-					}
-
-					if err != nil {
-						return url.URL{}, "", err
-					}
-					//pods[0].Status.PodIP
-
-					//podsWithRanks :=
-
-					infos := PodsWithInfos{
-						Pods:     pods,
-						podInfos: pInfos,
-						Now:      metav1.Now(),
-					}
-
-				target := GenerateRangeNum(len(filteredPods)/2, len(filteredPods))
-				podName = filteredPods[target].Name
-				//TODO: ip is nil?
-				serviceIP = filteredPods[target].Status.PodIP
-
-			} else {
-				l.AddFunc(functionName)
+				sort.Sort(podsWithinfo)
 			}
-		} else if len(filteredPods) > 0 {
-			target := GenerateRangeNum(0, len(filteredPods))
+
+			target := GenerateRangeNum(len(filteredPods)/2, len(filteredPods))
 			podName = filteredPods[target].Name
+			//TODO: ip is nil?
 			serviceIP = filteredPods[target].Status.PodIP
+
+		} else {
+			l.AddFunc(functionName)
 		}
-	*/
+	} else if len(filteredPods) > 0 {
+		target := GenerateRangeNum(0, len(filteredPods))
+		podName = filteredPods[target].Name
+		serviceIP = filteredPods[target].Status.PodIP
+	}
+
 	//klog.Infof("picking pod %s out of sharpeod %s with pod IP %s", podName, name, serviceIP)
 	//pods[0].Status.ContainerStatuses[0].ContainerID
 	/*
@@ -297,66 +291,73 @@ func (l *FunctionLookup) Resolve(name string, suffix string) (url.URL, string, e
 
 func (l *FunctionLookup) DeleteFunction(name string) {
 	//l.lock
-	delete(l.ShareInfos, name)
-	return
+	l.Database.Delete(name)
 }
 
 func (l *FunctionLookup) DeletePodInfo(funcName string, podName string) {
-	if shrInfo, ok := l.ShareInfos[funcName]; ok {
-		shrInfo.Lock.Lock()
-		defer shrInfo.Lock.Unlock()
-		delete(shrInfo.PodInfos, podName)
+	if shr, found := l.Database.Get(funcName); found {
 		klog.Infof("Deleting pod %s info of shr %s", podName, funcName)
-	}
-}
-
-func (l *FunctionLookup) GetSharePodInfo(name string) SharePodInfo {
-	if _, ok := l.ShareInfos[name]; ok {
-		return *l.ShareInfos[name]
-	} else {
-		l.AddFunc(name)
-		return *l.ShareInfos[name]
+		shr.(gcache.Cache).Delete(podName)
 	}
 }
 
 func (l *FunctionLookup) AddFunc(funcname string) {
+	//TODO
+	//tmp := make(map[string]gcache.Item, 50)
+	shrcache := gcache.New(5*time.Minute, 10*time.Minute)
+	klog.Infof("DEBUG: initializing, SharePod info %s", funcname)
+	l.Database.Set(funcname, shrcache, gcache.NoExpiration)
 
-	if sharepodinfo, ok := l.ShareInfos[funcname]; !ok {
-		l.ShareInfos[funcname] = &SharePodInfo{PodInfos: make(map[string]PodInfo), Lock: sync.RWMutex{}, ScaleDown: false}
-		klog.Infof("Info of Sharepod %s initialized...", funcname)
-	} else {
-		if sharepodinfo.PodInfos == nil {
-			sharepodinfo.PodInfos = make(map[string]PodInfo)
+	/*
+		if sharepodinfo, ok := l.ShareInfos[funcname]; !ok {
+			l.ShareInfos[funcname] = &SharePodInfo{PodInfos: make(map[string]PodInfo), Lock: sync.RWMutex{}, ScaleDown: false}
+			klog.Infof("Info of Sharepod %s initialized...", funcname)
+		} else {
+			if sharepodinfo.PodInfos == nil {
+				sharepodinfo.PodInfos = make(map[string]PodInfo)
+			}
 		}
-	}
+	*/
 
 }
 
 func (l *FunctionLookup) UpdatePossiTimeOut(possi bool, functionName string, podName string) {
-	if _, ok := l.ShareInfos[functionName]; !ok {
-
-		podinfos := make(map[string]PodInfo)
-
-		podinfos[podName] = PodInfo{PodName: podName, ServiceName: functionName, PossiTimeout: possi}
-
-		l.ShareInfos[functionName] = &SharePodInfo{
-			PodInfos: podinfos,
-			Lock:     sync.RWMutex{},
-		}
-		klog.Infof("DEBUG: initializing, SharePod info %s", functionName)
-		return
-	} else {
-		l.ShareInfos[functionName].Lock.Lock()
-		//test.lock.Lock()
-		defer l.ShareInfos[functionName].Lock.Unlock()
-
-		if podInfo, ok := l.ShareInfos[functionName].PodInfos[podName]; ok {
-			podInfo.PossiTimeout = possi
+	if shr, found := l.Database.Get(functionName); found {
+		if pod, found := shr.(gcache.Cache).Get(podName); found {
+			pod.(*PodInfo).PossiTimeout = possi
 		} else {
 			klog.Infof("Sharepod %s with Pod %s 's info nil...", functionName, podName)
-			l.ShareInfos[functionName].PodInfos[podName] = PodInfo{PodName: podName, ServiceName: functionName, PossiTimeout: possi, Timeout: false} //return
+			shr.(gcache.Cache).Set(podName, &PodInfo{PodName: podName, ServiceName: functionName, TotalInvoke: 0, Rate: 0, PossiTimeout: false, Timeout: false}, gcache.DefaultExpiration)
 		}
+	} else {
+		l.AddFunc(functionName)
 	}
+	/*
+		if _, ok := l.ShareInfos[functionName]; !ok {
+
+			podinfos := make(map[string]PodInfo)
+
+			podinfos[podName] = PodInfo{PodName: podName, ServiceName: functionName, PossiTimeout: possi}
+
+			l.ShareInfos[functionName] = &SharePodInfo{
+				PodInfos: podinfos,
+				Lock:     sync.RWMutex{},
+			}
+			klog.Infof("DEBUG: initializing, SharePod info %s", functionName)
+			return
+		} else {
+			l.ShareInfos[functionName].Lock.Lock()
+			//test.lock.Lock()
+			defer l.ShareInfos[functionName].Lock.Unlock()
+
+			if podInfo, ok := l.ShareInfos[functionName].PodInfos[podName]; ok {
+				podInfo.PossiTimeout = possi
+			} else {
+				klog.Infof("Sharepod %s with Pod %s 's info nil...", functionName, podName)
+				l.ShareInfos[functionName].PodInfos[podName] = PodInfo{PodName: podName, ServiceName: functionName, PossiTimeout: possi, Timeout: false} //return
+			}
+		}
+	*/
 }
 
 func (l *FunctionLookup) Update(duration time.Duration, functionName string, podName string, kube clientset.Interface, timeout bool) {
@@ -364,33 +365,31 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 	//var sharepodInfo SharePodInfo
 	//sharepodInfo = (*l.ShareInfos)[functionName]
 	//TODO:
+	/*
+		err := l.DB.Update(func(tx *buntdb.Tx) error {
 
-	if _, ok := l.ShareInfos[functionName]; !ok {
+			tx.Set("")
+			return nil
+		})
 
-		podinfos := make(map[string]PodInfo)
+	*/
 
-		podinfos[podName] = PodInfo{PodName: podName, ServiceName: functionName, AvgResponseTime: duration, LastResponseTime: duration, Rate: float32(1000) / float32(duration.Milliseconds()), TotalInvoke: 1, RateChange: Inc}
-
-		l.ShareInfos[functionName] = &SharePodInfo{
-			PodInfos: podinfos,
-			Lock:     sync.RWMutex{},
-		}
-		klog.Infof("DEBUG: initializing, SharePod info %s", functionName)
-		return
+	if shr, found := l.Database.Get(functionName); !found {
+		l.AddFunc(functionName)
+		//TOOD
 	} else {
-		newReplica := false
-		var totalInvoke int32 = 0
-		var dec = 0
-		l.ShareInfos[functionName].Lock.Lock()
-		//test.lock.Lock()
-		defer func() {
-			l.ShareInfos[functionName].Lock.Unlock()
-			if newReplica && !l.ShareInfos[functionName].ScaleDown {
-				go l.UpdateReplica(kube, l.DefaultNamespace, functionName, totalInvoke)
-			}
-		}()
+		if pod, found := shr.(gcache.Cache).Get(podName); found {
+			podInfo := pod.(*PodInfo)
+			newReplica := false
+			var totalInvoke int32 = 0
+			var dec = 0
+			//test.lock.Lock()
+			defer func() {
+				if newReplica {
+					go l.UpdateReplica(kube, l.DefaultNamespace, functionName, totalInvoke)
+				}
+			}()
 
-		if podInfo, ok := l.ShareInfos[functionName].PodInfos[podName]; ok {
 			//podInfo.totalInvoke++
 			//time.Duration()
 			var invoke_pre = podInfo.TotalInvoke
@@ -424,27 +423,108 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 			} else {
 				podInfo.RateChange = ChangeType(Sta)
 			}
-		} else {
-			klog.Infof("Sharepod %s with Pod %s 's info nil...", functionName, podName)
-			l.ShareInfos[functionName].PodInfos[podName] = PodInfo{PodName: podName, ServiceName: functionName, AvgResponseTime: duration, TotalInvoke: 1,
-				LastResponseTime: duration, RateChange: Inc, Rate: float32(1000) / float32(duration.Milliseconds()), PossiTimeout: false, Timeout: false}
-			//return
-		}
-		for _, podinfo := range l.ShareInfos[functionName].PodInfos {
-			totalInvoke += podinfo.TotalInvoke
-			if podinfo.PossiTimeout || podinfo.Timeout {
-				dec++
+
+			for _, podinfo := range shr.(gcache.Cache).Items() {
+				totalInvoke += podinfo.Object.(PodInfo).TotalInvoke
+				if podinfo.Object.(PodInfo).PossiTimeout || podinfo.Object.(PodInfo).Timeout {
+					dec++
+				}
+			}
+
+			//var ratio float32
+			// <= or < ?
+			//debugging
+			klog.Infof("Sharepod %s with %d PodInfos and %d pods time out...", functionName, len(shr.(gcache.Cache).Items()), dec)
+			if len(shr.(gcache.Cache).Items())-dec <= 1 {
+				newReplica = true
 			}
 		}
 
-		//var ratio float32
-		// <= or < ?
-		//debugging
-		klog.Infof("Sharepod %s with %d PodInfos and %d pods time out...", functionName, len(l.ShareInfos[functionName].PodInfos), dec)
-		if len(l.ShareInfos[functionName].PodInfos)-dec < 1 {
-			newReplica = true
-		}
 	}
+
+	/*
+		if _, ok := l.ShareInfos[functionName]; !ok {
+
+			podinfos := make(map[string]PodInfo)
+
+			podinfos[podName] = PodInfo{PodName: podName, ServiceName: functionName, AvgResponseTime: duration, LastResponseTime: duration, Rate: float32(1000) / float32(duration.Milliseconds()), TotalInvoke: 1, RateChange: Inc, PossiTimeout: timeout}
+
+			l.ShareInfos[functionName] = &SharePodInfo{
+				PodInfos: podinfos,
+				Lock:     sync.RWMutex{},
+			}
+			klog.Infof("DEBUG: initializing, SharePod info %s", functionName)
+			return
+		} else {
+			newReplica := false
+			var totalInvoke int32 = 0
+			var dec = 0
+			l.ShareInfos[functionName].Lock.Lock()
+			//test.lock.Lock()
+			defer func() {
+				l.ShareInfos[functionName].Lock.Unlock()
+				if newReplica && !l.ShareInfos[functionName].ScaleDown {
+					go l.UpdateReplica(kube, l.DefaultNamespace, functionName, totalInvoke)
+				}
+			}()
+
+			if podInfo, ok := l.ShareInfos[functionName].PodInfos[podName]; ok {
+				//podInfo.totalInvoke++
+				//time.Duration()
+				var invoke_pre = podInfo.TotalInvoke
+				var invoke_cur = podInfo.TotalInvoke + 1
+
+				podInfo.AvgResponseTime = (podInfo.AvgResponseTime*(time.Duration(invoke_pre)) + duration) / time.Duration(invoke_cur)
+
+				//podInfo.TotalInvoke++
+
+				if duration.Seconds() >= 2 {
+					podInfo.Timeout = true
+				} else {
+					podInfo.Timeout = false
+				}
+
+				oldRate := podInfo.Rate
+				if podInfo.AvgResponseTime.Milliseconds() > 0 {
+					podInfo.Rate = float32(1000) / float32(podInfo.AvgResponseTime.Milliseconds())
+				} else {
+					podInfo.Rate = float32(1000) / float32(duration.Milliseconds())
+					podInfo.AvgResponseTime = duration
+				}
+				podInfo.PossiTimeout = timeout
+				podInfo.LastInvoke = time.Now()
+
+				if podInfo.Rate/oldRate > 1.2 {
+					podInfo.RateChange = ChangeType(Inc)
+				} else if podInfo.Rate/oldRate < 0.8 {
+					podInfo.RateChange = ChangeType(Dec)
+					//needUpdate := false
+				} else {
+					podInfo.RateChange = ChangeType(Sta)
+				}
+			} else {
+				klog.Infof("Sharepod %s with Pod %s 's info nil...", functionName, podName)
+				l.ShareInfos[functionName].PodInfos[podName] = PodInfo{PodName: podName, ServiceName: functionName, AvgResponseTime: duration, TotalInvoke: 1,
+					LastResponseTime: duration, RateChange: Inc, Rate: float32(1000) / float32(duration.Milliseconds()), PossiTimeout: false, Timeout: false}
+				//return
+			}
+			for _, podinfo := range l.ShareInfos[functionName].PodInfos {
+				totalInvoke += podinfo.TotalInvoke
+				if podinfo.PossiTimeout || podinfo.Timeout {
+					dec++
+				}
+			}
+
+			//var ratio float32
+			// <= or < ?
+			//debugging
+			klog.Infof("Sharepod %s with %d PodInfos and %d pods time out...", functionName, len(l.ShareInfos[functionName].PodInfos), dec)
+			if len(l.ShareInfos[functionName].PodInfos)-dec < 1 {
+				newReplica = true
+			}
+		}
+
+	*/
 }
 
 func (l *FunctionLookup) UpdateReplica(kube clientset.Interface, namepsace string, shrName string, invoke int32) {
@@ -512,47 +592,70 @@ func (l *FunctionLookup) UpdateReplica(kube clientset.Interface, namepsace strin
 }
 
 func (l *FunctionLookup) ScaleDown(funtionName string) {
-	if podinfos, ok := l.ShareInfos[funtionName]; ok {
-		podinfos.Lock.Lock()
-		podinfos.ScaleDown = true
-		podinfos.Lock.Unlock()
-	}
+	/*
+		if podinfos, ok := l.ShareInfos[funtionName]; ok {
+			podinfos.Lock.Lock()
+			podinfos.ScaleDown = true
+			podinfos.Lock.Unlock()
+		}
+
+	*/
 }
 
 func (l *FunctionLookup) ScaleUp(funtionName string) {
-	if podinfos, ok := l.ShareInfos[funtionName]; ok {
-		podinfos.Lock.Lock()
-		podinfos.ScaleDown = false
-		podinfos.Lock.Unlock()
-	}
+	/*
+		if podinfos, ok := l.ShareInfos[funtionName]; ok {
+			podinfos.Lock.Lock()
+			podinfos.ScaleDown = false
+			podinfos.Lock.Unlock()
+		}
+
+	*/
 }
 
 func (l *FunctionLookup) Insert(shrName string, podName string, podIp string) {
 
-	if sharepodInfo, ok := (l.ShareInfos)[shrName]; ok {
-
-		sharepodInfo.Lock.Lock()
-		defer sharepodInfo.Lock.Unlock()
-		if podInfo, ok2 := (sharepodInfo.PodInfos)[podName]; ok2 {
-			if podInfo.PodIp == "" {
-				podInfo.PodIp = podIp
-			}
-		} else {
-			sharepodInfo.PodInfos[podName] = PodInfo{PodName: podName, PodIp: podIp, ServiceName: shrName, TotalInvoke: 0, Rate: 0}
+	if shr, found := l.Database.Get(shrName); found {
+		if _, found := shr.(gcache.Cache).Get(podName); !found {
+			shr.(gcache.Cache).Set(podName, PodInfo{PodName: podName, PodIp: podIp, ServiceName: shrName, TotalInvoke: 0, Rate: 0, PossiTimeout: false, Timeout: false}, gcache.DefaultExpiration)
 		}
 	} else {
-		podinfos := make(map[string]PodInfo)
-		podinfos[podName] = PodInfo{PodName: podName, PodIp: podIp, ServiceName: shrName, TotalInvoke: 0, Rate: 0}
-		(l.ShareInfos)[shrName] = &SharePodInfo{PodInfos: podinfos}
+		l.AddFunc(shrName)
 	}
+
+	/*
+		if sharepodInfo, ok := (l.ShareInfos)[shrName]; ok {
+
+			sharepodInfo.Lock.Lock()
+			defer sharepodInfo.Lock.Unlock()
+			if podInfo, ok2 := (sharepodInfo.PodInfos)[podName]; ok2 {
+				if podInfo.PodIp == "" {
+					podInfo.PodIp = podIp
+				}
+			} else {
+				sharepodInfo.PodInfos[podName] =
+			}
+		} else {
+			podinfos := make(map[string]PodInfo)
+			podinfos[podName] = PodInfo{PodName: podName, PodIp: podIp, ServiceName: shrName, TotalInvoke: 0, Rate: 0}
+			(l.ShareInfos)[shrName] = &SharePodInfo{PodInfos: podinfos}
+		}
+
+	*/
 }
 
 func (l *FunctionLookup) deletepPodinfo(functionName string, podName string) {
-	if sharepodInfo, ok := l.ShareInfos[functionName]; ok {
-		sharepodInfo.Lock.Lock()
-		defer sharepodInfo.Lock.Unlock()
-		delete(sharepodInfo.PodInfos, podName)
+	if shr, found := l.Database.Get(functionName); found {
+		shr.(gcache.Cache).Delete(podName)
 	}
+	/*
+		if sharepodInfo, ok := l.ShareInfos[functionName]; ok {
+			sharepodInfo.Lock.Lock()
+			defer sharepodInfo.Lock.Unlock()
+			delete(sharepodInfo.PodInfos, podName)
+		}
+
+	*/
 }
 
 func (l *FunctionLookup) verifyNamespace(name string) error {

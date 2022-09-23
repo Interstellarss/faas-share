@@ -21,6 +21,10 @@ import (
 const (
 	watchdogPort       = "8080"
 	defaultContentType = "text/plain"
+
+	maxidleconns        = 0
+	maxidleConnsPerHost = 10
+	idleConnTimeout     = 400 * time.Millisecond
 )
 
 // BaseURLResolver URL resolver for proxy requests
@@ -108,10 +112,10 @@ func NewProxyClient(timeout time.Duration, maxIdleConns int, maxIdleConnsPerHost
 				KeepAlive: 1 * time.Second,
 				DualStack: true,
 			}).DialContext,
-			MaxIdleConns:          maxIdleConns,
-			MaxIdleConnsPerHost:   maxIdleConnsPerHost,
-			IdleConnTimeout:       120 * time.Millisecond,
-			TLSHandshakeTimeout:   10 * time.Second,
+			MaxIdleConns:          maxidleconns,
+			MaxIdleConnsPerHost:   maxidleConnsPerHost,
+			IdleConnTimeout:       idleConnTimeout,
+			TLSHandshakeTimeout:   5 * time.Second,
 			ExpectContinueTimeout: 1500 * time.Millisecond,
 		},
 		Timeout: timeout,

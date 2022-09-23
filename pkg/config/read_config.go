@@ -68,6 +68,8 @@ func (ReadConfig) Read(hasEnv ftypes.HasEnv) (BootstrapConfig, error) {
 
 	cfg.FunctionRate = rateReplica
 
+	//cfg.FaaSConfig
+
 	return cfg, nil
 }
 

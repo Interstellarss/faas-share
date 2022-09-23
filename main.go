@@ -2,6 +2,8 @@ package main
 
 import (
 	"flag"
+	"github.com/lovoo/goka"
+	"github.com/tidwall/buntdb"
 	"log"
 	"time"
 
@@ -30,6 +32,12 @@ import (
 
 	providertypes "github.com/openfaas/faas-provider/types"
 	//version "github.com/Interstellarss/faas-share/version"
+)
+
+var (
+	brokers = []string{}
+	topic   goka.Stream
+	group   goka.Group
 )
 
 func main() {
@@ -208,6 +216,19 @@ func runOperator(setup serverSetup, cfg config.BootstrapConfig) {
 
 	shareInfos := make(map[string]*k8s.SharePodInfo)
 
+	//emitter, err := goka.NewEmitter()
+
+	//data := gcache.New(6*time.Minute, 10*time.Minute)
+
+	data, err := buntdb.Open("data.db")
+	if err != nil {
+		klog.Fatalf("Error creating/opening database for gateway ....")
+	}
+	defer data.Close()
+
+	data.CreateIndex("function", "*", buntdb.IndexString)
+	data.CreateIndex("names", "*", buntdb.IndexString)
+
 	sharepodLookup := k8s.NewFunctionLookup("faas-share-fn", listers.PodsInformer.Lister(), listers.SharepodsInformer.Lister(), shareInfos)
 
 	rateScale := false
@@ -219,6 +240,8 @@ func runOperator(setup serverSetup, cfg config.BootstrapConfig) {
 	klog.Infof("rate scale: %i", rateScale)
 
 	sharepodLookup.RateRep = rateScale
+
+	//c := gc
 
 	//TOOD: conttroller pkg for faas-share
 	ctrl := controller.NewController(

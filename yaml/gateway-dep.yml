@@ -79,8 +79,8 @@ spec:
       - name: operator
         resources:
             requests:
-              cpu: 50m
-              memory: 120Mi
+              cpu: 80m
+              memory: 180Mi
         image: ghcr.io/interstellarss/faas-share:v0.1.23
         imagePullPolicy: Always
         command:
@@ -93,7 +93,7 @@ spec:
           - name: profiles_namespace
             value: "faas-share"
           - name: read_timeout
-            value: "60s"
+            value: "2s"
           - name: write_timeout
             value: "60s"
           - name: image_pull_policy

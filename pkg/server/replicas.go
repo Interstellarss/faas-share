@@ -135,9 +135,9 @@ func makeReplicaHandler(defaultNamespace string, kube clientset.Interface, funct
 		replica := shr.Spec.Replicas
 
 		if *replica >= int32(req.Replicas) {
-			go functionlookup.ScaleDown(shrDepName)
+			//go functionlookup.ScaleDown(shrDepName)
 		} else {
-			go functionlookup.ScaleUp(shrDepName)
+			//go functionlookup.ScaleUp(shrDepName)
 		}
 
 		klog.Infof("Current replica is %d", *replica)
