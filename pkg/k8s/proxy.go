@@ -426,7 +426,7 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 				podInfo.RateChange = ChangeType(Sta)
 			}
 
-			for _, podinfo := range shr.(gcache.Cache).Items() {
+			for _, podinfo := range shr.(*gcache.Cache).Items() {
 				totalInvoke += podinfo.Object.(PodInfo).TotalInvoke
 				if podinfo.Object.(PodInfo).PossiTimeout || podinfo.Object.(PodInfo).Timeout {
 					dec++
@@ -436,8 +436,8 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 			//var ratio float32
 			// <= or < ?
 			//debugging
-			klog.Infof("Sharepod %s with %d PodInfos and %d pods time out...", functionName, len(shr.(gcache.Cache).Items()), dec)
-			if len(shr.(gcache.Cache).Items())-dec <= 1 {
+			klog.Infof("Sharepod %s with %d PodInfos and %d pods time out...", functionName, len(shr.(*gcache.Cache).Items()), dec)
+			if len(shr.(*gcache.Cache).Items())-dec <= 1 {
 				newReplica = true
 			}
 		}
