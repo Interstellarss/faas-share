@@ -2,6 +2,7 @@ package server
 
 import (
 	"github.com/Interstellarss/faas-share/pkg/k8s"
+	gcache "github.com/patrickmn/go-cache"
 	"io"
 	glog "k8s.io/klog"
 	"log"
@@ -165,10 +166,10 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 	var possi bool = false
 	var timeout *time.Timer = time.NewTimer(600 * time.Millisecond)
 
-	if shrinfo, ok := resolver.ShareInfos[functionName]; ok {
-		if podinfo, ok := shrinfo.PodInfos[podName]; ok {
-			if podinfo.AvgResponseTime.Milliseconds() > 0 && podinfo.AvgResponseTime.Milliseconds() < 300 && len(shrinfo.PodInfos) > 2 {
-				timeout = time.NewTimer(podinfo.AvgResponseTime * 2)
+	if shrinfo, found := resolver.Database.Get(functionName); found {
+		if podinfo, found := shrinfo.(*gcache.Cache).Get(podName); found {
+			if podinfo.(*k8s.PodInfo).AvgResponseTime.Milliseconds() > 0 && podinfo.(*k8s.PodInfo).AvgResponseTime.Milliseconds() < 300 && len(shrinfo.(*gcache.Cache).Items()) > 2 {
+				timeout = time.NewTimer(podinfo.(*k8s.PodInfo).AvgResponseTime * 2)
 			}
 		}
 	}

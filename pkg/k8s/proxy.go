@@ -139,17 +139,17 @@ type ShareLister struct {
 }
 
 //extension to moultiple namespaces
-func (f *FunctionLookup) GetLister() ShareLister {
-	f.lock.RLock()
-	defer f.lock.RUnlock()
-	return ShareLister{podlister: f.PodLister, faaslister: f.FaasLister}
+func (l *FunctionLookup) GetLister() ShareLister {
+	l.lock.RLock()
+	defer l.lock.RUnlock()
+	return ShareLister{podlister: l.PodLister, faaslister: l.FaasLister}
 }
 
-func (f *FunctionLookup) SetLister(lister ShareLister) {
-	f.lock.RLock()
-	defer f.lock.RUnlock()
-	f.PodLister = lister.podlister
-	f.FaasLister = lister.faaslister
+func (l *FunctionLookup) SetLister(lister ShareLister) {
+	l.lock.RLock()
+	defer l.lock.RUnlock()
+	l.PodLister = lister.podlister
+	l.FaasLister = lister.faaslister
 }
 
 func getNamespace(name, defaultNamespace string) string {
@@ -323,11 +323,11 @@ func (l *FunctionLookup) AddFunc(funcname string) {
 
 func (l *FunctionLookup) UpdatePossiTimeOut(possi bool, functionName string, podName string) {
 	if shr, found := l.Database.Get(functionName); found {
-		if pod, found := shr.(gcache.Cache).Get(podName); found {
+		if pod, found := shr.(*gcache.Cache).Get(podName); found {
 			pod.(*PodInfo).PossiTimeout = possi
 		} else {
 			klog.Infof("Sharepod %s with Pod %s 's info nil...", functionName, podName)
-			shr.(gcache.Cache).Set(podName, &PodInfo{PodName: podName, ServiceName: functionName, TotalInvoke: 0, Rate: 0, PossiTimeout: false, Timeout: false}, gcache.DefaultExpiration)
+			shr.(*gcache.Cache).Set(podName, &PodInfo{PodName: podName, ServiceName: functionName, TotalInvoke: 0, Rate: 0, PossiTimeout: false, Timeout: false}, gcache.DefaultExpiration)
 		}
 	} else {
 		l.AddFunc(functionName)
@@ -377,8 +377,10 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 	if shr, found := l.Database.Get(functionName); !found {
 		l.AddFunc(functionName)
 		//TOOD
+		tmp, _ := l.Database.Get(functionName)
+		tmp.(*gcache.Cache).Set(podName, &PodInfo{PodName: podName, ServiceName: functionName, TotalInvoke: 1, Rate: (float32(1000) / float32(duration.Milliseconds())), PossiTimeout: false, Timeout: false, AvgResponseTime: duration}, gcache.DefaultExpiration)
 	} else {
-		if pod, found := shr.(gcache.Cache).Get(podName); found {
+		if pod, found := shr.(*gcache.Cache).Get(podName); found {
 			podInfo := pod.(*PodInfo)
 			newReplica := false
 			var totalInvoke int32 = 0
@@ -616,7 +618,7 @@ func (l *FunctionLookup) ScaleUp(funtionName string) {
 func (l *FunctionLookup) Insert(shrName string, podName string, podIp string) {
 
 	if shr, found := l.Database.Get(shrName); found {
-		if _, found := shr.(gcache.Cache).Get(podName); !found {
+		if _, found := shr.(*gcache.Cache).Get(podName); !found {
 			shr.(gcache.Cache).Set(podName, PodInfo{PodName: podName, PodIp: podIp, ServiceName: shrName, TotalInvoke: 0, Rate: 0, PossiTimeout: false, Timeout: false}, gcache.DefaultExpiration)
 		}
 	} else {
