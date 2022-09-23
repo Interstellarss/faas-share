@@ -145,6 +145,12 @@ func (l *FunctionLookup) GetLister() ShareLister {
 	return ShareLister{podlister: l.PodLister, faaslister: l.FaasLister}
 }
 
+func (l *FunctionLookup) GetSHRLister() faas.SharePodLister {
+	l.lock.RLock()
+	defer l.lock.RUnlock()
+	return l.FaasLister
+}
+
 func (l *FunctionLookup) SetLister(lister ShareLister) {
 	l.lock.RLock()
 	defer l.lock.RUnlock()
@@ -388,7 +394,7 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 			//test.lock.Lock()
 			defer func() {
 				if newReplica {
-					go l.UpdateReplica(kube, l.DefaultNamespace, functionName, totalInvoke)
+					l.UpdateReplica(kube, l.DefaultNamespace, functionName, totalInvoke)
 				}
 			}()
 
@@ -532,9 +538,11 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 func (l *FunctionLookup) UpdateReplica(kube clientset.Interface, namepsace string, shrName string, invoke int32) {
 	//klog.Infof("pod %s of sharepod %s rate decrease...", podInfo.PodName, functionName)
 	if l.RateRep {
+
 		klog.Infof("Starting Update Sharepod %s Replica ...", shrName)
 
-		shr, err := kube.KubeshareV1().SharePods(namepsace).Get(context.TODO(), shrName, metav1.GetOptions{})
+		shrlist := l.GetSHRLister()
+		shr, err := shrlist.SharePods(namepsace).Get(shrName)
 		if err != nil {
 			klog.Errorf("Sharepod %s get error: %v", shrName, err)
 			return
