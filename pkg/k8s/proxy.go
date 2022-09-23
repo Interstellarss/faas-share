@@ -427,8 +427,8 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 			}
 
 			for _, podinfo := range shr.(*gcache.Cache).Items() {
-				totalInvoke += podinfo.Object.(PodInfo).TotalInvoke
-				if podinfo.Object.(PodInfo).PossiTimeout || podinfo.Object.(PodInfo).Timeout {
+				totalInvoke += podinfo.Object.(*PodInfo).TotalInvoke
+				if podinfo.Object.(*PodInfo).PossiTimeout || podinfo.Object.(*PodInfo).Timeout {
 					dec++
 				}
 			}
