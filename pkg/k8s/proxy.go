@@ -210,7 +210,7 @@ func (l *FunctionLookup) Resolve(name string, suffix string) (url.URL, string, e
 			//shareinfo.Lock.Lock()
 			//defer shareinfo.Lock.Unlock()
 
-			pInfos := shareinfo.(gcache.Cache).Items()
+			pInfos := shareinfo.(*gcache.Cache).Items()
 
 			if len(pInfos) > 0 {
 				podsWithinfo := PodsWithInfos{
