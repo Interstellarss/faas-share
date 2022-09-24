@@ -83,7 +83,7 @@ func (s PodsWithInfos) Less(i, j int) bool {
 		}
 	*/
 	if info1.(*PodInfo).Rate == 0 || info2.(*PodInfo).Rate == 0 {
-		return !(info1.(*PodInfo).Rate == 0)
+		return (info1.(*PodInfo).Rate == 0)
 	}
 
 	/*

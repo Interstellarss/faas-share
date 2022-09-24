@@ -164,11 +164,11 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 		defer proxyReq.Body.Close()
 	}
 	var possi bool = false
-	var timeout *time.Timer = time.NewTimer(600 * time.Millisecond)
+	var timeout *time.Timer = time.NewTimer(500 * time.Millisecond)
 
 	if shrinfo, found := resolver.Database.Get(functionName); found {
 		if podinfo, found := shrinfo.(*gcache.Cache).Get(podName); found {
-			if podinfo.(*k8s.PodInfo).AvgResponseTime.Milliseconds() > 0 && podinfo.(*k8s.PodInfo).AvgResponseTime.Milliseconds() < 300 && len(shrinfo.(*gcache.Cache).Items()) > 2 {
+			if podinfo.(*k8s.PodInfo).AvgResponseTime.Milliseconds() > 0 && podinfo.(*k8s.PodInfo).AvgResponseTime.Milliseconds() < 240 && len(shrinfo.(*gcache.Cache).Items()) > 2 {
 				timeout = time.NewTimer(podinfo.(*k8s.PodInfo).AvgResponseTime * 2)
 			}
 		}
