@@ -68,8 +68,8 @@ data:
             service: gateway
             severity: major
         - alert: InstanceDown
-          expr: sum by (function_name) (predict_linear(gateway_function_invocation_total{code="200"}[15s], 30))<=0
-          for: 10s
+          expr: sum by (function_name) (rate(gateway_function_invocation_total[20s]) - rate(gateway_function_invocation_total[20s] offset 5s)) < -1
+          for: 5s
           labels:
             service: gateway
             severity: major
@@ -77,7 +77,7 @@ data:
             summary: Instance "{{$labels.function_name}}" down
             description: Having "{{$labels.function_name}}" has been down for more than 5s
         - alert: APIHighInvocationRate
-          expr: sum(rate(gateway_function_invocation_total{code="200"}[10s])) BY (function_name) > 5
+          expr: sum(rate(gateway_function_invocation_total{code="200"}[10s])) BY (function_name) > 15
           for: 5s
           labels:
             service: gateway
