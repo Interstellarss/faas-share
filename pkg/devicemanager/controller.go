@@ -860,6 +860,10 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 		//TODO
 		podsToDelete := getPodsToDelete(filteredPods, diff)
 
+		if podsToDelete == nil {
+			klog.V(2).Infof("too much pods to delete...")
+		}
+
 		//Comment: delete logic for container pool
 		//podsToDelete[i] = podsToDelete[diff - 1]
 

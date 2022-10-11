@@ -288,9 +288,9 @@ func getPodsToDelete(filteredPods []*v1.Pod, diff int) []*v1.Pod {
 		podsWithRanks := getPodsRankedByRelatedPodsOnSameNode(filteredPods)
 		sort.Sort(podsWithRanks)
 		//
-
-	}
-	return filteredPods[:diff]
+		return filteredPods[:diff]
+	} //else if diff > len(filteredPods)
+	return filteredPods
 }
 
 func afterOrZero(t1, t2 *metav1.Time) bool {

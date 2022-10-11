@@ -14,6 +14,8 @@ data:
       evaluation_interval: 15s
       external_labels:
           monitor: 'faas-monitor'
+    
+    
     rule_files:
         - 'alert.rules.yml'
     alerting:
@@ -26,6 +28,14 @@ data:
         scrape_interval: 10s
         static_configs:
           - targets: ['localhost:9090']
+      - job_name: 'dcgm-node'
+        scrape_interval: 5s
+        static_configs:
+          - targets: ['138.246.235.35:9400']
+      - job_name: 'dcgm-node2'
+        scrape_interval: 5s
+        static_configs:
+          - targets: ['138.246.233.238:9400']
       - job_name: 'kubernetes-pods'
         scrape_interval: 5s
         honor_labels: false
@@ -68,7 +78,18 @@ data:
             service: gateway
             severity: major
         - alert: InstanceDown
-          expr: sum by (function_name) (rate(gateway_function_invocation_total[20s]) - rate(gateway_function_invocation_total[20s] offset 5s)) < -1
+          #expr: sum by (function_name) (rate(gateway_function_invocation_total[20s]) - rate(gateway_function_invocation_total[20s] offset 5s)) < -1
+          expr: sum(rate(gateway_function_invocation_total{code="200"}[10s])) BY (function_name) <= 10
+          for: 5s
+          labels:
+            service: gateway
+            severity: major
+          annotations:
+            summary: Instance "{{$labels.function_name}}" down
+            description: Having "{{$labels.function_name}}" has been down for more than 5s
+        - alert: RPSDown
+          expr: sum by (function_name) (rate(gateway_function_invocation_total[20s]) - rate(gateway_function_invocation_total[20s] offset 5s)) < -1 and sum(rate(gateway_function_invocation_total{code="200"}[10s])) BY (function_name) > 10
+          #expr: sum(rate(gateway_function_invocation_total{code="200"}[10s])) BY (function_name) <= 10
           for: 5s
           labels:
             service: gateway
@@ -77,7 +98,7 @@ data:
             summary: Instance "{{$labels.function_name}}" down
             description: Having "{{$labels.function_name}}" has been down for more than 5s
         - alert: APIHighInvocationRate
-          expr: sum(rate(gateway_function_invocation_total{code="200"}[10s])) BY (function_name) > 15
+          expr: sum(rate(gateway_function_invocation_total{code="200"}[10s])) BY (function_name) > 10
           for: 5s
           labels:
             service: gateway
