@@ -107,7 +107,7 @@ func NewFunctionLookup(ns string, podLister corelister.PodLister, faasLister faa
 		IdleTimeout: 240 * time.Second,
 
 		Dial: func() (redis.Conn, error) {
-			c, err := redis.DialURL("redis://")
+			c, err := redis.DialURL("redis.redis.svc.cluster.local:6379")
 			if err != nil {
 				return nil, err
 			}
