@@ -9,6 +9,8 @@ import (
 	"errors"
 	"fmt"
 	clientset "github.com/Interstellarss/faas-share/pkg/client/clientset/versioned"
+	"github.com/gocelery/gocelery"
+	"github.com/gomodule/redigo/redis"
 	gcache "github.com/patrickmn/go-cache"
 	v1 "k8s.io/api/core/v1"
 	utilruntime "k8s.io/apimachinery/pkg/util/runtime"
@@ -99,6 +101,31 @@ func (s PodsWithInfos) Less(i, j int) bool {
 }
 
 func NewFunctionLookup(ns string, podLister corelister.PodLister, faasLister faas.SharePodLister, db *gcache.Cache) *FunctionLookup {
+	redisPool := &redis.Pool{
+		MaxActive:   0,
+		MaxIdle:     3,
+		IdleTimeout: 240 * time.Second,
+
+		Dial: func() (redis.Conn, error) {
+			c, err := redis.DialURL("redis://")
+			if err != nil {
+				return nil, err
+			}
+			return c, err
+		},
+		TestOnBorrow: func(c redis.Conn, t time.Time) error {
+			_, err := c.Do("PING")
+			return err
+		},
+	}
+
+	// initialize celery client
+	cli, _ := gocelery.NewCeleryClient(
+		gocelery.NewRedisBroker(redisPool),
+		&gocelery.RedisCeleryBackend{Pool: redisPool},
+		5,
+	)
+
 	return &FunctionLookup{
 		DefaultNamespace: ns,
 		//EndpointLister:   lister,
@@ -108,7 +135,8 @@ func NewFunctionLookup(ns string, podLister corelister.PodLister, faasLister faa
 		//ShareInfos: sharepodInfos,
 		//lock:     sync.RWMutex{},
 		//DB: db,
-		Database: db,
+		Database:     db,
+		CeleryClient: cli,
 	}
 }
 
@@ -131,6 +159,8 @@ type FunctionLookup struct {
 
 	Database *gcache.Cache
 	//DB *buntdb.DB
+	//redispool redis.Pool
+	CeleryClient *gocelery.CeleryClient
 }
 
 type ShareLister struct {
@@ -314,6 +344,8 @@ func (l *FunctionLookup) AddFunc(funcname string) {
 	klog.Infof("DEBUG: initializing, SharePod info %s", funcname)
 	l.Database.Set(funcname, shrcache, gcache.NoExpiration)
 
+	//l.CeleryClient.Register()
+
 	/*
 		if sharepodinfo, ok := l.ShareInfos[funcname]; !ok {
 			l.ShareInfos[funcname] = &SharePodInfo{PodInfos: make(map[string]PodInfo), Lock: sync.RWMutex{}, ScaleDown: false}
@@ -413,7 +445,7 @@ func (l *FunctionLookup) Update(duration time.Duration, functionName string, pod
 			} else {
 				podInfo.Timeout = false
 			}
-
+			//podInfo.PossiTimeout = timeout
 			oldRate := podInfo.Rate
 			if podInfo.AvgResponseTime.Milliseconds() > 0 {
 				podInfo.Rate = float32(1000) / float32(podInfo.AvgResponseTime.Milliseconds())

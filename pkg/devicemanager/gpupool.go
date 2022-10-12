@@ -537,10 +537,10 @@ func (c *Controller) getAndSetUUIDFromDummyPod(nodeName, GPUID, podName string, 
 	return nil
 }
 
-func (c *Controller) removePodFromList(sharepod *faasshareV1.SharePod, pod *corev1.Pod) {
-	nodeName := pod.Spec.NodeName
-	GPUID := pod.Annotations[faasshareV1.KubeShareResourceGPUID]
-	key := fmt.Sprintf("%s/%s", pod.ObjectMeta.Namespace, pod.ObjectMeta.Name)
+func (c *Controller) removePodFromList(sharepod *faasshareV1.SharePod, Pod *corev1.Pod) {
+	nodeName := Pod.Spec.NodeName
+	GPUID := Pod.Annotations[faasshareV1.KubeShareResourceGPUID]
+	key := fmt.Sprintf("%s/%s", Pod.ObjectMeta.Namespace, Pod.ObjectMeta.Name)
 
 	nodesInfoMux.Lock()
 	defer nodesInfoMux.Unlock()

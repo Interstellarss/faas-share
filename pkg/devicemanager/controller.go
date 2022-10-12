@@ -903,7 +903,7 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 				podCopy := targetPod.DeepCopy()
 				defer func() {
 					wg.Done()
-					go c.removePodFromList(shrCopy, podCopy)
+					c.removePodFromList(shrCopy, podCopy)
 				}()
 				//c.clientset
 				if err := c.kubeclient.CoreV1().Pods(targetPod.Namespace).Delete(ctx, targetPod.Name, metav1.DeleteOptions{}); err != nil {

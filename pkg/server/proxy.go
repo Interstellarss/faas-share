@@ -3,12 +3,12 @@ package server
 import (
 	"github.com/Interstellarss/faas-share/pkg/k8s"
 	gcache "github.com/patrickmn/go-cache"
-	"io"
 	glog "k8s.io/klog"
 	"log"
 	"net"
 	"net/http"
 	"net/url"
+	"reflect"
 	"strings"
 	"time"
 
@@ -129,7 +129,7 @@ func NewProxyClient(timeout time.Duration, maxIdleConns int, maxIdleConnsPerHost
 // proxyRequest handles the actual resolution of and then request to the function service.
 func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient *http.Client, resolver *k8s.FunctionLookup,
 	kube clientset.Interface) {
-	ctx := originalReq.Context()
+	//ctx := originalReq.Context()
 
 	pathVars := mux.Vars(originalReq)
 	functionName := pathVars["name"]
@@ -153,16 +153,17 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 		httputil.Errorf(w, http.StatusServiceUnavailable, "No endpoints available for: %s.", functionName)
 		return
 	}
+	glog.Infof("picking backedn pod with addr: %s", functionAddr)
 
-	proxyReq, err := buildProxyRequest(originalReq, functionAddr, pathVars["params"])
-	if err != nil {
-		httputil.Errorf(w, http.StatusInternalServerError, "Failed to resolve service: %s.", functionName)
-		return
-	}
+	//proxyReq, err := buildProxyRequest(originalReq, functionAddr, pathVars["params"])
+	//if err != nil {
+	//	httputil.Errorf(w, http.StatusInternalServerError, "Failed to resolve service: %s.", functionName)
+	//	return
+	//}
 
-	if proxyReq.Body != nil {
-		defer proxyReq.Body.Close()
-	}
+	//if proxyReq.Body != nil {
+	//	defer proxyReq.Body.Close()
+	//}
 	var possi bool = false
 	var timeout *time.Timer = time.NewTimer(500 * time.Millisecond)
 
@@ -180,46 +181,67 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 		go resolver.UpdatePossiTimeOut(true, functionName, podName)
 	}()
 	start := time.Now()
-	response, err := proxyClient.Do(proxyReq.WithContext(ctx))
-	seconds := time.Since(start)
+
+	//response, err := proxyClient.Do(proxyReq.WithContext(ctx))
+	//taskName :=
+	argA := pathVars["params"]
+	response, err := resolver.CeleryClient.Delay(functionName, argA)
 
 	if err != nil {
-		log.Printf("error with proxy request to: %s, %s\n", proxyReq.URL.String(), err.Error())
+		//log.Printf("error with proxy request to: %s, %s\n", proxyReq.URL.String(), err.Error())
 
 		httputil.Errorf(w, http.StatusInternalServerError, "Can't reach service for: %s.", functionName)
 		return
 	}
 
-	if timeout.Stop() || response.StatusCode == 200 {
-		possi = false
+	if timeout.Stop() {
+		ready, err := response.Ready()
+		if err != nil {
+			possi = true
+		} else {
+			if !ready {
+				possi = true
+			} else {
+
+			}
+		}
 	} else {
 		possi = true
 	}
 
 	defer func() {
-		if response.StatusCode == 200 || response.StatusCode == http.StatusRequestTimeout || response.StatusCode == http.StatusGatewayTimeout {
-			go resolver.Update(seconds, functionName, podName, kube, possi)
+		result, err := response.Get(3 * time.Second)
+		seconds := time.Since(start)
+		w.Header().Set("Content-Type", defaultContentType)
+		if err != nil {
+			go resolver.Update(seconds, functionName, podName, kube, true)
+			w.WriteHeader(502)
 		} else {
-			go resolver.Update(5, functionName, podName, kube, possi)
+			w.WriteHeader(200)
+		}
+		go resolver.Update(seconds, functionName, podName, kube, possi)
+		//if response.StatusCode == 200 || response.StatusCode == http.StatusRequestTimeout || response.StatusCode == http.StatusGatewayTimeout {
+		//	go resolver.Update(seconds, functionName, podName, kube, possi)
+		//} else {
+		//	go resolver.Update(5, functionName, podName, kube, possi)
+		//}
+
+		//resolver.
+		//if response.Body != nil {
+		//	defer response.Body.Close()
+		//}
+
+		log.Printf("%s took %f seconds\n", functionName, seconds.Seconds())
+
+		//clientHeader := w.Header()
+		//copyHeaders(clientHeader, &response.Header)
+
+		if result != nil {
+			//io.Copy(w, result.())
+			glog.Infof("result: %+v of type %+v", result, reflect.TypeOf(result))
 		}
 
 	}()
-	//resolver.
-	if response.Body != nil {
-		defer response.Body.Close()
-	}
-
-	log.Printf("%s took %f seconds\n", functionName, seconds.Seconds())
-
-	clientHeader := w.Header()
-	copyHeaders(clientHeader, &response.Header)
-	w.Header().Set("Content-Type", getContentType(originalReq.Header, response.Header))
-
-	w.WriteHeader(response.StatusCode)
-	if response.Body != nil {
-		io.Copy(w, response.Body)
-	}
-
 }
 
 // buildProxyRequest creates a request object for the proxy request, it will ensure that

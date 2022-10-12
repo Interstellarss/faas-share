@@ -165,6 +165,9 @@ github.com/go-openapi/swag
 # github.com/go-stack/stack v1.8.0
 ## explicit
 github.com/go-stack/stack
+# github.com/gocelery/gocelery v0.0.0-20201111034804-825d89059344
+## explicit; go 1.13
+github.com/gocelery/gocelery
 # github.com/gogo/googleapis v1.4.0
 ## explicit; go 1.12
 github.com/gogo/googleapis/google/rpc
@@ -191,6 +194,10 @@ github.com/golang/protobuf/ptypes/timestamp
 # github.com/golang/snappy v0.0.4
 ## explicit
 github.com/golang/snappy
+# github.com/gomodule/redigo v2.0.0+incompatible
+## explicit
+github.com/gomodule/redigo/internal
+github.com/gomodule/redigo/redis
 # github.com/google/gnostic v0.5.7-v3refs
 ## explicit; go 1.12
 github.com/google/gnostic/compiler
@@ -381,12 +388,18 @@ github.com/prometheus/procfs/internal/util
 # github.com/rcrowley/go-metrics v0.0.0-20201227073835-cf1acfcdf475
 ## explicit
 github.com/rcrowley/go-metrics
+# github.com/satori/go.uuid v1.2.1-0.20181028125025-b2ce2384e17b
+## explicit
+github.com/satori/go.uuid
 # github.com/sirupsen/logrus v1.8.1
 ## explicit; go 1.13
 github.com/sirupsen/logrus
 # github.com/spf13/pflag v1.0.5
 ## explicit; go 1.12
 github.com/spf13/pflag
+# github.com/streadway/amqp v0.0.0-20190827072141-edfb9018d271
+## explicit; go 1.10
+github.com/streadway/amqp
 # github.com/syndtr/goleveldb v1.0.0
 ## explicit
 github.com/syndtr/goleveldb/leveldb
@@ -401,31 +414,6 @@ github.com/syndtr/goleveldb/leveldb/opt
 github.com/syndtr/goleveldb/leveldb/storage
 github.com/syndtr/goleveldb/leveldb/table
 github.com/syndtr/goleveldb/leveldb/util
-# github.com/tidwall/btree v1.4.2
-## explicit; go 1.18
-github.com/tidwall/btree
-# github.com/tidwall/buntdb v1.2.10
-## explicit; go 1.18
-github.com/tidwall/buntdb
-# github.com/tidwall/gjson v1.14.3
-## explicit; go 1.12
-github.com/tidwall/gjson
-# github.com/tidwall/grect v0.1.4
-## explicit; go 1.15
-github.com/tidwall/grect
-# github.com/tidwall/match v1.1.1
-## explicit; go 1.15
-github.com/tidwall/match
-# github.com/tidwall/pretty v1.2.0
-## explicit; go 1.16
-github.com/tidwall/pretty
-# github.com/tidwall/rtred v0.1.2
-## explicit; go 1.15
-github.com/tidwall/rtred
-github.com/tidwall/rtred/base
-# github.com/tidwall/tinyqueue v0.1.1
-## explicit; go 1.15
-github.com/tidwall/tinyqueue
 # go.opencensus.io v0.23.0
 ## explicit; go 1.13
 go.opencensus.io
