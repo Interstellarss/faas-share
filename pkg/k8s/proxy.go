@@ -110,8 +110,10 @@ func NewFunctionLookup(ns string, podLister corelister.PodLister, faasLister faa
 		Dial: func() (redis.Conn, error) {
 			c, err := redis.DialURL("redis.redis.svc.cluster.local:6379")
 			if err != nil {
+				klog.Infof("Error connecting to Redis...")
 				return nil, err
 			}
+			klog.Infof("Connected to redis...")
 			return c, err
 		},
 		TestOnBorrow: func(c redis.Conn, t time.Time) error {
@@ -119,7 +121,6 @@ func NewFunctionLookup(ns string, podLister corelister.PodLister, faasLister faa
 			return err
 		},
 	}
-	klog.Infof("Connected to redis...")
 	// initialize celery client
 	cli, _ := gocelery.NewCeleryClient(
 		gocelery.NewRedisBroker(redisPool),
