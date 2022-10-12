@@ -185,7 +185,8 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 	//response, err := proxyClient.Do(proxyReq.WithContext(ctx))
 	//taskName :=
 	argA := pathVars["params"]
-	response, err := resolver.CeleryClient.Delay(functionName, argA)
+	taskName := "index." + functionName
+	response, err := resolver.CeleryClient.Delay(taskName, argA)
 
 	if err != nil {
 		//log.Printf("error with proxy request to: %s, %s\n", proxyReq.URL.String(), err.Error())
