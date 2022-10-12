@@ -101,6 +101,7 @@ func (s PodsWithInfos) Less(i, j int) bool {
 }
 
 func NewFunctionLookup(ns string, podLister corelister.PodLister, faasLister faas.SharePodLister, db *gcache.Cache) *FunctionLookup {
+	klog.Infof("Connecting to Redis...")
 	redisPool := &redis.Pool{
 		MaxActive:   0,
 		MaxIdle:     3,
@@ -118,13 +119,15 @@ func NewFunctionLookup(ns string, podLister corelister.PodLister, faasLister faa
 			return err
 		},
 	}
-
+	klog.Infof("Connected to redis...")
 	// initialize celery client
 	cli, _ := gocelery.NewCeleryClient(
 		gocelery.NewRedisBroker(redisPool),
 		&gocelery.RedisCeleryBackend{Pool: redisPool},
 		5,
 	)
+
+	klog.Infof("Initialize celery client...")
 
 	return &FunctionLookup{
 		DefaultNamespace: ns,
