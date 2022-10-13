@@ -2,7 +2,6 @@ package server
 
 import (
 	"github.com/Interstellarss/faas-share/pkg/k8s"
-	gcache "github.com/patrickmn/go-cache"
 	glog "k8s.io/klog"
 	"log"
 	"net"
@@ -146,14 +145,14 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 	}
 	log.Printf("request suffix with: %s", suffix)
 
-	functionAddr, podName, resolveErr := resolver.Resolve(functionName, suffix)
-	if resolveErr != nil {
-		// TODO: Should record the 404/not found error in Prometheus.
-		log.Printf("resolver error: no endpoints for %s: %s\n", functionName, resolveErr.Error())
-		httputil.Errorf(w, http.StatusServiceUnavailable, "No endpoints available for: %s.", functionName)
-		return
-	}
-	glog.Infof("picking backedn pod with addr: %s", functionAddr)
+	//functionAddr, podName, resolveErr := resolver.Resolve(functionName, suffix)
+	//if resolveErr != nil {
+	// TODO: Should record the 404/not found error in Prometheus.
+	//	log.Printf("resolver error: no endpoints for %s: %s\n", functionName, resolveErr.Error())
+	//	httputil.Errorf(w, http.StatusServiceUnavailable, "No endpoints available for: %s.", functionName)
+	//	return
+	//}
+	//glog.Infof("picking backedn pod with addr: %s", functionAddr)
 
 	//proxyReq, err := buildProxyRequest(originalReq, functionAddr, pathVars["params"])
 	//if err != nil {
@@ -164,22 +163,26 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 	//if proxyReq.Body != nil {
 	//	defer proxyReq.Body.Close()
 	//}
-	var possi bool = false
+	//var possi bool = false
 	var timeout *time.Timer = time.NewTimer(500 * time.Millisecond)
-
-	if shrinfo, found := resolver.Database.Get(functionName); found {
-		if podinfo, found := shrinfo.(*gcache.Cache).Get(podName); found {
-			if podinfo.(*k8s.PodInfo).AvgResponseTime.Milliseconds() > 0 && podinfo.(*k8s.PodInfo).AvgResponseTime.Milliseconds() < 240 && len(shrinfo.(*gcache.Cache).Items()) > 2 {
-				timeout = time.NewTimer(podinfo.(*k8s.PodInfo).AvgResponseTime * 2)
+	/*
+		if shrinfo, found := resolver.Database.Get(functionName); found {
+			if podinfo, found := shrinfo.(*gcache.Cache).Get(podName); found {
+				if podinfo.(*k8s.PodInfo).AvgResponseTime.Milliseconds() > 0 && podinfo.(*k8s.PodInfo).AvgResponseTime.Milliseconds() < 240 && len(shrinfo.(*gcache.Cache).Items()) > 2 {
+					timeout = time.NewTimer(podinfo.(*k8s.PodInfo).AvgResponseTime * 2)
+				}
 			}
 		}
-	}
-	go func() {
-		<-timeout.C
-		glog.Warningf("possible time out of 500ms or 2 times avg time of shr %s pod %s", functionName, podName)
-		possi = true
-		go resolver.UpdatePossiTimeOut(true, functionName, podName)
-	}()
+
+
+		go func() {
+			<-timeout.C
+			glog.Warningf("possible time out of 500ms or 2 times avg time of shr %s pod %s", functionName, podName)
+			possi = true
+			go resolver.UpdatePossiTimeOut(true, functionName, podName)
+		}()
+
+	*/
 	start := time.Now()
 
 	//response, err := proxyClient.Do(proxyReq.WithContext(ctx))
@@ -198,16 +201,16 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 	if timeout.Stop() {
 		ready, err := response.Ready()
 		if err != nil {
-			possi = true
+			//possi = true
 		} else {
 			if !ready {
-				possi = true
+				//possi = true
 			} else {
 
 			}
 		}
 	} else {
-		possi = true
+		//possi = true
 	}
 
 	defer func() {
@@ -215,12 +218,12 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 		seconds := time.Since(start)
 		w.Header().Set("Content-Type", defaultContentType)
 		if err != nil {
-			go resolver.Update(seconds, functionName, podName, kube, true)
+			//go resolver.Update(seconds, functionName, podName, kube, true)
 			w.WriteHeader(502)
 		} else {
 			w.WriteHeader(200)
 		}
-		go resolver.Update(seconds, functionName, podName, kube, possi)
+		//go resolver.Update(seconds, functionName, podName, kube, possi)
 		//if response.StatusCode == 200 || response.StatusCode == http.StatusRequestTimeout || response.StatusCode == http.StatusGatewayTimeout {
 		//	go resolver.Update(seconds, functionName, podName, kube, possi)
 		//} else {
