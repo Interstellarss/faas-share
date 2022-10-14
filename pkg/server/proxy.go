@@ -198,7 +198,7 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 		return
 	}
 
-	result, err := response.Get(2 * time.Second)
+	result, err := response.Get(3 * time.Second)
 	seconds := time.Since(start)
 	w.Header().Set("Content-Type", defaultContentType)
 	if err != nil {
