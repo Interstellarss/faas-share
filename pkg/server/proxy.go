@@ -213,39 +213,37 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 		//possi = true
 	}
 
-	defer func() {
-		result, err := response.Get(3 * time.Second)
-		seconds := time.Since(start)
-		w.Header().Set("Content-Type", defaultContentType)
-		if err != nil {
-			//go resolver.Update(seconds, functionName, podName, kube, true)
-			w.WriteHeader(502)
-		} else {
-			w.WriteHeader(200)
-		}
-		//go resolver.Update(seconds, functionName, podName, kube, possi)
-		//if response.StatusCode == 200 || response.StatusCode == http.StatusRequestTimeout || response.StatusCode == http.StatusGatewayTimeout {
-		//	go resolver.Update(seconds, functionName, podName, kube, possi)
-		//} else {
-		//	go resolver.Update(5, functionName, podName, kube, possi)
-		//}
+	result, err := response.Get(2 * time.Second)
+	seconds := time.Since(start)
+	w.Header().Set("Content-Type", defaultContentType)
+	if err != nil {
+		//go resolver.Update(seconds, functionName, podName, kube, true)
+		w.WriteHeader(502)
+	} else {
+		w.WriteHeader(200)
+	}
+	//go resolver.Update(seconds, functionName, podName, kube, possi)
+	//if response.StatusCode == 200 || response.StatusCode == http.StatusRequestTimeout || response.StatusCode == http.StatusGatewayTimeout {
+	//	go resolver.Update(seconds, functionName, podName, kube, possi)
+	//} else {
+	//	go resolver.Update(5, functionName, podName, kube, possi)
+	//}
 
-		//resolver.
-		//if response.Body != nil {
-		//	defer response.Body.Close()
-		//}
+	//resolver.
+	//if response.Body != nil {
+	//	defer response.Body.Close()
+	//}
 
-		log.Printf("%s took %f seconds\n", functionName, seconds.Seconds())
+	log.Printf("%s with task id %s took %f seconds\n", functionName, response.TaskID, seconds.Seconds())
 
-		//clientHeader := w.Header()
-		//copyHeaders(clientHeader, &response.Header)
+	//clientHeader := w.Header()
+	//copyHeaders(clientHeader, &response.Header)
 
-		if result != nil {
-			//io.Copy(w, result.())
-			glog.Infof("result: %+v of type %+v", result, reflect.TypeOf(result))
-		}
+	if result != nil {
+		//io.Copy(w, result.)
+		glog.Infof("result: %+v of type %+v", result, reflect.TypeOf(result))
+	}
 
-	}()
 }
 
 // buildProxyRequest creates a request object for the proxy request, it will ensure that
