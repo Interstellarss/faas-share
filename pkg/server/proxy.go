@@ -164,7 +164,7 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 	//	defer proxyReq.Body.Close()
 	//}
 	//var possi bool = false
-	var timeout *time.Timer = time.NewTimer(500 * time.Millisecond)
+	//var timeout *time.Timer = time.NewTimer(500 * time.Millisecond)
 	/*
 		if shrinfo, found := resolver.Database.Get(functionName); found {
 			if podinfo, found := shrinfo.(*gcache.Cache).Get(podName); found {
@@ -196,21 +196,6 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 
 		httputil.Errorf(w, http.StatusInternalServerError, "Can't reach service for: %s.", functionName)
 		return
-	}
-
-	if timeout.Stop() {
-		ready, err := response.Ready()
-		if err != nil {
-			//possi = true
-		} else {
-			if !ready {
-				//possi = true
-			} else {
-
-			}
-		}
-	} else {
-		//possi = true
 	}
 
 	result, err := response.Get(2 * time.Second)

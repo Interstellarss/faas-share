@@ -103,9 +103,10 @@ func (s PodsWithInfos) Less(i, j int) bool {
 func NewFunctionLookup(ns string, podLister corelister.PodLister, faasLister faas.SharePodLister, db *gcache.Cache) *FunctionLookup {
 	klog.Infof("Connecting to Redis...")
 	redisPool := &redis.Pool{
-		MaxActive:   0,
-		MaxIdle:     3,
-		IdleTimeout: 240 * time.Second,
+		MaxActive:       0,
+		MaxIdle:         10,
+		IdleTimeout:     0,
+		MaxConnLifetime: 0,
 
 		Dial: func() (redis.Conn, error) {
 			c, err := redis.DialURL("redis://redis.redis.svc.cluster.local:6379")
