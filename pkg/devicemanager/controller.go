@@ -999,10 +999,10 @@ func newPod(shrpod *faasv1.SharePod, isWarm bool, podManagerIP string, podManage
 		annotationCopy[key] = val
 	}
 
-	probes, err := makeSimpleProbes()
-	if err != nil {
-		klog.Errorf("Error makeing Probes %s...", err)
-	}
+	//probes, err := makeSimpleProbes()
+	//if err != nil {
+	//	klog.Errorf("Error makeing Probes %s...", err)
+	//}
 
 	//annotationCopy = append(annotationCopy,)
 	if isWarm {
@@ -1053,11 +1053,11 @@ func newPod(shrpod *faasv1.SharePod, isWarm bool, podManagerIP string, podManage
 			},
 		)
 
-		if c.ReadinessProbe == nil {
-			c.ReadinessProbe = probes.Readiness
-		}
+		//if c.ReadinessProbe == nil {
+		//c.ReadinessProbe = probes.Readiness
+		//}
 		c.ImagePullPolicy = shrpod.Spec.PodSpec.Containers[0].ImagePullPolicy
-		c.LivenessProbe = probes.Liveness
+		//c.LivenessProbe = probes.Liveness
 	}
 	specCopy.Volumes = append(specCopy.Volumes,
 		corev1.Volume{

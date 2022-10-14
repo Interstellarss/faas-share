@@ -21,9 +21,10 @@ type PodInfo struct {
 }
 
 type SharePodInfo struct {
-	PodInfos map[string]PodInfo
+	//PodInfos map[string]PodInfo
 
-	ScaleDown bool
+	ScaleDown   bool
+	TotalInvoke int32
 	//todo make thread safe
 	Lock sync.RWMutex
 	//Lock sync.Mutex
