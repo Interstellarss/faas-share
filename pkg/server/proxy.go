@@ -163,7 +163,7 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 	//if proxyReq.Body != nil {
 	//	defer proxyReq.Body.Close()
 	//}
-	//var possi bool = false
+	var possi bool = false
 	//var timeout *time.Timer = time.NewTimer(500 * time.Millisecond)
 	/*
 		if shrinfo, found := resolver.Database.Get(functionName); found {
@@ -201,13 +201,16 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 	result, err := response.Get(3 * time.Second)
 	seconds := time.Since(start)
 	w.Header().Set("Content-Type", defaultContentType)
+	podName := result.(string)
 	if err != nil {
 		//go resolver.Update(seconds, functionName, podName, kube, true)
 		w.WriteHeader(502)
+		possi = true
 	} else {
 		w.WriteHeader(200)
+		possi = false
 	}
-	//go resolver.Update(seconds, functionName, podName, kube, possi)
+	go resolver.Update(seconds, functionName, podName, kube, possi)
 	//if response.StatusCode == 200 || response.StatusCode == http.StatusRequestTimeout || response.StatusCode == http.StatusGatewayTimeout {
 	//	go resolver.Update(seconds, functionName, podName, kube, possi)
 	//} else {
