@@ -197,12 +197,7 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 	}
 
 	defer func() {
-		if response.StatusCode == 200 || response.StatusCode == http.StatusRequestTimeout || response.StatusCode == http.StatusGatewayTimeout {
-			go resolver.Update(seconds, functionName, podName, kube, possi)
-		} else {
-			go resolver.Update(5, functionName, podName, kube, possi)
-		}
-
+		go resolver.Update(seconds, functionName, podName, kube, possi)
 	}()
 	//resolver.
 	if response.Body != nil {
