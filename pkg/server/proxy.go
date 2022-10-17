@@ -199,13 +199,22 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 		return
 	}
 
-	result, err := response.Get(3 * time.Second)
+	result, err := response.Get(200 * time.Millisecond)
 	seconds = time.Since(start)
 	w.Header().Set("Content-Type", defaultContentType)
 	if err != nil {
 		//go resolver.Update(seconds, functionName, podName, kube, true)
-		w.WriteHeader(502)
+		//w.WriteHeader(502)
 		possi = true
+		//go get
+		go resolver.UpdateReplica(kube, resolver.DefaultNamespace, functionName, 0)
+		result, err = response.Get(2 * time.Second)
+		if err != nil {
+			seconds = time.Since(start)
+			w.WriteHeader(504)
+		} else {
+			w.WriteHeader(200)
+		}
 	} else {
 
 		w.WriteHeader(200)
@@ -236,6 +245,10 @@ func proxyRequest(w http.ResponseWriter, originalReq *http.Request, proxyClient 
 		//io.Copy(w, result.)
 		glog.Infof("result: %+v of type %+v", result, reflect.TypeOf(result))
 	}
+
+}
+
+func GetResult() {
 
 }
 
