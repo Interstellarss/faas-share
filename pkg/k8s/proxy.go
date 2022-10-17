@@ -235,11 +235,11 @@ func (l *FunctionLookup) Resolve(name string, suffix string) (url.URL, string, e
 		} else {
 			l.AddFunc(functionName)
 		}
-	} //else if len(filteredPods) < 2 && len(filteredPods) >= 0 {
-	//target := GenerateRangeNum(0, len(filteredPods))
-	//podName = filteredPods[target].Name
-	//serviceIP = filteredPods[target].Status.PodIP
-	//}
+	} else if len(filteredPods) < 2 && len(filteredPods) >= 0 {
+		target := GenerateRangeNum(0, len(filteredPods))
+		podName = filteredPods[target].Name
+		serviceIP = filteredPods[target].Status.PodIP
+	}
 
 	//klog.Infof("picking pod %s out of sharpeod %s with pod IP %s", podName, name, serviceIP)
 	//pods[0].Status.ContainerStatuses[0].ContainerID
