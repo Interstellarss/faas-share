@@ -145,7 +145,7 @@ data:
 {{- if or (eq .Values.openfaasPro false) (eq (or .Values.ceScaling false) true) }}
         - alert: InstanceDown
           #expr: sum by (function_name) (rate(gateway_function_invocation_total[20s]) - rate(gateway_function_invocation_total[20s] offset 5s)) < -1
-          expr: sum(rate(gateway_function_invocation_total{code="200"}[10s])) BY (function_name) <= 10
+          expr: sum(rate(gateway_function_invocation_total{code="200"}[10s])) BY (function_name) <= 10 and sum(rate(gateway_function_invocation_total{code="200"}[10s])) BY (function_name) > 1
           for: 5s
           labels:
             service: gateway
