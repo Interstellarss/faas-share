@@ -87,7 +87,7 @@ spec:
   containers:
   - name: kubeshare-device-manager
     #image: ncy9371/kubeshare-device-manager:20200429135835
-    image: leslie233/kubeshare-device-manager:latest
+    image: {{ .Values.kubeshareDeviceManager.image }}
 ---
 
 apiVersion: apps/v1
@@ -113,7 +113,7 @@ spec:
         effect: NoSchedule
       initContainers:
       - name: gemini-hook-init
-        image: ncy9371/kubeshare-gemini-hook-init:20200429135835
+        image: {{ .Values.kubeshareNodeDaemon.geminiHookInit.image }}
         volumeMounts:
         - name: "kubeshare-library"
           mountPath: /kubeshare/library
@@ -131,7 +131,7 @@ spec:
         - name: "kubeshare-library"
           mountPath: "/kubeshare/library"
       - name: gemini-scheduler
-        image: yukiozhu/kubeshare-gemini-scheduler:deletion-optimized-v1.0
+        image: {{ .Values.kubeshareNodeDaemon.geminiScheduler.image }}
         volumeMounts:
         - name: "kubeshare-scheduler"
           mountPath: "/kubeshare/scheduler"

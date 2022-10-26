@@ -171,6 +171,13 @@ operator:
       memory: "180Mi"
       cpu: "80m"
 
+kubeshareDeviceManager:
+  image: leslie233/kubeshare-device-manager:latest
+kubeshareNodeDaemon:
+  geminiHookInit:
+    image: ncy9371/kubeshare-gemini-hook-init:20200429135835
+  geminiScheduler:
+    image: yukiozhu/kubeshare-gemini-scheduler:deletion-optimized-v1.0
 
 # OpenFaaS Pro
 # The values for queueWorkerPro are merged with those under

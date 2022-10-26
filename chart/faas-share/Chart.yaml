@@ -10,4 +10,4 @@ sources:
 - https://github.com/Interstellarss/faas-share-charts
 - https://github.com/Interstellarss/faas-share
 - https://github.com/NTHU-LSALAB/KubeShare
-version: 0.1.23
+version: 0.1.24
