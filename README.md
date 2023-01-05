@@ -1,4 +1,4 @@
-Our contribution lies in test branch
+Our contribution lies in test/proxy branch
 
 
 ### Intall
