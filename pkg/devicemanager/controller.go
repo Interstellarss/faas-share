@@ -31,7 +31,6 @@ import (
 	"k8s.io/client-go/tools/record"
 	"k8s.io/client-go/util/workqueue"
 	"k8s.io/klog/v2"
-
 	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/faasshare/v1"
 	//kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/faas_share/v1"
 
@@ -130,7 +129,6 @@ func NewController(
 	kubeshareclient clientset.Interface,
 	nodeInformer coreinformers.NodeInformer,
 	podInformer coreinformers.PodInformer,
-	//containerdClient *containerd.Client,
 	kubeshareInformer informers.SharePodInformer) *Controller {
 
 	// Create event broadcaster
@@ -1051,6 +1049,10 @@ func newPod(shrpod *faasv1.SharePod, isWarm bool, podManagerIP string, podManage
 				Name:      "kubeshare-lib",
 				MountPath: KubeShareLibraryPath,
 			},
+			corev1.VolumeMount{
+				Name:      "nvidia-mps",
+				MountPath: "/tmp/nvidia-mps",
+			},
 		)
 
 		//if c.ReadinessProbe == nil {
@@ -1065,6 +1067,14 @@ func newPod(shrpod *faasv1.SharePod, isWarm bool, podManagerIP string, podManage
 			VolumeSource: corev1.VolumeSource{
 				HostPath: &corev1.HostPathVolumeSource{
 					Path: KubeShareLibraryPath,
+				},
+			},
+		},
+		corev1.Volume{
+			Name: "nvidia-mps",
+			VolumeSource: corev1.VolumeSource{
+				HostPath: &corev1.HostPathVolumeSource{
+					Path: "/tmp/nvidia-mps",
 				},
 			},
 		},
@@ -1096,7 +1106,7 @@ func newPod(shrpod *faasv1.SharePod, isWarm bool, podManagerIP string, podManage
 			NodeName:   scheNode,
 			Containers: specCopy.Containers,
 			Volumes:    specCopy.Volumes,
-
+			HostIPC:    true,
 			//InitContainers: []corev1.Container{},
 		},
 	}

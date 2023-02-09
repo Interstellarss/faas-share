@@ -634,6 +634,11 @@ func (c *Controller) removeSharePodFromList(sharepod *faasshareV1.SharePod) {
 						continue
 					}
 				}
+
+				err := c.kubeclient.CoreV1().Pods(pod.Name).Delete(context.Background(), pod.Name, metav1.DeleteOptions{})
+				if err != nil {
+					klog.Errorf("Error deleting pod fo sharepod with %v", err)
+				}
 			}
 		}
 		//nodesInfoMux.Unlock()
