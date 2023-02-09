@@ -553,7 +553,6 @@ func (c *Controller) removePodFromList(sharepod *faasshareV1.SharePod, pod *core
 				if podRequest.Key == key {
 					klog.Infof("Remove MtgpuPod %s from list, remaining %d MtgpuPod(s).", key, podlist.Len())
 					podlist.Remove(pod)
-
 					uuid := gpu.UUID
 					remove := false
 
@@ -633,6 +632,11 @@ func (c *Controller) removeSharePodFromList(sharepod *faasshareV1.SharePod) {
 						}
 						continue
 					}
+				}
+
+				err := c.kubeclient.CoreV1().Pods(pod.Name).Delete(context.Background(), pod.Name, metav1.DeleteOptions{})
+				if err != nil {
+					klog.Errorf("Error deleting pod fo sharepod with %v", err)
 				}
 			}
 		}
