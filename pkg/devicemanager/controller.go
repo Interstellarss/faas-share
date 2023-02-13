@@ -358,6 +358,7 @@ func (c *Controller) processNextWorkItem() bool {
 func (c *Controller) syncHandler(key string) error {
 
 	startTime := time.Now()
+	klog.V(2).Infof("Starting to sync SharePod %q (%v)", key, time.Since(startTime))
 	defer func() {
 		klog.V(4).Infof("Finished syncing SharePod %q (%v)", key, time.Since(startTime))
 	}()

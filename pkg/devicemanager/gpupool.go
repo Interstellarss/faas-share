@@ -71,6 +71,16 @@ type NameList struct {
 	listMux  sync.Mutex
 }
 
+func (n *NodeInfo) PrintMe(nodeName string) {
+	klog.Infof("============ Node: %s ============", nodeName)
+	for _, info := range n.GPUID2GPU {
+		klog.Infof("============ GPU: %s ============", info.UUID)
+
+		klog.Infof("GpuUsage: %d", info.Usage)
+		klog.Infof("GpuMem: %d", info.Mem)
+	}
+}
+
 func (c *Controller) initNodesInfo() error {
 	//TODO: need new InitnodeInfo for faas-share that go through
 	var pods []*corev1.Pod
@@ -619,11 +629,11 @@ func (c *Controller) removeSharePodFromList(sharepod *faasshareV1.SharePod) {
 						if podlist.Len() == 0 {
 							//delete(node.GPUID2GPU, GPUID)
 							//remove = true
-						} else {
-							gpu.Usage -= podRequest.Request
-							gpu.Mem -= podRequest.Memory
-							syncConfig(nodeName, uuid, podlist)
 						}
+					        klog.Infof("Updating syncing info")
+						gpu.Usage -= podRequest.Request
+						gpu.Mem -= podRequest.Memory
+						syncConfig(nodeName, uuid, podlist)
 						node.PodManagerPortBitmap.Unmask(podRequest.PodManagerPort - PodManagerPortStart)
 
 						//nodesInfoMux.Unlock()
@@ -635,9 +645,11 @@ func (c *Controller) removeSharePodFromList(sharepod *faasshareV1.SharePod) {
 					}
 				}
 
-				err := c.kubeclient.CoreV1().Pods(pod.Name).Delete(context.Background(), pod.Name, metav1.DeleteOptions{})
+				err := c.kubeclient.CoreV1().Pods(namepsace).Delete(context.Background(), pod.Name, metav1.DeleteOptions{})
 				if err != nil {
 					klog.Errorf("Error deleting pod fo sharepod with %v", err)
+				} else{
+					klog.Infof("Successfully deleting pod : %d", pod.Name)
 				}
 			}
 		}
