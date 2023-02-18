@@ -30,6 +30,7 @@ type PodRequest struct {
 	Key            string
 	Request        float64
 	Limit          float64
+	Partition      int64
 	Memory         int64
 	PodManagerPort int
 }
@@ -37,6 +38,7 @@ type PodRequest struct {
 type GPUInfo struct {
 	UUID    string
 	Usage   float64
+	Partition int64
 	Mem     int64
 	PodList *list.List
 }
@@ -170,7 +172,8 @@ func (c *Controller) initNodesInfo() error {
 		for _, pod := range pods {
 			gpu_request := 0.0
 			gpu_limit := 0.0
-			gpu_mem := int64(0)
+			gpu_partition := int64(0)
+			gpu_mem := int64(100)
 			GPUID := ""
 
 			var err error
@@ -180,6 +183,11 @@ func (c *Controller) initNodesInfo() error {
 			}
 			gpu_request, err = strconv.ParseFloat(pod.ObjectMeta.Annotations[faasshareV1.KubeShareResourceGPURequest], 64)
 			if err != nil || gpu_request > gpu_limit || gpu_request < 0.0 {
+				continue
+			}
+			gpu_partition, err = strconv.ParseInt(pod.ObjectMeta.Annotations[faasshareV1.KubeShareResourceGPUPartition], 10, 64)
+			if err != nil || gpu_partition < 0 || gpu_partition > 100 {
+				gpu_partition = int64(100)
 				continue
 			}
 			gpu_mem, err = strconv.ParseInt(pod.ObjectMeta.Annotations[faasshareV1.KubeShareResourceGPUMemory], 10, 64)
@@ -212,10 +220,12 @@ func (c *Controller) initNodesInfo() error {
 			}
 			gpu.Usage += gpu_request
 			gpu.Mem += gpu_mem
+			gpu.Partition += gpu_partition
 			gpu.PodList.PushBack(&PodRequest{
 				Key:            fmt.Sprintf("%s/%s", pod.ObjectMeta.Namespace, pod.ObjectMeta.Name),
 				Request:        gpu_request,
 				Limit:          gpu_limit,
+				Partition:      gpu_partition,
 				Memory:         gpu_mem,
 				PodManagerPort: (*sharepod.Status.PodManagerPort)[pod.Name],
 			})
@@ -354,7 +364,7 @@ func FindInQueue(key string, pl *list.List) (*PodRequest, bool) {
  * errCode 3: Pod manager port pool is full
  * errCode 255: other error
  */
-func (c *Controller) getPhysicalGPUuuid(nodeName string, GPUID string, gpu_request, gpu_limit float64, gpu_mem int64, key string, port *int) (uuid string, errCode int) {
+func (c *Controller) getPhysicalGPUuuid(nodeName string, GPUID string, gpu_request, gpu_limit float64, gpu_partition int64, gpu_mem int64, key string, port *int) (uuid string, errCode int) {
 
 	nodesInfoMux.Lock()
 	defer nodesInfoMux.Unlock()
@@ -371,6 +381,7 @@ func (c *Controller) getPhysicalGPUuuid(nodeName string, GPUID string, gpu_reque
 			UUID:    "",
 			Usage:   gpu_request,
 			Mem:     gpu_mem,
+			Partition: gpu_partition,
 			PodList: list.New(),
 		}
 		tmp := node.PodManagerPortBitmap.FindNextFromCurrentAndSet() + PodManagerPortStart
@@ -383,6 +394,7 @@ func (c *Controller) getPhysicalGPUuuid(nodeName string, GPUID string, gpu_reque
 			Key:            key,
 			Request:        gpu_request,
 			Limit:          gpu_limit,
+			Partition:      gpu_partition,
 			Memory:         gpu_mem,
 			PodManagerPort: *port,
 		})
@@ -391,13 +403,14 @@ func (c *Controller) getPhysicalGPUuuid(nodeName string, GPUID string, gpu_reque
 		return "", 1
 	} else {
 		if podreq, isFound := FindInQueue(key, gpu.PodList); !isFound {
-			if tmp := gpu.Usage + gpu_request; tmp > 1.0 {
+			if tmp := gpu.Usage + gpu_request; tmp > 1.0 { //todo, update!!
 				klog.Infof("Resource exceed, usage: %f, new_req: %f", gpu.Usage, gpu_request)
 				return "", 2
 			} else {
 				gpu.Usage = tmp
 			}
 			gpu.Mem += gpu_mem
+			gpu.Partition += gpu_partition
 			tmp := node.PodManagerPortBitmap.FindNextFromCurrentAndSet() + PodManagerPortStart
 			if tmp == -1 {
 				klog.Errorf("Pod manager port pool is full!!!!!")
@@ -408,6 +421,7 @@ func (c *Controller) getPhysicalGPUuuid(nodeName string, GPUID string, gpu_reque
 				Key:            key,
 				Request:        gpu_request,
 				Limit:          gpu_limit,
+				Partition:      gpu_partition,
 				Memory:         gpu_mem,
 				PodManagerPort: *port,
 			})

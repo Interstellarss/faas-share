@@ -8,7 +8,7 @@ import (
 	corev1 "k8s.io/api/core/v1"
 )
 
-func scheduleSharePod(isGPUPod bool, gpu_request float64, gpu_mem int64, gpupod *faasv1.SharePod, nodeList []*corev1.Node, podList []*corev1.Pod, sharePodList []*faasv1.SharePod) (string, string) {
+func scheduleSharePod(isGPUPod bool, gpu_request float64, gpu_partition int64, gpu_mem int64, gpupod *faasv1.SharePod, nodeList []*corev1.Node, podList []*corev1.Pod, sharePodList []*faasv1.SharePod) (string, string) {
 
 	// Implement custom scheduling algorithm and replace the function assignment
 	// Prototype: FUNC(bool, string, *kubesharev1.SharePod, NodeResources) (string, string, error)

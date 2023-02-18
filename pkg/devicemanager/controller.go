@@ -697,6 +697,7 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 			isGPUPod := false
 			gpu_request := 0.0
 			gpu_limit := 0.0
+			gpu_partition := int64(100)
 			gpu_mem := int64(0)
 
 			physicalGPUuuid := ""
@@ -716,6 +717,11 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 					utilruntime.HandleError(fmt.Errorf("Pod of SharePod %s/%s value error: %s", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name, faasv1.KubeShareResourceGPURequest))
 
 				}
+				gpu_partition, err = strconv.ParseInt(gpupod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPUPartition], 10, 64)
+				if err != nil || gpu_partition < 0 || gpu_partition > 100 {
+					gpu_partition = int64(100)
+				}
+
 				gpu_mem, err = strconv.ParseInt(gpupod.ObjectMeta.Annotations[faasv1.KubeShareResourceGPUMemory], 10, 64)
 				if err != nil || gpu_mem < 0 {
 					utilruntime.HandleError(fmt.Errorf("Pod of SharePod %s/%s value error: %s", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name, faasv1.KubeShareResourceGPUMemory))
@@ -725,7 +731,7 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 			}
 			var schedNode, schedGPUID string
 
-			schedNode, schedGPUID = c.schedule(gpupod, gpu_request, gpu_limit, gpu_mem, isGPUPod, key)
+			schedNode, schedGPUID = c.schedule(gpupod, gpu_request, gpu_limit, gpu_partition, gpu_mem, isGPUPod, key)
 
 			/*
 				if len(gpupod.Status.Node2Id) == 0 {
@@ -777,7 +783,7 @@ func (c *Controller) manageReplicas(ctx context.Context, filteredPods []*corev1.
 				}
 				podKey = fmt.Sprintf("%s/%s", shrCopy.ObjectMeta.Namespace, subpodName)
 
-				physicalGPUuuid, errCode = c.getPhysicalGPUuuid(schedNode, schedGPUID, gpu_request, gpu_limit, gpu_mem, podKey, &physicalGPUport)
+				physicalGPUuuid, errCode = c.getPhysicalGPUuuid(schedNode, schedGPUID, gpu_request, gpu_limit, gpu_partition, gpu_mem, podKey, &physicalGPUport)
 				klog.Infof("Pod of Sharepod %v/%v with vGPU port: %d", shrCopy.Namespace, shrCopy.Name, physicalGPUport)
 				switch errCode {
 				case 0:
@@ -1113,7 +1119,7 @@ func newPod(shrpod *faasv1.SharePod, isWarm bool, podManagerIP string, podManage
 	}
 }
 
-func (c *Controller) schedule(gpupod *faasv1.SharePod, gpu_request float64, gpu_limit float64, gpu_mem int64, isGPUPod bool, key string) (string, string) {
+func (c *Controller) schedule(gpupod *faasv1.SharePod, gpu_request float64, gpu_limit float64, gpu_partition int64, gpu_mem int64, isGPUPod bool, key string) (string, string) {
 
 	nodeList, err := c.nodesLister.List(labels.Everything())
 	if err != nil {
@@ -1127,7 +1133,7 @@ func (c *Controller) schedule(gpupod *faasv1.SharePod, gpu_request float64, gpu_
 	if err != nil {
 		utilruntime.HandleError(fmt.Errorf(""))
 	}
-	schedNode, schedGPUID := scheduleSharePod(isGPUPod, gpu_request, gpu_mem, gpupod, nodeList, podList, sharePodList)
+	schedNode, schedGPUID := scheduleSharePod(isGPUPod, gpu_request, gpu_partition, gpu_mem, gpupod, nodeList, podList, sharePodList)
 	if schedNode == "" {
 		klog.Infof("No enough resources for Pod of a SharePod: %s/%s", gpupod.ObjectMeta.Namespace, gpupod.ObjectMeta.Name)
 		// return fmt.Errorf("No enough resources for SharePod: %s/%s")
