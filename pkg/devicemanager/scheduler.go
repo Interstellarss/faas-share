@@ -4,6 +4,7 @@ import (
 	"math"
 	"sync"
 
+	"k8s.io/klog/v2"
 	faasv1 "github.com/Interstellarss/faas-share/pkg/apis/faasshare/v1"
 	corev1 "k8s.io/api/core/v1"
 )
@@ -18,10 +19,10 @@ func scheduleSharePod(isGPUPod bool, gpu_request float64, gpu_partition int64, g
 	for _, filter := range filters {
 		filter(nodeResources, gpupod)
 	}
-	return ap(isGPUPod, gpu_request, gpu_mem, gpupod, nodeResources)
+	return ap(isGPUPod, gpu_request, gpu_partition, gpu_mem, gpupod, nodeResources)
 }
 
-func ScheduleAlgorithmBestFit(isGPUPod bool, gpu_request float64, gpu_mem int64, sharepod *faasv1.SharePod, nodeResources NodeResources) (schedNodeName string, schedGPUID string) {
+func ScheduleAlgorithmBestFit(isGPUPod bool, gpu_request float64, gpu_partition int64, gpu_mem int64, sharepod *faasv1.SharePod, nodeResources NodeResources) (schedNodeName string, schedGPUID string) {
 	type candidateNodeGPU struct {
 		NodeName string
 		GPUID    string
@@ -62,15 +63,21 @@ func ScheduleAlgorithmBestFit(isGPUPod bool, gpu_request float64, gpu_mem int64,
 		if isGPUPod {
 			findTheHole := false
 			for id, gpu := range nodeRes.GpuFree {
-				if gpu.GPUFreeReq < gpu_request_millivalue || gpu.GPUFreeMem < gpu_mem {
+				if gpu.GPUFreeReq < gpu_request_millivalue*gpu_partition || gpu.GPUFreeMem < gpu_mem {
 					continue
 				}
+				_, ok := gpu.packer.TryInsert(int(gpu_request_millivalue), int(gpu_partition), 2)
+				gpu.packer.PrintInfo()
+				klog.Info("try insert into packer with result", gpu_request_millivalue, gpu_partition, ok)
+				if !ok {
+				        continue
+				}
 				findTheHole = true
-				tryBestNode(gpu.GPUFreeReq-gpu_request_millivalue, nodeName, id)
+				tryBestNode(gpu.GPUFreeReq-gpu_request_millivalue*gpu_partition, nodeName, id)
 			}
 			if !findTheHole {
 				if nodeRes.GpuFreeCount > 0 {
-					tryBestNode(1000-gpu_request_millivalue, nodeName, faasv1.NewGPUID(5))
+					tryBestNode(1000*100-gpu_request_millivalue*gpu_partition, nodeName, faasv1.NewGPUID(5))
 				}
 			}
 		} else {

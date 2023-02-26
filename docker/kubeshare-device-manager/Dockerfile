@@ -8,7 +8,6 @@ ENV PATH $GOPATH/bin:/usr/local/go/bin:$PATH
 
 WORKDIR /go/src/github.com/Interstellarss/faas-share
 
-COPY . .
 
 RUN apt update && \
     apt-get install -y gnupg1
@@ -18,9 +17,10 @@ RUN apt-key adv --fetch-keys https://developer.download.nvidia.com/compute/cuda/
 
 RUN apt update && \
     apt install -y g++ wget make git && \
-    wget -nv -O - https://storage.googleapis.com/golang/go${GOLANG_VERSION}.linux-amd64.tar.gz | tar -C /usr/local -xz && \
-    make kubeshare-device-manager
+    wget -nv -O - https://storage.googleapis.com/golang/go${GOLANG_VERSION}.linux-amd64.tar.gz | tar -C /usr/local -xz 
 
+COPY . .
+RUN make kubeshare-device-manager
 FROM alpine:3.9
 
 COPY --from=build /go/src/github.com/Interstellarss/faas-share/bin/kubeshare-device-manager /usr/bin/kubeshare-device-manager

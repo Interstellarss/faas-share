@@ -38,7 +38,6 @@ type PodRequest struct {
 type GPUInfo struct {
 	UUID    string
 	Usage   float64
-	Partition int64
 	Mem     int64
 	PodList *list.List
 }
@@ -218,9 +217,8 @@ func (c *Controller) initNodesInfo() error {
 				klog.Errorf("SharePod '%s/%s' doesn't have corresponding dummy Pod!", sharepod.ObjectMeta.Namespace, sharepod.ObjectMeta.Name)
 				continue
 			}
-			gpu.Usage += gpu_request
+			gpu.Usage += gpu_request * (float64(gpu_partition) / 100.0)
 			gpu.Mem += gpu_mem
-			gpu.Partition += gpu_partition
 			gpu.PodList.PushBack(&PodRequest{
 				Key:            fmt.Sprintf("%s/%s", pod.ObjectMeta.Namespace, pod.ObjectMeta.Name),
 				Request:        gpu_request,
@@ -379,9 +377,8 @@ func (c *Controller) getPhysicalGPUuuid(nodeName string, GPUID string, gpu_reque
 	if gpu, ok := node.GPUID2GPU[GPUID]; !ok {
 		gpu = &GPUInfo{
 			UUID:    "",
-			Usage:   gpu_request,
+			Usage:   gpu_request*(float64(gpu_partition)/100.0),
 			Mem:     gpu_mem,
-			Partition: gpu_partition,
 			PodList: list.New(),
 		}
 		tmp := node.PodManagerPortBitmap.FindNextFromCurrentAndSet() + PodManagerPortStart
@@ -403,14 +400,13 @@ func (c *Controller) getPhysicalGPUuuid(nodeName string, GPUID string, gpu_reque
 		return "", 1
 	} else {
 		if podreq, isFound := FindInQueue(key, gpu.PodList); !isFound {
-			if tmp := gpu.Usage + gpu_request; tmp > 1.0 { //todo, update!!
-				klog.Infof("Resource exceed, usage: %f, new_req: %f", gpu.Usage, gpu_request)
+			if tmp := gpu.Usage + gpu_request*(float64(gpu_partition)/100.0); tmp > 1.0 { //todo, update!!
+				klog.Infof("Resource exceed, usage: %f, new_req: %f", gpu.Usage, gpu_request*(float64(gpu_partition)/100.0))
 				return "", 2
 			} else {
 				gpu.Usage = tmp
 			}
 			gpu.Mem += gpu_mem
-			gpu.Partition += gpu_partition
 			tmp := node.PodManagerPortBitmap.FindNextFromCurrentAndSet() + PodManagerPortStart
 			if tmp == -1 {
 				klog.Errorf("Pod manager port pool is full!!!!!")
@@ -585,7 +581,7 @@ func (c *Controller) removePodFromList(sharepod *faasshareV1.SharePod, Pod *core
 						//delete(node.GPUID2GPU, GPUID)
 						//remove = true
 					} else {
-						gpu.Usage -= podRequest.Request
+						gpu.Usage -= podRequest.Request * (float64(podRequest.Partition)/100.0)
 						gpu.Mem -= podRequest.Memory
 						syncConfig(nodeName, uuid, podlist)
 					}
@@ -645,7 +641,7 @@ func (c *Controller) removeSharePodFromList(sharepod *faasshareV1.SharePod) {
 							//remove = true
 						}
 					        klog.Infof("Updating syncing info")
-						gpu.Usage -= podRequest.Request
+						gpu.Usage -= podRequest.Request*(float64(podRequest.Partition)/100.0)
 						gpu.Mem -= podRequest.Memory
 						syncConfig(nodeName, uuid, podlist)
 						node.PodManagerPortBitmap.Unmask(podRequest.PodManagerPort - PodManagerPortStart)

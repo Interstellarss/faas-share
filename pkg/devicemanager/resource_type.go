@@ -2,6 +2,8 @@ package devicemanager
 
 import (
 	"k8s.io/klog"
+        binpack2d "github.com/Interstellarss/faas-share/pkg/go-binpack2d"
+
 )
 
 /* ------------------- struct NodeResources start ------------------- */
@@ -80,7 +82,7 @@ type GPUResource struct {
 	GPUFreeReq int64
 	// GPUFreeMem in bytes
 	GPUFreeMem int64
-
+	packer binpack2d.Packer
 	GPUAffinityTags     []string
 	GPUAntiAffinityTags []string
 	// len(GPUExclusionTags) should be only one
@@ -103,6 +105,7 @@ func (this *GPUResource) DeepCopy() *GPUResource {
 	return &GPUResource{
 		GPUFreeReq:          this.GPUFreeReq,
 		GPUFreeMem:          this.GPUFreeMem,
+		packer:              *this.packer.DeepCopy(),
 		GPUAffinityTags:     tmpGPUAffinityTags,
 		GPUAntiAffinityTags: tmpGPUAntiAffinityTags,
 		GPUExclusionTags:    tmpGPUExclusionTags,

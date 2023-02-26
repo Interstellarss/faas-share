@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	kubesharev1 "github.com/Interstellarss/faas-share/pkg/apis/faasshare/v1"
+	binpack2d "github.com/Interstellarss/faas-share/pkg/go-binpack2d"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/klog"
 )
@@ -32,9 +33,12 @@ func syncPodResources(nodeRes NodeResources, podList []*corev1.Pod, sharePodList
 			if _, ok := nodeRes[nodeName].GpuFree[GPUID]; !ok {
 				if nodeRes[nodeName].GpuFreeCount > 0 {
 					nodeRes[nodeName].GpuFreeCount--
+
+                                        newpacker := binpack2d.CreateWithName(1000,100,GPUID)
 					nodeRes[nodeName].GpuFree[GPUID] = &GPUResource{
-						GPUFreeReq: 1000,
+						GPUFreeReq: 1000*100,
 						GPUFreeMem: nodeRes[nodeName].GpuMemTotal,
+						packer: *newpacker,
 					}
 				}
 			}
@@ -65,6 +69,7 @@ func syncPodResources(nodeRes NodeResources, podList []*corev1.Pod, sharePodList
 			isGPUPod := false
 			gpu_request := 0.0
 			gpu_limit := 0.0
+			gpu_partition := int64(100)
 			gpu_mem := int64(0)
 			GPUID := ""
 			affinityTag := ""
@@ -82,6 +87,10 @@ func syncPodResources(nodeRes NodeResources, podList []*corev1.Pod, sharePodList
 				}
 				gpu_request, err = strconv.ParseFloat(pod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPURequest], 64)
 				if err != nil || gpu_request > gpu_limit || gpu_request < 0.0 {
+					continue
+				}
+				gpu_partition, err = strconv.ParseInt(pod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUPartition], 10, 64)
+				if err != nil || gpu_partition < 0 {
 					continue
 				}
 				gpu_mem, err = strconv.ParseInt(pod.ObjectMeta.Annotations[kubesharev1.KubeShareResourceGPUMemory], 10, 64)
@@ -103,12 +112,18 @@ func syncPodResources(nodeRes NodeResources, podList []*corev1.Pod, sharePodList
 			}
 
 			if isGPUPod {
+				gpu_request_milivalue := int64(math.Ceil(gpu_request * (float64)(1000.0)))
 				if gpuInfo, ok := nodeRes[nodeName].GpuFree[GPUID]; !ok {
 					if nodeRes[nodeName].GpuFreeCount > 0 {
 						nodeRes[nodeName].GpuFreeCount--
+						newpacker := binpack2d.CreateWithName(1000, 100, GPUID)
+						newpacker.Insert(int(gpu_request_milivalue), int(gpu_partition), 2)
+						newpacker.PrintInfo()
+
 						nodeRes[nodeName].GpuFree[GPUID] = &GPUResource{
-							GPUFreeReq: 1000 - int64(math.Ceil(gpu_request*(float64)(1000.0))),
+							GPUFreeReq: 1000*100 - gpu_request_milivalue*gpu_partition,
 							GPUFreeMem: nodeRes[nodeName].GpuMemTotal - gpu_mem,
+							packer: *newpacker,
 						}
 					} else {
 						klog.Errorf("==================================")
@@ -122,8 +137,10 @@ func syncPodResources(nodeRes NodeResources, podList []*corev1.Pod, sharePodList
 						continue
 					}
 				} else {
-					gpuInfo.GPUFreeReq -= int64(math.Ceil(gpu_request * (float64)(1000.0)))
+					gpuInfo.GPUFreeReq -= gpu_request_milivalue * gpu_partition
 					gpuInfo.GPUFreeMem -= gpu_mem
+					gpuInfo.packer.Insert(int(gpu_request_milivalue), int(gpu_partition), 2)
+					gpuInfo.packer.PrintInfo()
 				}
 
 				if affinityTag != "" {
