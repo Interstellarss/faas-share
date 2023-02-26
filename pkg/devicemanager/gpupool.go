@@ -172,8 +172,8 @@ func (c *Controller) initNodesInfo() error {
 		for _, pod := range pods {
 			gpu_request := 0.0
 			gpu_limit := 0.0
-			gpu_partition := int64(0)
-			gpu_mem := int64(100)
+			gpu_partition := int64(100)
+			gpu_mem := int64(0)
 			GPUID := ""
 
 			var err error

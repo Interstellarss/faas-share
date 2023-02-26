@@ -259,6 +259,8 @@ func syncConfig(nodeName, UUID string, podList *list.List) error {
 			buf.WriteString(" ")
 			buf.WriteString(fmt.Sprintf("%f", pod.Value.(*PodRequest).Limit))
 			buf.WriteString(" ")
+                        buf.WriteString(fmt.Sprintf("%d", pod.Value.(*PodRequest).Partition))
+                        buf.WriteString(" ")
 			buf.WriteString(fmt.Sprintf("%d", pod.Value.(*PodRequest).Memory))
 			buf.WriteString(",")
 		}
