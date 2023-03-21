@@ -1,0 +1,26 @@
+apiVersion: faasshare.tum/v1
+kind: SharePod
+metadata:
+  name: resnet
+  namespace: faas-share-fn
+  labels:
+    "com.openfaas.scale.max": "15"
+  annotations:
+    "kubeshare/gpu_request": "0.1"
+    "kubeshare/gpu_limit": "1.0"
+    "kubeshare/gpu_mem": "1073741824"
+spec:
+  replicas: 1
+  podSpec:
+    terminationGracePeriodSeconds: 1
+    containers:
+      - name: resnet
+        image: yukiozhu/resnet-flask:cuda11.3 
+        env:
+        - name: CU_HOOK_DEBUG
+          value: "1"
+        - name: fprocess
+          value: python /kubeshare/library/ResNet/server/index.py
+        command: [ "sh", "-c", "fwatchdog" ]
+        #command: [ "/bin/bash", "-c", "--" ]
+        #args: [ "while true; do sleep 30; done;" ]
