@@ -13,9 +13,13 @@ import (
 // the appropriate OwnerReferences on the resource so handleObject can discover
 // the Function resource that 'owns' it.
 func newService(sharepod *faasv1.SharePod) *corev1.Service {
+        funcname, found := sharepod.Labels["faas_function"]
+        if !found {
+                funcname = sharepod.ObjectMeta.Name
+        }
 	return &corev1.Service{
 		ObjectMeta: metav1.ObjectMeta{
-			Name:      sharepod.ObjectMeta.Name,
+			Name:      funcname,
 			Namespace: sharepod.Namespace,
 			//todo here: do we need to modify annotaions also through sharepod
 			Annotations: map[string]string{"prometheus.io.scrape": "false"},
@@ -29,7 +33,7 @@ func newService(sharepod *faasv1.SharePod) *corev1.Service {
 		},
 		Spec: corev1.ServiceSpec{
 			Type:     corev1.ServiceTypeClusterIP,
-			Selector: map[string]string{"faas_function": sharepod.Name},
+			Selector: map[string]string{"faas_function": funcname},
 			Ports: []corev1.ServicePort{
 				{
 					Name:     "http",

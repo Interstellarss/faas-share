@@ -65,6 +65,9 @@ metadata:
   namespace: kube-system
   annotations:
     scheduler.alpha.kubernetes.io/critical-pod: ""
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "/metrics"
+    prometheus.io/port: "9090"
   labels:
     app: kubeshare-device-manager
 spec:

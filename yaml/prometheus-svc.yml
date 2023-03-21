@@ -8,7 +8,7 @@ metadata:
   name: prometheus
   namespace: "faas-share"
 spec:
-  type: ClusterIP
+  type: NodePort
   ports:
     - port: 9090
       protocol: TCP

@@ -1,0 +1,1063 @@
+W0227 10:42:55.030812       1 client_config.go:617] Neither --kubeconfig nor --master was specified.  Using the inClusterConfig.  This might not work.
+I0227 10:42:55.207275       1 controller.go:184] Setting up event handlers
+I0227 10:42:55.207535       1 controller.go:244] Starting SharePod controller
+I0227 10:42:55.207552       1 controller.go:247] Waiting for informer caches to sync
+I0227 10:42:55.308556       1 controller.go:268] Starting workers
+I0227 10:42:55.308606       1 controller.go:276] Started workers
+I0227 10:42:55.308678       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:42:55.308710       1 config.go:53] Start listening on 0.0.0.0:9797...
+I0227 10:42:55.308951       1 config.go:65] Waiting for clients...
+I0227 10:42:55.394301       1 gpupool.go:442] ERICYEH: creating dummy pod: kubeshare-vgpu-gpu-one-camdl
+I0227 10:42:58.122031       1 controller.go:602] A Dummy pod kubeshare-vgpu-gpu-one-camdl is being proceed...
+I0227 10:42:58.122090       1 controller.go:615] Start go routine to get UUID from dummy Pod
+I0227 10:42:58.151163       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:42:58.151235       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:42:59.151495       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:42:59.271358       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:42:59.271409       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:00.271765       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:00.291117       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:00.291159       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:01.291508       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:01.309932       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:01.309986       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:02.310322       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:02.338571       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:02.338633       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:03.339008       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:03.357992       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:03.358043       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:04.358415       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:04.385270       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:04.385321       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:05.386033       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:05.462246       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:05.462298       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:06.462528       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:06.530290       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:06.530341       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:07.530594       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:07.548839       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:07.548890       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:08.549176       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:08.574160       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:08.574217       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:09.575137       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:09.594908       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:09.594952       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:10.595585       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:10.698171       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:10.698240       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:11.698526       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:11.711101       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:11.711148       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:12.711406       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:12.728944       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:12.728989       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:13.730158       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:13.746341       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:13.746387       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:14.746596       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:14.768805       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:14.768851       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:15.769905       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:15.790824       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:15.790869       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:16.791259       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:16.811577       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:16.811625       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:17.811835       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:17.831857       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:17.831904       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:18.832380       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:20.348878       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:20.349141       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:21.349670       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:21.372178       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:21.372426       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:22.372879       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:22.392657       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:22.392704       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:23.393710       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:23.414681       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:23.414729       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:24.415827       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:24.433436       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:24.433595       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:25.258066       1 controller.go:602] A Dummy pod kubeshare-vgpu-gpu-one-camdl is being proceed...
+I0227 10:43:25.258520       1 controller.go:615] Start go routine to get UUID from dummy Pod
+I0227 10:43:25.266207       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:25.266294       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:25.434790       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:25.454790       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:25.454836       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:26.266771       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:26.378129       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:26.378179       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:26.455445       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:26.467451       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:26.467494       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:27.378744       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:27.399450       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:27.399499       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:27.467629       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:27.486877       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:27.486926       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:28.400225       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:28.416242       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:28.416369       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:28.487568       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:28.500496       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:28.500546       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:29.416621       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:29.434678       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:29.434729       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:29.500934       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:29.513924       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:29.514100       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:30.435761       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:30.454590       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:30.454739       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:30.514860       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:30.587109       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:30.587297       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:31.455167       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:31.481810       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:31.481987       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:31.588157       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:31.601467       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:31.601640       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:32.482506       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:32.602222       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:32.719872       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:32.719928       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:32.722107       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:32.722131       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:33.720553       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:33.722825       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:33.751960       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:33.752009       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:33.754138       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:33.754348       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:34.752490       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:34.754738       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:34.771271       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:34.771318       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:34.771281       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:34.771490       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:35.771776       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:35.771804       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:35.793282       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:35.793452       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:35.794304       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:35.794963       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:36.794501       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:36.795640       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:36.813504       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:36.813547       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:36.814069       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:36.814124       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:37.814035       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:37.814348       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:37.833377       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:37.833431       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:37.833399       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:37.833476       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:38.833865       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:38.833910       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:38.850089       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:38.850146       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:38.850099       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:38.850210       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:39.850479       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:39.850542       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:39.869156       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:39.869219       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:39.869335       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:39.869372       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:40.870315       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:40.870462       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:40.888419       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:40.888468       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:40.888720       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:40.888767       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:41.888867       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:41.888937       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:41.904128       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:41.904176       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:41.904253       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:41.904328       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:42.904450       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:42.904550       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:42.922321       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:42.922369       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:42.922675       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:42.922706       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:43.922868       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:43.922986       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:43.943682       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:43.943728       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:43.943949       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:43.943992       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:44.944249       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:44.944309       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:44.961881       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+I0227 10:43:44.961907       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:44.961929       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+E0227 10:43:44.961940       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:45.962162       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:45.962223       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:46.019447       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:46.019487       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:46.019922       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:46.019968       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:47.020085       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:47.020129       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:47.038996       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:47.039108       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:47.040128       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:47.040215       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:48.039469       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:48.040707       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:48.059292       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:48.059359       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:48.059293       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:48.059407       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:49.059608       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:49.059702       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:49.075269       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:49.075325       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:49.077539       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:49.077589       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:50.076032       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:50.078322       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:50.094481       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:50.094537       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:50.094720       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:50.094754       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:51.095114       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:51.095224       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:51.113904       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+I0227 10:43:51.113945       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:51.113992       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+E0227 10:43:51.113954       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:52.114253       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:52.114329       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:52.134655       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:52.134725       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:52.134658       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:52.134770       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:53.135077       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:53.135137       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:53.207244       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:53.207324       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:53.207257       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:53.207378       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:54.207646       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:54.207696       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:54.228283       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+I0227 10:43:54.228304       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:54.228329       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+E0227 10:43:54.228342       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:55.228825       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:55.228870       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:55.260044       1 controller.go:602] A Dummy pod kubeshare-vgpu-gpu-one-camdl is being proceed...
+I0227 10:43:55.260092       1 controller.go:615] Start go routine to get UUID from dummy Pod
+I0227 10:43:55.297308       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:55.297380       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:55.302718       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+I0227 10:43:55.302761       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:55.302791       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+E0227 10:43:55.302801       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:56.297810       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:56.302949       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:56.302982       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:56.318466       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+I0227 10:43:56.318500       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:56.318541       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+E0227 10:43:56.318515       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:56.320175       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:56.320232       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:57.319373       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:57.319384       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:57.320986       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:57.351990       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:57.352043       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:57.352059       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:57.352103       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:57.353839       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:57.353880       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:58.352406       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:58.352893       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:58.354705       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:58.374729       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+I0227 10:43:58.374757       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:58.374782       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+E0227 10:43:58.374791       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:58.376767       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:58.376813       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:59.375921       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:59.375998       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:59.377163       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:43:59.394334       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:59.394380       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:59.394345       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:59.394408       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:43:59.396354       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:43:59.396389       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:00.395006       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:00.395049       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:00.397342       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:00.416104       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:00.416152       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:00.417347       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:00.417380       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:00.417935       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:00.417967       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:01.417261       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:01.417528       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:01.419058       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:01.455322       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:01.455372       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:01.457581       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:01.457625       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:01.458015       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:01.458062       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:02.456289       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:02.458530       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:02.458597       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:02.476958       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:02.477261       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:02.477801       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:02.477862       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:02.491047       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:02.491207       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:03.477866       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:03.478208       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:03.491914       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:03.497957       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:03.498013       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:03.497975       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:03.498062       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:03.504045       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:03.504089       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:04.499166       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:04.499230       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:04.504536       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:04.519288       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:04.519329       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:04.519932       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:04.519984       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:04.520627       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:04.520666       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:05.519905       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:05.520296       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:05.521068       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:05.539317       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:05.539419       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:05.539508       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:05.539585       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:05.550612       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:05.550692       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:06.539847       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:06.539923       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:06.551244       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:06.598562       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:06.598612       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:06.599315       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:06.599353       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:06.600977       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:06.601017       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:07.599134       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:07.599434       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:07.601803       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:07.619968       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:07.620018       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:07.621547       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:07.621593       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:07.621695       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:07.621759       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:08.621042       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:08.621665       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:08.622017       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:08.637562       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:08.637693       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:08.637576       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:08.637782       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:08.638800       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:08.638846       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:09.638035       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:09.638109       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:09.639305       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:09.656704       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:09.656751       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:09.656747       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:09.656782       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:09.658453       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:09.658500       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:10.657140       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:10.657212       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:10.659599       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:10.678294       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:10.678339       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:10.678846       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:10.678886       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:10.679858       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:10.679907       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:11.679003       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:11.679049       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:11.680263       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:11.693951       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:11.693997       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:11.695446       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:11.695490       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:11.696430       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:11.696476       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:12.694653       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:12.695807       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:12.696963       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:12.714207       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:12.714257       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:12.715109       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:12.715143       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:12.715632       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:12.715710       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:13.714794       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:13.715365       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:13.715870       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:13.846252       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:13.846318       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:13.846499       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:13.846703       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:13.848087       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:13.848136       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:14.847261       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:14.847285       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:14.848299       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:14.866224       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:14.866421       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:14.866258       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:14.866534       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:14.867918       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:14.867967       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:15.867108       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:15.867207       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:15.868429       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:15.886019       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:15.886063       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:15.887320       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:15.887362       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:15.889560       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:15.889726       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:16.886586       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:16.887738       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:16.890095       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:16.907434       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:16.907510       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:16.907767       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:16.907819       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:16.909005       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:16.909037       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:17.908312       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:17.908342       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:17.909553       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:17.927221       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:17.927269       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:17.927740       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:17.927771       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:17.928699       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:17.928720       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:18.927857       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:18.927912       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:18.929124       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:18.943173       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:18.943230       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:18.944261       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:18.944288       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:18.945069       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:18.945095       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:19.944319       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:19.944686       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:19.945996       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:19.962449       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:19.962488       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:19.962985       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:19.963099       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:19.964384       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:19.964434       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:20.963139       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:20.963562       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:20.965611       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:20.982356       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:20.982401       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:20.982437       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:20.982473       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:20.984053       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:20.984098       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:21.983196       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:21.983316       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:21.984469       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:22.025712       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+I0227 10:44:22.025748       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:22.025796       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+E0227 10:44:22.025755       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:22.027765       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:22.027810       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:23.026915       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:23.026978       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:23.028001       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:23.046854       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:23.046898       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:23.048495       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:23.048543       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:23.048846       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:23.048878       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:24.048125       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:24.048690       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:24.049296       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:24.079151       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+I0227 10:44:24.079195       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:24.079212       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+E0227 10:44:24.079231       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:24.081120       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:24.081159       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:25.079621       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:25.079725       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:25.082000       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:25.110925       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+I0227 10:44:25.110952       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:25.110974       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+E0227 10:44:25.110990       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:25.112986       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:25.113020       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:25.260443       1 controller.go:602] A Dummy pod kubeshare-vgpu-gpu-one-camdl is being proceed...
+I0227 10:44:25.260492       1 controller.go:615] Start go routine to get UUID from dummy Pod
+I0227 10:44:25.267573       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:25.267804       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:26.111705       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:26.112002       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:26.114154       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:26.130041       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:26.130087       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:26.130666       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:26.130854       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:26.132171       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:26.132221       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:26.268546       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:26.280886       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:26.280931       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:27.130937       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:27.131581       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:27.133212       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:27.149354       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:27.149408       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:27.149572       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:27.149623       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:27.151482       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:27.151528       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:27.281977       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:27.295229       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:27.295269       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:28.150354       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:28.150412       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:28.152011       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:28.168931       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:28.169026       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:28.170514       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:28.170548       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:28.172328       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:28.172379       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:28.295738       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:28.308570       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:28.308617       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:29.169595       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:29.170777       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:29.173024       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:29.183357       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:29.183403       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:29.183472       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:29.183524       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:29.187034       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:29.187072       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:29.309640       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:29.322016       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:29.322055       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:30.183717       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:30.183736       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:30.188004       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:30.200968       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:30.201016       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:30.201070       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:30.201105       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:30.203414       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:30.203458       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:30.322145       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:30.334812       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:30.334855       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:31.201834       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:31.201872       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:31.204171       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:31.223059       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:31.223109       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:31.223124       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:31.223156       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:31.225091       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:31.225127       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:31.335448       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:31.347576       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:31.347613       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:32.223626       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:32.223791       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:32.226035       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:32.242345       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:32.242390       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:32.255499       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:32.255534       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:32.255772       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:32.255867       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:32.347991       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:32.360688       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:32.360821       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:33.242714       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:33.255994       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:33.256029       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:33.293644       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:33.293694       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:33.293727       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:33.293743       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:33.295473       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:33.295512       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:33.361941       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:33.374161       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:33.374222       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:34.294311       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:34.294430       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:34.296577       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:34.312526       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:34.312792       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:34.312536       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:34.313478       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:34.314412       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:34.314455       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:34.374697       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:34.386856       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:34.386902       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:35.313467       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:35.313692       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:35.314664       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:35.330522       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:35.330572       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:35.331493       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:35.331528       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:35.332227       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:35.332258       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:35.387500       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:35.399442       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:35.399486       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:36.331739       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:36.331765       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:36.332304       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:36.351252       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:36.351308       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:36.351252       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:36.351385       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:36.353208       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:36.353406       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:36.400483       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:36.411800       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:36.411841       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:37.351917       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:37.351995       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:37.354290       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:37.376964       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:37.377014       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:37.377100       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:37.377124       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:37.379057       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:37.379089       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:37.412406       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:37.424355       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:37.424405       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:38.377465       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:38.377566       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:38.379861       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:38.399363       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:38.399408       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:38.399731       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:38.399776       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:38.400361       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:38.400394       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:38.424522       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:38.435508       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:38.435551       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:39.399716       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:39.400464       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:39.400492       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:39.420555       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:39.420616       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:39.420675       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:39.420712       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:39.422409       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:39.422442       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:39.436718       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:39.455201       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:39.455245       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:40.421025       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:40.421131       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:40.423373       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:40.439707       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:40.439863       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:40.439946       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:40.440005       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:40.441289       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:40.441410       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:40.455726       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:40.471782       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:40.471933       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:41.440161       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:41.440361       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:41.442533       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:41.468979       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:41.469028       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:41.469328       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:41.469381       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:41.471471       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:41.471506       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:41.472635       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:41.484061       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:41.484102       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:42.469292       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:42.469729       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:42.472641       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:42.485116       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:42.488895       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:42.488937       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:42.490029       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:42.490079       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:42.491213       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:42.491257       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:42.497290       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:42.497338       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:43.489636       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:43.490159       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:43.492357       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:43.497828       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:43.509162       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:43.509219       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:43.509947       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:43.509988       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:43.512863       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:43.512919       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:43.512933       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:43.512955       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:44.509711       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:44.510454       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:44.513071       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:44.513081       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:44.528913       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:44.528963       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:44.542661       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:44.542709       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:44.542665       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:44.542779       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:44.544950       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:44.545003       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:45.530147       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:45.542649       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:45.542694       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:45.543787       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:45.543865       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:45.546133       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:45.555915       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:45.556036       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:45.555921       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:45.556117       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:45.557813       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:45.557905       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:46.543001       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:46.557020       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:46.557055       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:46.558256       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:46.562068       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:46.562122       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:46.568347       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:46.568394       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:46.568997       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:46.569043       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:46.570055       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:46.570099       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:47.563295       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:47.568678       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:47.569103       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:47.570935       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:47.583481       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:47.583535       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:47.583572       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:47.583590       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:47.586519       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+I0227 10:44:47.586548       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:47.586575       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+E0227 10:44:47.586592       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:48.584126       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:48.584512       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:48.586747       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:48.586799       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:48.605249       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:48.605297       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:48.607230       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:48.607274       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:48.607731       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:48.607763       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:48.608325       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:48.608363       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:49.605633       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:49.608316       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:49.608374       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:49.608670       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:49.624808       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:49.624850       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:49.625608       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:49.625661       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:49.626880       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:49.626927       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:49.627364       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:49.627400       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:50.625293       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:50.626037       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:50.627573       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:50.627621       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:50.645249       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:50.645510       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:50.646589       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:50.646679       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:50.647332       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:50.647565       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:50.647575       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:50.647889       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:51.646681       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:51.646967       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:51.647888       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:51.648623       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:51.670610       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:51.670664       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:51.670918       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:51.670964       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:51.672496       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:51.672534       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:51.672934       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:51.672988       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:52.671768       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:52.671808       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:52.673002       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:52.673341       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:52.690555       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:52.690597       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:52.692318       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:52.692351       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:52.693747       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:52.693777       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:52.694333       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:52.694367       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:53.691457       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:53.692622       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:53.694850       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:53.694913       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:53.710990       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:53.711265       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:53.711985       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:53.712123       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:53.713510       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:53.714075       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:53.714006       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:53.714666       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:54.711693       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:54.713421       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:54.714529       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:54.715752       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:54.734251       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:54.734295       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:54.734352       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:54.734369       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:54.735081       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:54.735129       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:54.735272       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:54.735305       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:55.261928       1 controller.go:602] A Dummy pod kubeshare-vgpu-gpu-one-camdl is being proceed...
+I0227 10:44:55.261983       1 controller.go:615] Start go routine to get UUID from dummy Pod
+I0227 10:44:55.269474       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:55.269524       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:55.734828       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:55.734880       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:55.735242       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:55.735466       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:55.946817       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:55.946863       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:55.946834       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:55.946891       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:55.948317       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:55.948368       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:55.948839       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:55.948872       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:56.270479       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:56.287385       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+E0227 10:44:56.287461       1 gpupool.go:538] Cannot find UUID 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559' from dummy Pod: 'kubeshare-vgpu-gpu-one-camdl' in UUID database. 
+I0227 10:44:56.533132       1 config.go:72] Connect to a client, addr:port=10.244.0.39:52976
+I0227 10:44:56.541309       1 config.go:111] Receive device list from node: gpu-one, devices: GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559:16384,
+I0227 10:44:56.546919       1 config.go:212] Update node gpu-one GPU info: GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559:16384,
+I0227 10:44:56.565191       1 config.go:282] Syncing to node 'gpu-one' with content: '::
+'
+I0227 10:44:56.565365       1 config.go:189] Receive heartbeat from node: gpu-one
+I0227 10:44:56.947038       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:56.947128       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:56.949407       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:56.949463       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:56.961574       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+I0227 10:44:56.961621       1 gpupool.go:551] After dummy Pod created, PodList Len: 0
+I0227 10:44:56.966523       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+I0227 10:44:56.966566       1 gpupool.go:551] After dummy Pod created, PodList Len: 0
+I0227 10:44:56.966689       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+I0227 10:44:56.966706       1 gpupool.go:551] After dummy Pod created, PodList Len: 0
+I0227 10:44:56.968247       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+I0227 10:44:56.968267       1 gpupool.go:551] After dummy Pod created, PodList Len: 0
+I0227 10:44:57.287765       1 gpupool.go:479] Dummy pod kubeshare-vgpu-gpu-one-camdl on Node gpu-one is created!
+I0227 10:44:57.301371       1 gpupool.go:528] Dummy Pod kubeshare-vgpu-gpu-one-camdl get device ID: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559'
+I0227 10:44:57.301415       1 gpupool.go:551] After dummy Pod created, PodList Len: 0
+I0227 10:45:11.541896       1 config.go:189] Receive heartbeat from node: gpu-one
+I0227 10:45:17.622247       1 controller.go:391] Funcname:resnet Quota:0.5 Partition:50 detected
+I0227 10:45:17.623022       1 controller.go:498] Pod of SharePod faas-share-fn/resnet with length 0
+I0227 10:45:17.623057       1 controller.go:651] SHR resnet with current replica %!s(int=-4)
+I0227 10:45:17.623498       1 resource_type.go:24] ============ Node: gpu-one ============
+I0227 10:45:17.623529       1 resource_type.go:25] CpuTotal: 20000
+I0227 10:45:17.623540       1 resource_type.go:26] MemTotal: 388754464768000
+I0227 10:45:17.623591       1 resource_type.go:27] GpuTotal: 1
+I0227 10:45:17.623605       1 resource_type.go:28] GpuMemTotal: 17179869184
+I0227 10:45:17.623615       1 resource_type.go:29] CpuFree: 20000
+I0227 10:45:17.623626       1 resource_type.go:30] MemFree: 388754464768000
+I0227 10:45:17.623636       1 resource_type.go:31] GpuFree: 1
+I0227 10:45:17.623739       1 resource_type.go:32] GpuId:
+I0227 10:45:17.623763       1 resource_type.go:37] ============ Node Info End ============
+I0227 10:45:17.624081       1 binpack2d.go:62] Packer: camdl1000 100
+I0227 10:45:17.624104       1 binpack2d.go:63] Used Rectangles:
+I0227 10:45:17.624115       1 binpack2d.go:67] Free Rectangles:
+I0227 10:45:17.624172       1 binpack2d.go:69]  i,x,y,w,h:0 0 0 1000 100
+I0227 10:45:17.624258       1 scheduler.go:71] try insert into packer with result500 50 true
+I0227 10:45:17.624383       1 controller.go:805] SharePod 'faas-share-fn/resnet' had been scheduled to node 'gpu-one' GPUID 'camdl'.
+I0227 10:45:17.624514       1 config.go:282] Syncing to node 'gpu-one' with content: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559:faas-share-fn/resnet-h8n5l 0.500000 1.000000 50 2073741824,:faas-share-fn/resnet-h8n5l 50051,
+'
+I0227 10:45:17.624755       1 controller.go:833] Pod of Sharepod faas-share-fn/resnet with vGPU port: 50051
+I0227 10:45:17.624790       1 controller.go:836] SharePod faas-share-fn/resnet is bound to GPU uuid: GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559
+I0227 10:45:17.624850       1 controller.go:866] TESTING: Starting to create new pod of sharepod faas-share-fn/resnet in batch
+I0227 10:45:17.984000       1 resource_type.go:24] ============ Node: gpu-one ============
+I0227 10:45:17.984050       1 resource_type.go:25] CpuTotal: 20000
+I0227 10:45:17.984063       1 resource_type.go:26] MemTotal: 388754464768000
+I0227 10:45:17.984073       1 resource_type.go:27] GpuTotal: 1
+I0227 10:45:17.984088       1 resource_type.go:28] GpuMemTotal: 17179869184
+I0227 10:45:17.984099       1 resource_type.go:29] CpuFree: 20000
+I0227 10:45:17.984111       1 resource_type.go:30] MemFree: 388754464768000
+I0227 10:45:17.984123       1 resource_type.go:31] GpuFree: 1
+I0227 10:45:17.984134       1 resource_type.go:32] GpuId:
+I0227 10:45:17.984145       1 resource_type.go:37] ============ Node Info End ============
+I0227 10:45:17.984556       1 binpack2d.go:62] Packer: camdl1000 100
+I0227 10:45:17.984648       1 binpack2d.go:63] Used Rectangles:
+I0227 10:45:17.984696       1 binpack2d.go:67] Free Rectangles:
+I0227 10:45:17.984752       1 binpack2d.go:69]  i,x,y,w,h:0 0 0 1000 100
+I0227 10:45:17.984794       1 scheduler.go:71] try insert into packer with result500 50 true
+I0227 10:45:17.984885       1 controller.go:805] SharePod 'faas-share-fn/resnet' had been scheduled to node 'gpu-one' GPUID 'camdl'.
+I0227 10:45:17.985050       1 config.go:282] Syncing to node 'gpu-one' with content: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559:faas-share-fn/resnet-h8n5l 0.500000 1.000000 50 2073741824,faas-share-fn/resnet-b1cj2 0.500000 1.000000 50 2073741824,:faas-share-fn/resnet-h8n5l 50051,faas-share-fn/resnet-b1cj2 50052,
+'
+I0227 10:45:17.985297       1 controller.go:833] Pod of Sharepod faas-share-fn/resnet with vGPU port: 50052
+I0227 10:45:17.985421       1 controller.go:836] SharePod faas-share-fn/resnet is bound to GPU uuid: GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559
+I0227 10:45:17.985503       1 controller.go:866] TESTING: Starting to create new pod of sharepod faas-share-fn/resnet in batch
+I0227 10:45:18.006346       1 resource_type.go:24] ============ Node: gpu-one ============
+I0227 10:45:18.006387       1 resource_type.go:25] CpuTotal: 20000
+I0227 10:45:18.006398       1 resource_type.go:26] MemTotal: 388754464768000
+I0227 10:45:18.006407       1 resource_type.go:27] GpuTotal: 1
+I0227 10:45:18.006415       1 resource_type.go:28] GpuMemTotal: 17179869184
+I0227 10:45:18.006424       1 resource_type.go:29] CpuFree: 20000
+I0227 10:45:18.006432       1 resource_type.go:30] MemFree: 388754464768000
+I0227 10:45:18.006440       1 resource_type.go:31] GpuFree: 1
+I0227 10:45:18.006452       1 resource_type.go:32] GpuId:
+I0227 10:45:18.006460       1 resource_type.go:37] ============ Node Info End ============
+I0227 10:45:18.006523       1 binpack2d.go:62] Packer: camdl1000 100
+I0227 10:45:18.006542       1 binpack2d.go:63] Used Rectangles:
+I0227 10:45:18.006554       1 binpack2d.go:65]  i,x,y,w,h:0 0 0 500 50
+I0227 10:45:18.006562       1 binpack2d.go:67] Free Rectangles:
+I0227 10:45:18.006572       1 binpack2d.go:69]  i,x,y,w,h:0 0 50 1000 50
+I0227 10:45:18.006581       1 binpack2d.go:69]  i,x,y,w,h:1 500 0 500 100
+I0227 10:45:18.006639       1 binpack2d.go:62] Packer: camdl1000 100
+I0227 10:45:18.006653       1 binpack2d.go:63] Used Rectangles:
+I0227 10:45:18.006662       1 binpack2d.go:65]  i,x,y,w,h:0 0 0 500 50
+I0227 10:45:18.006670       1 binpack2d.go:67] Free Rectangles:
+I0227 10:45:18.006679       1 binpack2d.go:69]  i,x,y,w,h:0 0 50 1000 50
+I0227 10:45:18.006688       1 binpack2d.go:69]  i,x,y,w,h:1 500 0 500 100
+I0227 10:45:18.006702       1 scheduler.go:71] try insert into packer with result500 50 true
+I0227 10:45:18.006719       1 controller.go:805] SharePod 'faas-share-fn/resnet' had been scheduled to node 'gpu-one' GPUID 'camdl'.
+I0227 10:45:18.006806       1 config.go:282] Syncing to node 'gpu-one' with content: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559:faas-share-fn/resnet-h8n5l 0.500000 1.000000 50 2073741824,faas-share-fn/resnet-b1cj2 0.500000 1.000000 50 2073741824,faas-share-fn/resnet-z7xtd 0.500000 1.000000 50 2073741824,:faas-share-fn/resnet-h8n5l 50051,faas-share-fn/resnet-b1cj2 50052,faas-share-fn/resnet-z7xtd 50053,
+'
+I0227 10:45:18.006936       1 controller.go:833] Pod of Sharepod faas-share-fn/resnet with vGPU port: 50053
+I0227 10:45:18.006962       1 controller.go:836] SharePod faas-share-fn/resnet is bound to GPU uuid: GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559
+I0227 10:45:18.006984       1 controller.go:866] TESTING: Starting to create new pod of sharepod faas-share-fn/resnet in batch
+I0227 10:45:18.063464       1 resource_type.go:24] ============ Node: gpu-one ============
+I0227 10:45:18.063512       1 resource_type.go:25] CpuTotal: 20000
+I0227 10:45:18.063525       1 resource_type.go:26] MemTotal: 388754464768000
+I0227 10:45:18.063535       1 resource_type.go:27] GpuTotal: 1
+I0227 10:45:18.063545       1 resource_type.go:28] GpuMemTotal: 17179869184
+I0227 10:45:18.063556       1 resource_type.go:29] CpuFree: 20000
+I0227 10:45:18.063565       1 resource_type.go:30] MemFree: 388754464768000
+I0227 10:45:18.063575       1 resource_type.go:31] GpuFree: 1
+I0227 10:45:18.063586       1 resource_type.go:32] GpuId:
+I0227 10:45:18.063597       1 resource_type.go:37] ============ Node Info End ============
+I0227 10:45:18.063702       1 binpack2d.go:62] Packer: camdl1000 100
+I0227 10:45:18.063741       1 binpack2d.go:63] Used Rectangles:
+I0227 10:45:18.063755       1 binpack2d.go:65]  i,x,y,w,h:0 0 0 500 50
+I0227 10:45:18.063766       1 binpack2d.go:67] Free Rectangles:
+I0227 10:45:18.063777       1 binpack2d.go:69]  i,x,y,w,h:0 0 50 1000 50
+I0227 10:45:18.063789       1 binpack2d.go:69]  i,x,y,w,h:1 500 0 500 100
+I0227 10:45:18.063814       1 binpack2d.go:62] Packer: camdl1000 100
+I0227 10:45:18.063845       1 binpack2d.go:63] Used Rectangles:
+I0227 10:45:18.063857       1 binpack2d.go:65]  i,x,y,w,h:0 0 0 500 50
+I0227 10:45:18.063868       1 binpack2d.go:65]  i,x,y,w,h:1 0 50 500 50
+I0227 10:45:18.063878       1 binpack2d.go:67] Free Rectangles:
+I0227 10:45:18.063889       1 binpack2d.go:69]  i,x,y,w,h:0 500 0 500 100
+I0227 10:45:18.063914       1 binpack2d.go:62] Packer: camdl1000 100
+I0227 10:45:18.063924       1 binpack2d.go:63] Used Rectangles:
+I0227 10:45:18.063935       1 binpack2d.go:65]  i,x,y,w,h:0 0 0 500 50
+I0227 10:45:18.063946       1 binpack2d.go:65]  i,x,y,w,h:1 0 50 500 50
+I0227 10:45:18.063957       1 binpack2d.go:65]  i,x,y,w,h:2 500 0 500 50
+I0227 10:45:18.063968       1 binpack2d.go:67] Free Rectangles:
+I0227 10:45:18.063978       1 binpack2d.go:69]  i,x,y,w,h:0 500 50 500 50
+I0227 10:45:18.064036       1 binpack2d.go:62] Packer: camdl1000 100
+I0227 10:45:18.064061       1 binpack2d.go:63] Used Rectangles:
+I0227 10:45:18.064072       1 binpack2d.go:65]  i,x,y,w,h:0 0 0 500 50
+I0227 10:45:18.064084       1 binpack2d.go:65]  i,x,y,w,h:1 0 50 500 50
+I0227 10:45:18.064095       1 binpack2d.go:65]  i,x,y,w,h:2 500 0 500 50
+I0227 10:45:18.064105       1 binpack2d.go:67] Free Rectangles:
+I0227 10:45:18.064116       1 binpack2d.go:69]  i,x,y,w,h:0 500 50 500 50
+I0227 10:45:18.064128       1 scheduler.go:71] try insert into packer with result500 50 true
+I0227 10:45:18.064148       1 controller.go:805] SharePod 'faas-share-fn/resnet' had been scheduled to node 'gpu-one' GPUID 'camdl'.
+I0227 10:45:18.064277       1 config.go:282] Syncing to node 'gpu-one' with content: 'GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559:faas-share-fn/resnet-h8n5l 0.500000 1.000000 50 2073741824,faas-share-fn/resnet-b1cj2 0.500000 1.000000 50 2073741824,faas-share-fn/resnet-z7xtd 0.500000 1.000000 50 2073741824,faas-share-fn/resnet-xshf6 0.500000 1.000000 50 2073741824,:faas-share-fn/resnet-h8n5l 50051,faas-share-fn/resnet-b1cj2 50052,faas-share-fn/resnet-z7xtd 50053,faas-share-fn/resnet-xshf6 50054,
+'
+I0227 10:45:18.064428       1 controller.go:833] Pod of Sharepod faas-share-fn/resnet with vGPU port: 50054
+I0227 10:45:18.064456       1 controller.go:836] SharePod faas-share-fn/resnet is bound to GPU uuid: GPU-d7f1de82-bd1c-2ed0-4d47-4827dcac3559
+I0227 10:45:18.064483       1 controller.go:866] TESTING: Starting to create new pod of sharepod faas-share-fn/resnet in batch
+I0227 10:45:18.166575       1 controller.go:355] Successfully synced 'faas-share-fn/resnet'
+I0227 10:45:18.168959       1 controller.go:191] DEBUG: updating SHR resnet with replica %!i(int32=4) 
+I0227 10:45:18.169013       1 controller.go:192] DEBUG: queue length %!i(int=0)
+I0227 10:45:18.169054       1 controller.go:391] Funcname:resnet Quota:0.5 Partition:50 detected
+I0227 10:45:18.169252       1 controller.go:498] Pod of SharePod faas-share-fn/resnet with length 4
+I0227 10:45:18.169274       1 controller.go:651] SHR resnet with current replica %!s(int=0)
+I0227 10:45:18.183797       1 controller.go:191] DEBUG: updating SHR resnet with replica %!i(int32=4) 
+I0227 10:45:18.183846       1 controller.go:192] DEBUG: queue length %!i(int=0)
+I0227 10:45:18.184214       1 controller.go:355] Successfully synced 'faas-share-fn/resnet'
+I0227 10:45:18.184246       1 controller.go:391] Funcname:resnet Quota:0.5 Partition:50 detected
+I0227 10:45:18.184407       1 controller.go:498] Pod of SharePod faas-share-fn/resnet with length 4
+I0227 10:45:18.184420       1 controller.go:651] SHR resnet with current replica %!s(int=0)
+I0227 10:45:18.197771       1 controller.go:355] Successfully synced 'faas-share-fn/resnet'
+I0227 10:45:25.219904       1 controller.go:191] DEBUG: updating SHR resnet with replica %!i(int32=4) 
+I0227 10:45:25.219965       1 controller.go:192] DEBUG: queue length %!i(int=0)
+I0227 10:45:25.220031       1 controller.go:391] Funcname:resnet Quota:0.5 Partition:50 detected
+I0227 10:45:25.220339       1 controller.go:498] Pod of SharePod faas-share-fn/resnet with length 4
+I0227 10:45:25.220372       1 controller.go:651] SHR resnet with current replica %!s(int=0)
+I0227 10:45:25.263020       1 controller.go:602] A Dummy pod kubeshare-vgpu-gpu-one-camdl is being proceed...
+I0227 10:45:26.542212       1 config.go:189] Receive heartbeat from node: gpu-one
+I0227 10:45:26.753744       1 controller.go:355] Successfully synced 'faas-share-fn/resnet'
