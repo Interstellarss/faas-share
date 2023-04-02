@@ -328,7 +328,11 @@ func (c *Controller) syncHandler(key string) error {
 	// If the resource doesn't exist, we'll create it
 
 	svcGetOptions := metav1.GetOptions{}
-	_, getSvcErr := c.kubeclient.CoreV1().Services(sharepod.Namespace).Get(context.TODO(), sharepod.Name, svcGetOptions)
+        funcname, found := sharepod.Labels["faas_function"]
+        if !found {
+                funcname = sharepod.ObjectMeta.Name
+        }
+	_, getSvcErr := c.kubeclient.CoreV1().Services(sharepod.Namespace).Get(context.TODO(), funcname, svcGetOptions)
 	if errors.IsNotFound(getSvcErr) {
 		glog.Infof("Creating ClusterIP service for '%s'", sharepod.Name)
 		if _, err := c.kubeclient.CoreV1().Services(sharepod.Namespace).Create(context.TODO(), newService(sharepod), metav1.CreateOptions{}); err != nil {
@@ -349,7 +353,7 @@ func (c *Controller) syncHandler(key string) error {
 		return fmt.Errorf("transient error: %v", err)
 	}
 
-	existingService, err := c.kubeclient.CoreV1().Services(sharepod.Namespace).Get(context.TODO(), sharepod.Name, metav1.GetOptions{})
+	existingService, err := c.kubeclient.CoreV1().Services(sharepod.Namespace).Get(context.TODO(), funcname, metav1.GetOptions{})
 	if err != nil {
 		return err
 	}
@@ -357,7 +361,7 @@ func (c *Controller) syncHandler(key string) error {
 	existingService.Annotations = makeAnnotations(sharepod)
 	_, err = c.kubeclient.CoreV1().Services(sharepod.Namespace).Update(context.TODO(), existingService, metav1.UpdateOptions{})
 	if err != nil {
-		glog.Errorf("Updating service for '%s' failed: %v", sharepod.Name, err)
+		glog.Errorf("Updating service for '%s' failed: %v", funcname, err)
 	}
 
 	// If an error occurs during Update, we'll requeue the item so we can
