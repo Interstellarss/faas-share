@@ -18,7 +18,7 @@ spec:
         app: alertmanager
       annotations:
         sidecar.istio.io/inject: "true"
-        checksum/alertmanager-config: "46f66cf07845b752d0eb122dacc28f4d5ce9f00487506f7a59ce393f3cd03a13"
+        checksum/alertmanager-config: "315b4bda9314d4877c792ae0b57778650caa83bebb1e289573efd6eb43287a2b"
     spec:
       containers:
       - name: alertmanager
@@ -59,3 +59,10 @@ spec:
               - key: alertmanager.yml
                 path: alertmanager.yml
                 mode: 0644
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Exists
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/control-plane
+          operator: Exists

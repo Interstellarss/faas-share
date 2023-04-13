@@ -18,7 +18,7 @@ spec:
         app: prometheus
       annotations:
         sidecar.istio.io/inject: "true"
-        checksum/prometheus-config: "38e59b9f63dda1ef3d5ac1bb792c5775f0aee5b2da01f74bc42a3afa96bc68da"
+        checksum/prometheus-config: "6da7674c376e854b34e46cc7b323d1502831cc614f6858f1a454717e94e85ec5"
     spec:
       serviceAccountName: faas-share-prometheus
       containers:
@@ -66,3 +66,10 @@ spec:
                 mode: 0644
         - name: prom-data
           emptyDir: {}
+      tolerations:
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/master
+          operator: Exists
+        - effect: NoSchedule
+          key: node-role.kubernetes.io/control-plane
+          operator: Exists
