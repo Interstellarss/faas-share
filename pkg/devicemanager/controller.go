@@ -1121,7 +1121,7 @@ func newPod(shrpod *faasv1.SharePod, isWarm bool, podManagerIP string, podManage
 
 func (c *Controller) schedule(gpupod *faasv1.SharePod, gpu_request float64, gpu_limit float64, gpu_partition int64, gpu_mem int64, isGPUPod bool, key string) (string, string) {
 
-	nodeList, err := c.nodesLister.List(labels.Everything())
+	nodeList, err := c.nodesLister.List(labels.Set{"gpu": "present"}.AsSelector())
 	if err != nil {
 		utilruntime.HandleError(fmt.Errorf(""))
 	}

@@ -103,7 +103,8 @@ func (c *Controller) initNodesInfo() error {
 		return errrr
 	}
 
-	if nodes, err = c.nodesLister.List(labels.Everything()); err != nil {
+	//if nodes, err = c.nodesLister.List(labels.Everything()); err != nil {
+	if nodes, err = c.nodesLister.List(labels.Set{"gpu": "present"}.AsSelector()); err != nil {
 		errr := fmt.Errorf("error when list nodes: #{err}")
 		klog.Error(errr)
 		return errr
